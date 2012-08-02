@@ -215,23 +215,20 @@ td { vertical-align: top; }
 
 
 /* ==|== primary styles =====================================================
-   Author:
+   Author: Will Shown & Vail Gold
    ========================================================================== */
 
+canvas.faces {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+video.faces {
+    display: none;
+}
 
 /* ==|== media queries ======================================================
    EXAMPLE Media Query for Responsive Design.
