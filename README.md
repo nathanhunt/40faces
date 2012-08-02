@@ -1,4 +1,2 @@
-40faces
+[40faces](http://dressler-llc.com/40faces)
 =======
-
-[See it live](http://dressler-llc.com/40faces).
