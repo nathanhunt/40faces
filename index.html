@@ -36,15 +36,18 @@
 
   <div role="main">
 
-    <canvas class="faces">
+    <canvas class="faces" id="facesCanvas">
     </canvas>
     <!-- 480 x 360 -->
-    <video class="faces">
+    <video width="480" height="360" class="faces" id="facesVideo">
       <source src="http://html5doctor.com/demos/video-canvas-magic/video.mp4" type="video/mp4" />
-      <source src="http://html5doctor.com/demos/video-canvas-magic/video.webm" type="video/webm" />
       <source src="http://html5doctor.com/demos/video-canvas-magic/video.ogg" type="video/ogg" />
+      <source src="http://html5doctor.com/demos/video-canvas-magic/video.webm" type="video/webm" />
+      <!--<object width="640" height="505" type="application/x-shockwave-flash" data="http://www.youtube.com/watch?v=bXiJYcK4-GU">-->
+        <!--<param name="movie" value="http://www.youtube.com/watch?v=bXiJYcK4-GU">-->
+        <!--<img src="http://upload.wikimedia.org/wikipedia/en/thumb/e/e8/Teyandee_DVD.jpg/444px-Teyandee_DVD.jpg" width="444" height="600" alt="Samurai Pizza Cats" title="No video playback capabilities.">-->
+      <!--</object>-->
     </video>
-
   </div>
 
   <!-- JavaScript at the bottom for fast page loading -->

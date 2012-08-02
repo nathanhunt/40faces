@@ -226,8 +226,8 @@ canvas.faces {
     height: 100%;
 }
 
-video.faces {
-    display: none;
+video, video object {
+    display: none !important;
 }
 
 /* ==|== media queries ======================================================
