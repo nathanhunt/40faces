@@ -31,7 +31,7 @@
     Modernizr.load([
       {
         test: Modernizr.canvas && Modernizr.video,
-        nope: ['js/libs/flashcanvas.js', 'http://api.html5media.info/1.1.5/html5media.min.js'],
+        nope: ['js/libs/flashcanvas.js', 'js/libs/html5media.min.js'],
         complete: function(){
           $body.trigger('shimsLoaded');
         }
@@ -75,24 +75,33 @@
     if (sem == 1){startShim(canvas, v, $)}else{sem += 1}
   }
 
-  function drawShim(v, c, w, h){
-    console.log('drawing.');
-    //TODO: figure out how to pipe the data from the flash-video object to the flash-canvas object so that it works with drawImage(Image,…);
+  function drawShim(v, f, c){
+    if(v.getState() !== 3 ){ console.log('Nothing to draw.'); return false; }
+    var i = new Image();
+    i.src = "data:image/png;base64," + f.getScreenshot();
+    c.drawImage(i, 0, 0, i.width, i.height);
+    setTimeout(drawShim(v,f,c),20);
   }
 
   function startShim(canvas, v, $){
     var context = canvas.getContext('2d');
     var c = v.getClip(0);
-    var cw, ch
+    var f = $('#facesVideo_api').get(0);
 
     c.onStart(function(){
-      canvas.width = cw = c.metaData.width;
-      canvas.height = ch = c.metaData.height;
-      drawShim(this, context, cw, ch);
+      canvas.width = c.metaData.width;
+      canvas.height = c.metaData.height;
+      console.log('Drawing on start.');
+      drawShim(v, f, context);
+    });
+
+    c.onResume(function(){
+      console.log('Drawing on resume.');
+      drawShim(v, f, context);
     });
 
     v.startBuffering();
-    setTimeout(function(){v.play()}, 2000);
+    setTimeout(function(){v.play();}, 2000);
   }
 
 })(window);
