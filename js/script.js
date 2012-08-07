@@ -76,11 +76,11 @@
   }
 
   function drawShim(v, f, c){
-    if(v.getState() !== 3 ){ console.log('Nothing to draw.'); return false; }
+    //if(v.getState() !== 3 ){ console.log('Nothing to draw.'); return false; }
     var i = new Image();
     i.src = "data:image/png;base64," + f.getScreenshot();
     c.drawImage(i, 0, 0, i.width, i.height);
-    setTimeout(drawShim(v,f,c),20);
+    //setTimeout(drawShim(v,f,c),20);
   }
 
   function startShim(canvas, v, $){
@@ -91,13 +91,11 @@
     c.onStart(function(){
       canvas.width = c.metaData.width;
       canvas.height = c.metaData.height;
-      console.log('Drawing on start.');
-      drawShim(v, f, context);
     });
 
     c.onResume(function(){
       console.log('Drawing on resume.');
-      drawShim(v, f, context);
+      //drawShim(v, f, context);
     });
 
     v.startBuffering();
