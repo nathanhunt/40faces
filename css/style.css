@@ -273,7 +273,7 @@ canvas.faces, video, video object, #facesVideo_control {
 }
 
 canvas.faces {
-    z-index: 99;
+    z-index: 998;
 }
 
 video, video object {
@@ -289,8 +289,7 @@ video, video object {
 
 #facesVideo_control {
     z-index: 999;
-    background-image: url( 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
-    background-repeat: repeat;
+    background: url( 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' ) repeat;
     opacity: 0.33;
 }
 
