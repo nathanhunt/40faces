@@ -30,7 +30,7 @@
           'margin': '0 auto',
           'display': 'block'
         }), canvas = $canvas.get(0);
-        var $v = $('video.faces'), vid = $v.get(0);
+        var $vid = $('video.faces'), vid = $vid.get(0);
 
         var $container = $(window);
         $container.on('resize', function(){
@@ -40,18 +40,18 @@
         var context = canvas.getContext('2d');
         var cw, ch;
 
-        $v.on('play', function(){
+        $vid.on('play', function(){
           draw(this,context,cw,ch);
         });
 
-        $v.on('canplay', function(){
+        $vid.on('canplay', function(){
           cw = vid.videoWidth;
           ch = vid.videoHeight;
           canvas.width = cw;
           canvas.height = ch;
         });
 
-        $v.on('canplaythrough', function(){
+        $vid.on('canplaythrough', function(){
           $body.trigger('media:complete',[Modernizr.video, vid, canvas]);
         });
 
@@ -60,18 +60,28 @@
       }else{
 
         $('canvas').hide();
-        var v = window.$f(0);
+        var v = window.$f(0), $v = $('#facesVideo');
+
+        $v.before('<div id="facesVideo_control"></div>');
+        var $c = $('#facesVideo_control').on('click', function(e){
+          e.preventDefault();
+        });
+        var $resize = $v.add($c);
+        $resize.css({
+          position: 'absolute',
+          top: 0,
+          left: 0
+        });
 
         v.onLoad(function(){
 
-          var $v = $('#facesVideo').css('margin', '0 auto');
-
           var $container = $(window);
           $container.on('resize', function(){
-            fitInside($v, $container);
+            fitInside($resize, $container);
+            centerInside($resize, $container);
           }).trigger('resize');
 
-          $body.trigger('media:complete',[Modernizr.video, v]);
+          $body.trigger('media:complete',[Modernizr.video, v, $c]);
 
         });
       }
@@ -89,27 +99,56 @@
     ]);
 
   });
+  
+  function scaleFactor(ch, cw, th, tw){
+    return Math.min(
+      (ch/th), (cw/tw)
+    );
+  }
+
+  function centerInside ($elem, $container) {
+
+    var cW = $container.width(), cH = $container.height();
+
+    return $elem.each(function(){
+
+      var $this = $(this);
+      var tW = $this.width(), tH = $this.height();
+
+      $this.css({
+        top:  (cH - tH) / 2,
+        left: (cW - tW) / 2
+      });
+
+    });
+
+  }
 
   function fitInside ($elem, $container) {
+    
+    var cW = $container.width(), cH = $container.height();
 
-    var oW, oH;
+    return $elem.each(function(){
+      
+      var $this = $(this);
+      var oW, oH;
 
-    if($elem.data('orig-width') == null){
-      oW = parseInt($elem.width(),10);
-      $elem.data('orig-width', oW);
-    }else{ oW = parseInt($elem.data('orig-width'),10); }
+      if($this.data('orig-width') == null){
+        oW = parseInt($this.width(),10);
+        $this.data('orig-width', oW);
+      }else{ oW = parseInt($this.data('orig-width'),10); }
 
-    if($elem.data('orig-height') == null){
-      oH = parseInt($elem.height(),10);
-      $elem.data('orig-height', oH);
-    }else{ oH = parseInt($elem.data('orig-height'),10); }
+      if($this.data('orig-height') == null){
+        oH = parseInt($this.height(),10);
+        $this.data('orig-height', oH);
+      }else{ oH = parseInt($this.data('orig-height'),10); }
 
-    var scaleFactor = Math.min(
-      ($container.height()/oH),
-      ($container.width() /oW));
-    $elem.width (oW * scaleFactor);
-    $elem.height(oH * scaleFactor);
+      var s = scaleFactor(cH, cW, oH, oW);
 
+      $this.width (oW * s);
+      $this.height(oH * s);
+      
+    });
   }
 
   var framerate = 1000/24;
