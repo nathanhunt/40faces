@@ -21,6 +21,7 @@
   $(function(){
 
     var $body = $('body');
+    var $container = $('.faces').parent();
 
     $body.one('shimsLoaded', function(){
 
@@ -32,8 +33,7 @@
         }), canvas = $canvas.get(0);
         var $vid = $('video.faces'), vid = $vid.get(0);
 
-        var $container = $(window);
-        $container.on('resize', function(){
+        $(window).on('resize', function(){
           fitInside($canvas, $container);
         }).trigger('resize');
 
@@ -75,8 +75,7 @@
 
         v.onLoad(function(){
 
-          var $container = $(window);
-          $container.on('resize', function(){
+          $(window).on('resize', function(){
             fitInside($resize, $container);
             centerInside($resize, $container);
           }).trigger('resize');
@@ -108,15 +107,14 @@
 
   function centerInside ($elem, $container) {
 
-    var cW = $container.width(), cH = $container.height();
+    var cW = $container.width();
 
     return $elem.each(function(){
 
       var $this = $(this);
-      var tW = $this.width(), tH = $this.height();
+      var tW = $this.width();
 
       $this.css({
-        top:  (cH - tH) / 2,
         left: (cW - tW) / 2
       });
 
