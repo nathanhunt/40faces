@@ -23,7 +23,7 @@
 
     var defaultAttributes = {
       type: 'circle',
-      stroke: 'transparent',
+      'stroke-opacity': 0,
       fill: '270-#87E0FD-#53CBF1:40-#05ABE0',
       opacity: 0.5
     };

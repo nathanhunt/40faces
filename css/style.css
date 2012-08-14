@@ -83,7 +83,7 @@ html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 10
 
 html, button, input, select, textarea { font-family: sans-serif; color: #222; }
 
-body { font-size: 1em; line-height: 1.4; z-index: 0; height: 100%; }
+body { font-size: 1em; line-height: 1.4; height: 100%; }
 
 /*
  * Remove text-shadow in selection highlight: h5bp.com/i
@@ -275,12 +275,10 @@ canvas.faces, video, video object, #facesVideo_control {
 }
 
 canvas.faces {
-    z-index: 998;
     background: transparent;
 }
 
 video, video object {
-    z-index: 2;
     display: none !important;
 }
 
@@ -288,11 +286,9 @@ video, video object {
     width: 800px;
     height: 600px;
     background: transparent;
-    z-index: 1;
 }
 
 #facesVideo_control {
-    z-index: 999;
     background: url( 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' ) repeat;
     opacity: 0.33;
 }
@@ -307,7 +303,6 @@ video, video object {
     height: 100%;
     overflow: hidden;
     background: none;
-    z-index: 0;
 }
 
 /* ==|== media queries ======================================================
