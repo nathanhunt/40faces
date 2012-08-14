@@ -1,7 +1,52 @@
 /* Author: Will Shown & Vail Gold */
 
+/* BUBBLE MAKER
+ * controls… bubbles… */
+(function(window, $, Raphael, _){
+
+  $(function(){
+
+    var paper = Raphael('vector-content', 2400, 2400);
+    var bubbles = addBubbles(paper);
+
+  });
+
+  function addBubbles(paper) {
+
+    var bubbles = [];
+
+    var startingAttributes = {
+      cx: [-236.499, -135.166, 1059.167, 1144.167, 795.834, 1011.834, 1466.167, 1076.834, 660.834, 216.169 , 579.834, 1508.834],
+      cy: [-182.167,  202.5  , -399.833, -498.833, 14.5   , 201.5   , 717.167 , 999.5   , 880.5  , 1294.167, 1168.5 , 1831.5  ],
+      r:  [ 529.502,  216.169,  641.169,  626.169, 156.169, 216.169 , 646.169 , 216.169 , 216.169, 629.502 , 216.169, 216.169 ]
+    };
+
+    var defaultAttributes = {
+      type: 'circle',
+      stroke: 'transparent',
+      fill: '270-#87E0FD-#53CBF1:40-#05ABE0',
+      opacity: 0.5
+    };
+
+    var i;
+    for(i=0; i<startingAttributes.cx.length; i+=1){
+      var bubble = {
+        cx: startingAttributes.cx[i],
+        cy: startingAttributes.cy[i],
+        r: startingAttributes.r[i]
+      };
+      bubbles.push(
+        _.extend(bubble, defaultAttributes)
+      );
+    }
+
+    return paper.add(bubbles);
+  }
+
+}(window, window.jQuery, window.Raphael, window._));
+
 /* MEDIA CONTROLLER
- * pipe all abstract commands to this function. */
+ * pipe all control APIs to this function. */
 (function(window, $){
 
   var $body = $('body');

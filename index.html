@@ -27,14 +27,14 @@
   <!-- All JavaScript at the bottom, except this Modernizr build.
        Modernizr enables HTML5 elements & feature detects for optimal performance.
        Create your own custom Modernizr build: www.modernizr.com/download/ -->
-  <script src="js/libs/modernizr-2.5.3.min.js"></script>
+  <script src="js/libs/modernizr.40faces.js"></script>
 </head>
 <body>
   <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
        chromium.org/developers/how-tos/chrome-frame-getting-started -->
   <!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
 
-  <div role="main" id="main">
+  <div role="video" id="video">
     <canvas class="faces"></canvas>
      <!--480 x 360-->
     <video width="480" height="360" class="faces" id="facesVideo">
@@ -44,13 +44,16 @@
     </video>
   </div>
 
+  <div id="vector-content"></div>
+
   <!-- JavaScript at the bottom for fast page loading -->
 
   <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.1.min.js"><\/script>')</script>
 
   <!-- scripts concatenated and minified via build script -->
+  <script src="js/libs/underscore.min.js"></script>
   <script src="js/plugins.js"></script>
   <script src="js/script.js"></script>
   <!-- end scripts -->
