@@ -9,10 +9,9 @@
     window.paper = Raphael('vector-content', 2400, 2400);
     window.bubbles = addBubbles(paper);
 
-    var ft = paper.freeTransform(window.bubbles);
-    ft.hideHandles();
-    ft.attrs.rotate = 10;
-    ft.apply();
+    window.ft = paper.freeTransform(window.bubbles);
+    window.ft.opts.animate = {delay: 4000, easing: 'easeInOut'};
+    window.ft.hideHandles();
 
   });
 
