@@ -6,8 +6,13 @@
 
   $(function(){
 
-    var paper = Raphael('vector-content', 2400, 2400);
-    var bubbles = addBubbles(paper);
+    window.paper = Raphael('vector-content', 2400, 2400);
+    window.bubbles = addBubbles(paper);
+
+    var ft = paper.freeTransform(window.bubbles);
+    ft.hideHandles();
+    ft.attrs.rotate = 10;
+    ft.apply();
 
   });
 
@@ -39,8 +44,9 @@
         _.extend(bubble, defaultAttributes)
       );
     }
-
-    return paper.add(bubbles);
+    paper.setStart();
+    paper.add(bubbles);
+    return paper.setFinish();
   }
 
 }(window, window.jQuery, window.Raphael, window._));

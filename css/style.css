@@ -267,11 +267,18 @@ td { vertical-align: top; }
    Author: Will Shown & Vail Gold
    ========================================================================== */
 
+/* Page */
+
+body {
+    overflow: hidden;
+}
+
 /* Video */
 
 canvas.faces, video, video object, #facesVideo_control {
     width: 480px;
     height: 360px;
+    z-index: 3;
 }
 
 canvas.faces {
@@ -286,11 +293,12 @@ video, video object {
     width: 800px;
     height: 600px;
     background: transparent;
+    z-index:5;
 }
 
 #facesVideo_control {
     background: url( 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' ) repeat;
-    opacity: 0.33;
+    z-index: 999;
 }
 
 /* Background */
