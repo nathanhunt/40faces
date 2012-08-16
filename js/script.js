@@ -1,7 +1,7 @@
 /* Author: Will Shown & Vail Gold */
 
 /* LOGO PUTTER
-*  puts the logo. */
+ *  puts the logo. */
 (function(window, $, Raphael, _){
 
   var paper = Raphael('cinch-logo', 235, 22);
@@ -63,6 +63,10 @@
       ft.opts.animate = anim;
     }).trigger('resize');
 
+    window.primaryCanvas = {};
+    window.primaryCanvas.paper = paper;
+    window.primaryCanvas.bubbles = bubbles;
+
   });
 
   function addBubbles(paper) {
@@ -100,6 +104,17 @@
 
 }(window, window.jQuery, window.Raphael, window._));
 
+/* VIEW BINDER
+ * binds views. */
+(function(window, $, _){
+
+  window.UIstate = {
+    current: '40faces',
+    all: ['40faces', 'about', 'contact']
+  };
+
+}(window, window.jQuery, window._));
+
 /* MEDIA CONTROLLER
  * pipe all control APIs to this function. */
 (function(window, $){
@@ -108,6 +123,7 @@
 
   $body.one('media:complete', function(e, supportsVideo, v, c){
 
+    //TODO: suppress play if another view becomes active before media:complete is fired.
     v.play();
 
   });
@@ -245,7 +261,7 @@
     });
   }
 
-  var framerate = 1000/24;
+  var framerate = 20;
 
   function draw(v,c,w,h) {
     if(v.paused || v.ended) return false;
