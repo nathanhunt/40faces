@@ -271,6 +271,7 @@ td { vertical-align: top; }
 
 body {
     overflow: hidden;
+    padding-top: 40px;
 }
 
 /* Video */
@@ -305,7 +306,7 @@ video, video object {
 
 #vector-content{
     position: absolute;
-    top: 0;
+    top: 40px;
     left: 0;
     width: 100%;
     height: 100%;
