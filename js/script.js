@@ -10,8 +10,15 @@
     window.bubbles = addBubbles(paper);
 
     window.ft = paper.freeTransform(window.bubbles);
-    window.ft.opts.animate = {delay: 4000, easing: 'easeInOut'};
     window.ft.hideHandles();
+    $(window).on('resize',function(e){
+      var anim = window.ft.opts.animate;
+      window.ft.opts.animate = false;
+      window.ft.attrs.translate.x = ($(window).width() - $('#viewport').width()) / 2;
+      window.ft.apply();
+      window.ft.opts.animate = anim;
+    }).trigger('resize');
+    //window.ft.opts.animate = {delay: 4000, easing: 'easeInOut'};
 
   });
 
@@ -27,17 +34,17 @@
 
     var defaultAttributes = {
       type: 'circle',
-      'stroke-opacity': 0,
-      fill: '270-#87E0FD-#53CBF1:40-#05ABE0',
-      opacity: 0.5
+      'stroke-opacity': 0
     };
 
     var i;
     for(i=0; i<startingAttributes.cx.length; i+=1){
+      var o = (0.2+(Math.random()*0.3)).toFixed(2);
       var bubble = {
         cx: startingAttributes.cx[i],
         cy: startingAttributes.cy[i],
-        r: startingAttributes.r[i]
+        r: startingAttributes.r[i],
+        fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')'
       };
       bubbles.push(
         _.extend(bubble, defaultAttributes)
@@ -83,9 +90,7 @@
         }), canvas = $canvas.get(0);
         var $vid = $('video.faces'), vid = $vid.get(0);
 
-        $(window).on('resize', function(){
-          fitInside($canvas, $container);
-        }).trigger('resize');
+        fitInside($canvas, $container);
 
         var context = canvas.getContext('2d');
         var cw, ch;
@@ -125,10 +130,8 @@
 
         v.onLoad(function(){
 
-          $(window).on('resize', function(){
-            fitInside($resize, $container);
-            centerInside($resize, $container);
-          }).trigger('resize');
+          fitInside($resize, $container);
+          centerInside($resize, $container);
 
           $body.trigger('media:complete',[Modernizr.video, v, $c]);
 
@@ -173,11 +176,11 @@
   }
 
   function fitInside ($elem, $container) {
-    
+
     var cW = $container.width(), cH = $container.height();
 
     return $elem.each(function(){
-      
+
       var $this = $(this);
       var oW, oH;
 
@@ -195,7 +198,7 @@
 
       $this.width (oW * s);
       $this.height(oH * s);
-      
+
     });
   }
 

@@ -274,6 +274,17 @@ body {
     padding-top: 40px;
 }
 
+#viewport {
+    width: 800px;
+    height: 600px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.navbar-inner .container {
+    margin: 0 auto;
+}
+
 /* Video */
 
 canvas.faces, video, video object, #facesVideo_control {
@@ -291,8 +302,8 @@ video, video object {
 }
 
 #video {
-    width: 800px;
-    height: 600px;
+    width: 100%;
+    height: 100%;
     background: transparent;
     z-index:5;
 }
@@ -306,11 +317,10 @@ video, video object {
 
 #vector-content{
     position: absolute;
-    top: 40px;
+    top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden;
     background: none;
 }
 

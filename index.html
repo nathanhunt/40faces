@@ -39,7 +39,7 @@
     <div class="navbar-inner">
       <div class="container">
         <a class="brand">CINCH LEARNING</a>
-        <ul class="nav">
+        <ul class="nav pull-right">
           <li>
             <a>40 Faces</a>
           </li>
@@ -57,17 +57,22 @@
     </div>
   </div>
 
-  <div role="video" id="video">
-    <canvas class="faces"></canvas>
-     <!--480 x 360-->
-    <video width="480" height="360" class="faces" id="facesVideo">
-      <source src="video/video.mp4" type="video/mp4" />
-      <source src="video/video.ogg" type="video/ogg" />
-      <source src="video/video.webm" type="video/webm" />
-    </video>
+  <div role="viewport" id="viewport">
+
+    <div role="video" id="video">
+      <canvas class="faces"></canvas>
+       <!--480 x 360-->
+      <video width="480" height="360" class="faces" id="facesVideo">
+        <source src="video/video.mp4" type="video/mp4" />
+        <source src="video/video.ogg" type="video/ogg" />
+        <source src="video/video.webm" type="video/webm" />
+      </video>
+    </div>
+
   </div>
 
   <div id="vector-content"></div>
+
 
   <!-- JavaScript at the bottom for fast page loading -->
 
