@@ -5267,11 +5267,14 @@ window.Raphael.vml && function (R) {
         }
         o = o.shape || o.node;
         if (dots.length) {
+            var _ref, _ref1;
             o.removeChild(fill);
             fill.on = true;
             fill.method = "none";
             fill.color = dots[0].color;
             fill.color2 = dots[dots.length - 1].color;
+            fill.opacity = (_ref = dots[0].opacity) != null ? _ref : 1;
+            fill['o:opacity2'] = (_ref1 = dots[dots.length - 1].opacity) != null ? _ref1 : 1;
             var clrs = [];
             for (var i = 0, ii = dots.length; i < ii; i++) {
                 dots[i].offset && clrs.push(dots[i].offset + S + dots[i].color);
