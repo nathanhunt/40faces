@@ -106,14 +106,39 @@
 
 /* VIEW BINDER
  * binds views. */
-(function(window, $, _){
+(function(window, $, _, require){
 
-  window.UIstate = {
-    current: '40faces',
-    all: ['40faces', 'about', 'contact']
-  };
+  var scion = require('scion');
 
-}(window, window.jQuery, window._));
+  $(document).ready(function(){
+    var rect = document.createElement('div');
+
+    //convert to model
+    scion.urlToModel("scxml/40faces.sc.xml",function(err,model){
+
+      if(err) throw err;
+
+      //instantiate the interpreter
+      var interpreter = new scion.SCXML(model);
+
+      //start the interpreter
+      interpreter.start();
+
+      //send the init event
+      interpreter.gen({name:"init",data:rect});
+
+      function handleEvent(e){
+        e.preventDefault();
+        interpreter.gen({name : e.type,data: e});
+      }
+
+      //connect all relevant event listeners
+      $(rect).mousedown(handleEvent);
+      $(document.documentElement).bind("mouseup mousemove",handleEvent);
+    });
+  });
+
+}(window, window.jQuery, window._, window.require));
 
 /* MEDIA CONTROLLER
  * pipe all control APIs to this function. */
