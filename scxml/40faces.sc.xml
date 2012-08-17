@@ -5,13 +5,26 @@
 
     <datamodel>
         <data id="bubbles"/>
+        <data id="video"/>
+        <data id="occluder"/>
     </datamodel>
 
     <state id="initial-default">
-        <transition event="init" target="mainView">
+        <transition event="init" target="loading">
             <assign location="bubbles" expr="_event.data.bubbles"/>
             <script>
                 bubbles.deploy();
+            </script>
+        </transition>
+    </state>
+
+    <state id="loading">
+        <transition event="readyForMain" target="mainView">
+            <assign location="video" expr="_event.data.video"/>
+            <assign location="occluder" expr="_event.data.occluder"/>
+            <script>
+                video.play();
+                occluder.fadeOut(2e3);
             </script>
         </transition>
     </state>

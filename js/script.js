@@ -53,31 +53,39 @@
     var self = this;
 
     this.paper = Raphael('vector-content', 2400, 2400);
-    this.bubbles = addBubbles(this.paper);
-
-    this.ft = this.paper.freeTransform(this.bubbles);
-    this.ft.hideHandles();
-
-    $(window).on('resize',function(){
-      var anim = self.ft.opts.animate;
-      self.ft.opts.animate = false;
-      self.ft.attrs.translate.x = ($(window).width() - $('#viewport').width()) / 2;
-      self.ft.apply();
-      self.ft.opts.animate = anim;
-    }).trigger('resize');
 
     this.deploy = function(){
+
+      this.bubbles = deployBubbles(this.paper, 4e3, 'easeInOut', 400);
+
+      this.ft = this.paper.freeTransform(this.bubbles);
+      this.ft.hideHandles();
+
+      $(window).on('resize',function(){
+        var anim = self.ft.opts.animate;
+        self.ft.opts.animate = false;
+        self.ft.attrs.translate.x = ($(window).width() - $('#viewport').width()) / 2;
+        self.ft.apply();
+        self.ft.opts.animate = anim;
+      }).trigger('resize');
+
       console.log('Bubbles deployed!');
+
+      return this.bubbles;
     };
 
-    function addBubbles(paper) {
+    function deployBubbles(paper, duration, easing, delta) {
 
-      var bubbles = [];
-
-      var startingAttributes = {
+      var finalAttributes = {
         cx: [-236.499, -135.166, 1059.167, 1144.167, 795.834, 1011.834, 1466.167, 1076.834, 660.834, 216.169 , 579.834, 1508.834],
         cy: [-182.167,  202.5  , -399.833, -498.833, 14.5   , 201.5   , 717.167 , 999.5   , 880.5  , 1294.167, 1168.5 , 1831.5  ],
         r:  [ 529.502,  216.169,  641.169,  626.169, 156.169, 216.169 , 646.169 , 216.169 , 216.169, 629.502 , 216.169, 216.169 ]
+      };
+
+      var startingAttributes = {
+        cx: 400,
+        cy: 300,
+        r: 0
       };
 
       var defaultAttributes = {
@@ -86,21 +94,29 @@
       };
 
       var i;
-      for(i=0; i<startingAttributes.cx.length; i+=1){
-        var o = (0.2+(Math.random()*0.3)).toFixed(2);
-        var bubble = {
-          cx: startingAttributes.cx[i],
-          cy: startingAttributes.cy[i],
-          r: startingAttributes.r[i],
-          fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')'
-        };
-        bubbles.push(
-          _.extend(bubble, defaultAttributes)
-        );
-      }
       paper.setStart();
-      paper.add(bubbles);
-      return paper.setFinish();
+      for(i=0; i<finalAttributes.cx.length; i+=1){
+        var o = (0.2+(Math.random()*0.3)).toFixed(2);
+        var fill = '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')';
+        var finalAttrs = {
+          cx: finalAttributes.cx[i],
+          cy: finalAttributes.cy[i],
+          r:  finalAttributes.r[i]
+        };
+        var a = Raphael.animation(finalAttrs, duration, easing);
+        var b = paper.add([_.extend({ fill: fill }, startingAttributes, defaultAttributes)])[0];
+        b.animate(a.delay(delta * i));
+      }
+
+      var bubbleSet = paper.setFinish();
+
+      function triggerBubblesComplete(){
+        $('body').trigger('bubbles:complete',[bubbleSet]);
+      }
+
+      setTimeout(triggerBubblesComplete, ((i * delta) + duration));
+
+      return bubbleSet;
     }
 
     return this;
@@ -126,11 +142,29 @@
       interpreter.gen({name:"init",data:initData});
 
       function handleEvent(e){
-        e.preventDefault();
+        try{e.preventDefault();}catch(e){}
         interpreter.gen({name : e.type,data: e});
       }
 
       //connect all relevant event listeners
+      var video, bSet;
+      $('body').on('media:complete',function(e, v){
+        video = v;
+        checkIfReadyForPlay();
+      });
+      $('body').on('bubbles:complete',function(e, b){
+        bSet = b;
+        checkIfReadyForPlay();
+      });
+      function checkIfReadyForPlay(){
+        if(typeof video !== 'undefined' && typeof bSet !== 'undefined'){
+          handleEvent({
+            type: 'readyForMain',
+            video: video,
+            occluder: $('#occluder')
+          });
+        }
+      }
     });
   });
 
@@ -172,7 +206,7 @@
         });
 
         $vid.on('canplaythrough', function(){
-          $body.trigger('media:complete',[Modernizr.video, vid, canvas]);
+          $body.trigger('media:complete',[vid]);
         });
 
         vid.load();
@@ -198,7 +232,7 @@
           fitInside($resize, $container);
           centerInside($resize, $container);
 
-          $body.trigger('media:complete',[Modernizr.video, v, $c]);
+          $body.trigger('media:complete',[v]);
 
         });
       }
