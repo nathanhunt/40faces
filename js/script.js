@@ -158,10 +158,12 @@
       });
       function checkIfReadyForPlay(){
         if(typeof video !== 'undefined' && typeof bSet !== 'undefined'){
-          handleEvent({
-            type: 'readyForMain',
-            video: video,
-            occluder: $('#occluder')
+          interpreter.gen({
+            name: 'readyForMain',
+            data: {
+              video: video,
+              occluder: $('#occluder')
+            }
           });
         }
       }
