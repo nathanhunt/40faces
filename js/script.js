@@ -45,7 +45,7 @@
 
 /* BUBBLE MAKER
  * controls… bubbles… */
-(function(window, $, Raphael, _){
+function addBubbles(window, $, Raphael, _){
 
   $(function(){
 
@@ -102,30 +102,33 @@
     return paper.setFinish();
   }
 
-}(window, window.jQuery, window.Raphael, window._));
+}
 
 /* VIEW BINDER
  * binds views. */
-(function(window, $, _, require){
+(function(window, $, Raphael, _, require){
 
   var scion = require('scion');
 
-  $(document).ready(function(){
-    var rect = document.createElement('div');
+  addBubbles(window, $, Raphael, _);
 
-    //convert to model
+  var initData = {
+    bubbles: {
+      deploy: function(){console.log('Bubbles deployed.')}
+    }
+  };
+
+  $(document).ready(function(){
+
     scion.urlToModel("scxml/40faces.sc.xml",function(err,model){
 
       if(err) throw err;
 
-      //instantiate the interpreter
       var interpreter = new scion.SCXML(model);
 
-      //start the interpreter
       interpreter.start();
 
-      //send the init event
-      interpreter.gen({name:"init",data:rect});
+      interpreter.gen({name:"init",data:initData});
 
       function handleEvent(e){
         e.preventDefault();
@@ -133,27 +136,10 @@
       }
 
       //connect all relevant event listeners
-      $(rect).mousedown(handleEvent);
-      $(document.documentElement).bind("mouseup mousemove",handleEvent);
     });
   });
 
-}(window, window.jQuery, window._, window.require));
-
-/* MEDIA CONTROLLER
- * pipe all control APIs to this function. */
-(function(window, $){
-
-  var $body = $('body');
-
-  $body.one('media:complete', function(e, supportsVideo, v, c){
-
-    //TODO: suppress play if another view becomes active before media:complete is fired.
-    v.play();
-
-  });
-
-}(window, window.jQuery));
+}(window, window.jQuery, window.Raphael, window._, window.require));
 
 /* MEDIA SUBSTRATE
  * media:complete is fired on <body> when everything is ready. */

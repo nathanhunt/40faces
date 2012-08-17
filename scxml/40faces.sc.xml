@@ -4,55 +4,31 @@
         profile="ecmascript">
 
     <datamodel>
-        <data id="firstEvent"/>
-        <data id="eventStamp"/>
-        <data id="rectNode"/>
-        <data id="rectX"/>
-        <data id="rectY"/>
+        <data id="bubbles"/>
     </datamodel>
 
     <state id="initial-default">
-        <transition event="init" target="idle">
-            <assign location="rectNode" expr="_event.data"/>
-            <assign location="rectX" expr="0"/>
-            <assign location="rectY" expr="0"/>
+        <transition event="init" target="mainView">
+            <assign location="bubbles" expr="_event.data.bubbles"/>
+            <script>
+                bubbles.deploy();
+            </script>
         </transition>
     </state>
 
-    <state id="idle">
-        <onentry>
-            <script>
-                rectNode.textContent='idle';
-            </script>
-        </onentry>
-
-        <transition event="mousedown" target="dragging">
-            <assign location="firstEvent" expr="_event.data"/>
-            <assign location="eventStamp" expr="_event.data"/>
-        </transition>
+    <state id="mainView">
+        <transition event="toAbout" target="aboutView"/>
+        <transition event="toContact" target="contactView"/>
     </state>
 
-    <state id="dragging">
-        <onentry>
-            <script>
-                rectNode.textContent='dragging';
-            </script>
-        </onentry>
+    <state id="aboutView">
+        <transition event="toMain" target="mainView"/>
+        <transition event="toContact" target="contactView"/>
+    </state>
 
-        <transition event="mouseup" target="idle"/>
-
-        <transition event="mousemove" target="dragging">
-            <script>
-                var dx = eventStamp.clientX - _event.data.clientX;
-                var dy = eventStamp.clientY - _event.data.clientY;
-
-                //note that rectNode, rectX and rectY are all exposed
-                //from the datamodel as local variables
-                rectNode.style.left = rectX -= dx;
-                rectNode.style.top = rectY -= dy;
-            </script>
-            <assign location="eventStamp" expr="_event.data"/>
-        </transition>
+    <state id="contactView">
+        <transition event="toMain" target="mainView"/>
+        <transition event="toAbout" target="aboutView"/>
     </state>
 
 </scxml>
