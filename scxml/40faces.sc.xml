@@ -23,7 +23,6 @@
             <assign location="video" expr="_event.data.video"/>
             <assign location="occluder" expr="_event.data.occluder"/>
             <script>
-                console.log('Playing!');
                 video.play();
                 occluder.fadeOut(2e3);
             </script>

@@ -56,7 +56,7 @@
 
     this.deploy = function(){
 
-      this.bubbles = deployBubbles(this.paper, 4e3, 'easeInOut', 400);
+      this.bubbles = deployBubbles(this.paper, 3e3, 'easeInOut', 300, 600);
 
       this.ft = this.paper.freeTransform(this.bubbles);
       this.ft.hideHandles();
@@ -69,12 +69,25 @@
         self.ft.opts.animate = anim;
       }).trigger('resize');
 
-      console.log('Bubbles deployed!');
-
       return this.bubbles;
     };
 
-    function deployBubbles(paper, duration, easing, delta) {
+    function displayIntro(paper){
+      var s = paper.set();
+      s.push(paper.circle(400, 300, 200).attr({
+        'fill': '0-rgba(0,151,219,0.7)-rgba(0,100,178,0.7)',
+        'stroke-opacity': 0
+      }).toFront());
+      s.push(paper.text(400, 300, "See how teachers,\nadministrators and\nparents are using\nCinch technology\ntoday.").attr({
+        'text-anchor': 'middle',
+        'stroke-opacity': 0,
+        'fill': '#ffffff',
+        'font-size': 28
+      }).toFront());
+      return s;
+    }
+
+    function deployBubbles(paper, duration, easing, delta, introFadeOut) {
 
       var finalAttributes = {
         cx: [-236.499, -135.166, 1059.167, 1144.167, 795.834, 1011.834, 1466.167, 1076.834, 660.834, 216.169 , 579.834, 1508.834],
@@ -94,7 +107,11 @@
       };
 
       var i;
+
       paper.setStart();
+
+      var intro = displayIntro(paper);
+
       for(i=0; i<finalAttributes.cx.length; i+=1){
         var o = (0.2+(Math.random()*0.3)).toFixed(2);
         var fill = '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')';
@@ -105,12 +122,14 @@
         };
         var a = Raphael.animation(finalAttrs, duration, easing);
         var b = paper.add([_.extend({ fill: fill }, startingAttributes, defaultAttributes)])[0];
+        b.toBack();
         b.animate(a.delay(delta * i));
       }
 
       var bubbleSet = paper.setFinish();
 
       function triggerBubblesComplete(){
+        intro.animate({'opacity': 0}, introFadeOut, easing, function(){intro.forEach(function(e){e.remove()})});
         $('body').trigger('bubbles:complete',[bubbleSet]);
       }
 
@@ -158,6 +177,7 @@
       });
       function checkIfReadyForPlay(){
         if(typeof video !== 'undefined' && typeof bSet !== 'undefined'){
+          window.video = video;
           interpreter.gen({
             name: 'readyForMain',
             data: {
