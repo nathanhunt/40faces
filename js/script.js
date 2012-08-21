@@ -72,6 +72,24 @@
       return this.bubbles;
     };
 
+    this.transition = function(toState, fromState, duration, easing){
+      $(window).off('resize');
+      this.ft.attrs.center = {x: 0, y: 0};
+      this.ft.opts.animate = {'delay': duration, 'easing': easing};
+      if(toState === 'about'){
+        this.ft.attrs.rotate = 180;
+        this.ft.attrs.translate.x += 1543.79;
+        this.ft.attrs.translate.y += 1806.33;
+      }
+      var i, movingBubbles = self[toState+'Bubbles'];
+      for(i = 0; i < movingBubbles.length; i+=1){
+        var b = movingBubbles[i];
+        var a = Raphael.animation(b[toState+'Pos'], duration, easing);
+        b.animate(a);
+      }
+      this.ft.apply();
+    };
+
     function displayIntro(paper){
       var s = paper.set();
       s.push(paper.circle(400, 300, 200).attr({
@@ -89,10 +107,25 @@
 
     function deployBubbles(paper, duration, easing, delta, introFadeOut) {
 
-      var finalAttributes = {
+      self.aboutBubbles = [];
+      self.contactBubbles = [];
+
+      var mainAttributes = {
         cx: [-236.499, -135.166, 1059.167, 1144.167, 795.834, 1011.834, 1466.167, 1076.834, 660.834, 216.169 , 579.834, 1508.834],
         cy: [-182.167,  202.5  , -399.833, -498.833, 14.5   , 201.5   , 717.167 , 999.5   , 880.5  , 1294.167, 1168.5 , 1831.5  ],
         r:  [ 529.502,  216.169,  641.169,  626.169, 156.169, 216.169 , 646.169 , 216.169 , 216.169, 629.502 , 216.169, 216.169 ]
+      };
+
+      var aboutAttributes = {
+        cx: [null, 1026.51,  null, null, 1137.51,  1262.51,  null, null, 1018.51,  null, null, null],
+        cy: [null, 1607.174, null, null, 1532.174, 1619.975, null, null, 1467.174, null, null, null],
+        r:  [null, 58.025,   null, null, 58.025,   85.226,   null, null, 58.025,   null, null, null]
+      };
+
+      var contactAttributes = {
+        cx: [null, null, null, null, null, 1965.667, null, null, null, null, null, null],
+        cy: [null, null, null, null, null, -168.667, null, null, null, null, null, null],
+        r:  [null, null, null, null, null, 156.156,  null, null, null, null, null, null]
       };
 
       var startingAttributes = {
@@ -112,17 +145,37 @@
 
       var intro = displayIntro(paper);
 
-      for(i=0; i<finalAttributes.cx.length; i+=1){
+      for(i=0; i<mainAttributes.cx.length; i+=1){
         var o = (0.2+(Math.random()*0.3)).toFixed(2);
         var fill = '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')';
         var finalAttrs = {
-          cx: finalAttributes.cx[i],
-          cy: finalAttributes.cy[i],
-          r:  finalAttributes.r[i]
+          cx: mainAttributes.cx[i],
+          cy: mainAttributes.cy[i],
+          r:  mainAttributes.r[i]
         };
         var a = Raphael.animation(finalAttrs, duration, easing);
-        var b = paper.add([_.extend({ fill: fill }, startingAttributes, defaultAttributes)])[0];
-        b.toBack();
+        var b = paper.add([_.extend({ fill: fill }, startingAttributes, defaultAttributes)])[0]; b.toBack();
+
+        if(aboutAttributes.cx[i] !== null){
+          b.aboutPos = {
+            cx: aboutAttributes.cx[i],
+            cy: aboutAttributes.cy[i],
+            r:  aboutAttributes.r[i]
+          };
+          self.aboutBubbles.push(b);
+        }
+
+        if(contactAttributes.cx[i] !== null){
+          b.contactPos = {
+            cx: contactAttributes.cx[i],
+            cy: contactAttributes.cy[i],
+            r:  contactAttributes.r[i]
+          };
+          self.contactBubbles.push(b);
+        }
+
+        b.mainPos = finalAttrs;
+
         b.animate(a.delay(delta * i));
       }
 
@@ -147,6 +200,8 @@
   var initData = {
     bubbles: bubbles
   };
+
+  window.bubbles = bubbles;
 
   $(document).ready(function(){
 
