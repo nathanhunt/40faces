@@ -277,13 +277,14 @@ body {
 #viewport {
     width: 800px;
     height: 600px;
-    margin: 0 auto;
+    margin: 0 0 0 45px;
     position: relative;
     z-index: 8;
 }
 
-.navbar-inner .container {
-    margin: 0 auto;
+.navbar-fixed-top .navbar-inner .container {
+    width: 860px;
+    margin: 0 0 0 20px;
 }
 
 /* Video */

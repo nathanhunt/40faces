@@ -7,6 +7,7 @@
         <data id="bubbles"/>
         <data id="video"/>
         <data id="occluder"/>
+        <data id="duration"/>
     </datamodel>
 
     <state id="initial-default">
@@ -30,18 +31,54 @@
     </state>
 
     <state id="mainView">
-        <transition event="toAbout" target="aboutView"/>
-        <transition event="toContact" target="contactView"/>
+        <transition event="toAbout" target="aboutView">
+            <assign location="bubbles" expr="_event.data.bubbles"/>
+            <assign location="duration" expr="_event.data.duration"/>
+            <script>
+                bubbles.transition('about', 'main', duration, 'easeInOut');
+            </script>
+        </transition>
+        <transition event="toContact" target="contactView">
+            <assign location="bubbles" expr="_event.data.bubbles"/>
+            <assign location="duration" expr="_event.data.duration"/>
+            <script>
+                bubbles.transition('contact', 'main', duration, 'easeInOut');
+            </script>
+        </transition>
     </state>
 
     <state id="aboutView">
-        <transition event="toMain" target="mainView"/>
-        <transition event="toContact" target="contactView"/>
+        <transition event="toMain" target="mainView">
+            <assign location="bubbles" expr="_event.data.bubbles"/>
+            <assign location="duration" expr="_event.data.duration"/>
+            <script>
+                bubbles.transition('main', 'about', duration, 'easeInOut');
+            </script>
+        </transition>
+        <transition event="toContact" target="contactView">
+            <assign location="bubbles" expr="_event.data.bubbles"/>
+            <assign location="duration" expr="_event.data.duration"/>
+            <script>
+                bubbles.transition('contact', 'about', duration, 'easeInOut');
+            </script>
+        </transition>
     </state>
 
     <state id="contactView">
-        <transition event="toMain" target="mainView"/>
-        <transition event="toAbout" target="aboutView"/>
+        <transition event="toMain" target="mainView">
+            <assign location="bubbles" expr="_event.data.bubbles"/>
+            <assign location="duration" expr="_event.data.duration"/>
+            <script>
+                bubbles.transition('main', 'contact', duration, 'easeInOut');
+            </script>
+        </transition>
+        <transition event="toAbout" target="aboutView">
+            <assign location="bubbles" expr="_event.data.bubbles"/>
+            <assign location="duration" expr="_event.data.duration"/>
+            <script>
+                bubbles.transition('about', 'contact', duration, 'easeInOut');
+            </script>
+        </transition>
     </state>
 
 </scxml>
