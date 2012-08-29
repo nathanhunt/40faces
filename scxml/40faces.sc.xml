@@ -21,10 +21,10 @@
     <state id="loading">
         <transition event="readyForMain" target="mainView">
             <assign location="video" expr="_event.data.video"/>
-            <assign location="occluder" expr="_event.data.occluder"/>
+            <assign location="audio" expr="_event.data.audio"/>
             <script>
                 video.play();
-                occluder.fadeOut(2e3);
+                audio.play();
             </script>
         </transition>
     </state>
