@@ -38,8 +38,6 @@ dwsync.xml
 intermediate
 publish
 .idea
-/video
-/audio
 
 # build script local files
 build/buildinfo.properties
