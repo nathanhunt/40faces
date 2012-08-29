@@ -94,7 +94,7 @@
         },
         about: {
           rotate: -180,
-          translate: {x: -1450, y: -1350},
+          translate: {x: -1350, y: -1250},
           center: {x: 2985/2, y: 3174/2}
         }
       };
@@ -115,6 +115,44 @@
         b.animate(a);
       }
       this.ft.apply();
+
+      if(fromState === 'main') {
+        // Video should go out of the bottom left
+        $('#viewport').animate({top: $(window).height()+1000, left: -$(window).width()-1000}, duration);
+
+        // TODO: Volume should fade out, with callback of video stopping and seeking to beginning
+
+
+      } else if(fromState === 'about') {
+        // Fade out text from about bubbles
+      } else if(fromState === 'contact') {
+      }
+
+      if(toState === 'main') {
+        // Video should come from the bottom left
+        $('#viewport').animate({top: 0, left: 0}, duration, function() {
+          // Video should start playing
+        });
+
+      } else if(toState === 'contact') {
+        // Check for mini bubbles, and destroy them and text inside of them
+
+        setTimeout((function() {
+          // Create mini bubbles from the left side of the larger bubble,
+          // around the bottom, counter-clockwise. Add them to their own Raphael set.
+          // Put text into 3rd & 4th bubbles, and set mouseover, mouseout, and click events.
+
+        }), duration+10)
+      } else if(toState === 'about') {
+        setTimeout((function() {
+          var clickInterval = setInterval((function() {
+            if(bubbles.aboutBubbles[0].attrs.r === 50) {
+              bubbles.aboutBubbles[0].events[2].f.call(bubbles.aboutBubbles[0]);
+              clearInterval(clickInterval);
+            }
+          }), 10);
+        }), duration)
+      }
     };
 
     function displayIntro(paper){
@@ -139,21 +177,26 @@
       self.contactBubbles = [];
 
       var mainAttributes = {
-        cx: [-236.499, -135.166, 1059.167, 1144.167, 795.834, 1011.834, 1466.167, 1076.834, 660.834, 216.169 , 579.834, 1508.834],
-        cy: [-182.167,  202.5  , -399.833, -498.833, 14.5   , 201.5   , 717.167 , 999.5   , 880.5  , 1294.167, 1168.5 , 1831.5  ],
-        r:  [ 529.502,  216.169,  641.169,  626.169, 156.169, 216.169 , 646.169 , 216.169 , 216.169, 629.502 , 216.169, 216.169 ]
+//        cx: [-237, -135, 1059, 1144, 796, 1012, 1466, 1077, 661,  216,  580, 1509],
+//        cy: [-182,  203, -400, -499,  15,  202,  717, 1000, 881, 1294, 1169, 1832],
+//        r:  [ 530,  216,  641,  626, 156,  216,  646,  216, 216,  630,  216,  216]
+//                    #                        #     #      ##                 #
+        cx: [-237, -1000, -135, 1059, 1144,   796,  1012,  1012, 1466, 1077,    0,  216,  580],
+        cy: [-182,  -182,  203, -400, -499, -1000, -1202, -1202,  717, 1000, 1381, 1294, 1169],
+        r:  [ 530,   530,  216,  641,  626,   156,   216,   216,  646,  216,  216,  630,  216]
       };
 
       var aboutAttributes = {
-        cx: [null, 1026.51,  null, null, 1137.51,  1262.51,  null, null, 1018.51,  null, null, null],
-        cy: [null, 1607.174, null, null, 1532.174, 1619.975, null, null, 1467.174, null, null, null],
-        r:  [null, 58.025,   null, null, 58.025,   85.226,   null, null, 58.025,   null, null, null]
+        cx: [null, 1060, null, null, null,  995, 1010, null, null, 1015, null, null, null],
+        cy: [null, 1765, null, null, null, 1565, 1670, null, null, 1460, null, null, null],
+        r:  [null,   50, null, null, null,   50,   50, null, null,   50, null, null, null],
+        e:  [null, 'cinch', null, null, null, 'students', 'course', null, null, 'classroom', null, null, null]
       };
 
       var contactAttributes = {
-        cx: [null, null, null, null, null, 1985.667, null, null, null, null, null, null],
-        cy: [null, null, null, null, null, -168.667, null, null, null, null, null, null],
-        r:  [null, null, null, null, null, 156.156,  null, null, null, null, null, null]
+        cx: [null, null, null, null, null, null, null, 1986, null, null, null, null, null],
+        cy: [null, null, null, null, null, null, null, -168, null, null, null, null, null],
+        r:  [null, null, null, null, null, null, null,  156, null, null, null, null, null]
       };
 
       var startingAttributes = {
@@ -192,11 +235,207 @@
         self.mainBubbles.push(b);
 
         if(aboutAttributes.cx[i] !== null){
+          var mouseOverCallback = function() {
+            var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
+            if(tempBubble.attrs.r === 50) {
+              tempBubble.attr({'opacity': .8, 'cursor': 'pointer'});
+            }
+          };
+
+          var mouseOutCallback = function() {
+            var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
+            if(tempBubble.attrs.r === 50) {
+              tempBubble.attr('opacity', .6);
+            }
+          };
+
+          var clickCallback = function() {
+            var clickedBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
+            if(clickedBubble.attrs.r === 50) {
+              var duration = 325;
+
+              clickedBubble.animate({
+                cx: 1310,
+                cy: 1575,
+                r: 275,
+                opacity: .8
+              }, duration);
+
+              clickedBubble.textObjects.link.animate({'fill-opacity': 0}, 100);
+              clickedBubble.textObjects.text.animate({'fill-opacity': 1}, 800);
+
+              var defaultParams = {r: 50, opacity: .6};
+              var viewParams = {
+                'cinch': {cx: 1060, cy: 1765},
+                'course': {cx: 1010, cy: 1670},
+                'students': {cx: 995, cy: 1565},
+                'classroom': {cx: 1015, cy: 1460}
+              };
+
+              var bub = null;
+              for(var j=0; self.aboutBubbles[j]; j++) {
+                if(self.aboutBubbles[j].code !== clickedBubble.code && self.aboutBubbles[j].attrs.r > 50) {
+                  bub = self.aboutBubbles[j];
+                }
+              }
+              if(bub !== null) {
+                var params = _.extend(defaultParams, viewParams[bub.code]);
+                bub.animate(params, duration, '<>', function() {
+                  bub.textObjects.link.attr({
+                    x: params['cx'],
+                    y: params['cy']
+                  }).animate({
+                      'fill-opacity': 1
+                  }, 100);
+
+                });
+                bub.textObjects.text.animate({'fill-opacity': 0}, 100);
+              }
+            }
+          };
+
+          b.mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
+
           b.aboutPos = {
             cx: aboutAttributes.cx[i],
             cy: aboutAttributes.cy[i],
             r:  aboutAttributes.r[i]
           };
+
+          b['code'] = aboutAttributes.e[i];
+
+          var aboutCopy = {
+            'cinch': {
+              'link': 'About\nCINCH',
+              'title': 'CINCH Learning',
+              'subtitle': 'Make it Personal',
+              'text': "No one else connects with, engages or excites\n" +
+                "students exactly like you. With CINCH Learning\n" +
+                "you’re in control of how and what you teach like\n" +
+                "never before. CINCH Learning provides convenient\n" +
+                "cloud-based access to quality math and science\n" +
+                "content for grades 5-12 along with robust planning\n" +
+                "and assessment tools. Choose what you want to\n" +
+                "teach, what resources you want to use, and what\n" +
+                "device you want to use to deliver the lesson.\n" +
+                "Put it all together to create a compelling learning\n" +
+                "experience that is uniquely yours and highly\n" +
+                "personalized to your students.\n \n" +
+                "Get up close and personal with CINCH. Explore\n" +
+                "this site and then contact us for a product demo."
+            },
+            'course': {
+              'link': 'Your\nCourse',
+              'title': 'Your Course',
+              'subtitle': 'Personalize content',
+              'text': "You know what you want to teach and how you\n" +
+                "want to teach it. CINCH puts all the resources you\n" +
+                "need in one place to use any way you want.\n \n" +
+                "Choose from thousands of pre-built lessons to\n" +
+                "create your own unique scope and sequence.\n \n" +
+                "Customize lessons to match your personal teaching\n" +
+                "style. Add and use your own favorite content.\n \n" +
+                "Integrate videos, games, interactive labs and\n" +
+                "other multimedia assets."
+            },
+            'students': {
+              'link': 'Your\nStudents',
+              'title': 'Your Students',
+              'subtitle': 'Personalize learning',
+              'text': "You’ve got students who love math and\n" +
+                "science and students who haven’t yet unlocked\n" +
+                "the secrets. With CINCH, you can meet all\n" +
+                "their needs.\n \n" +
+                "Assign content, assessments, homework, and\n" +
+                "even games to each individual student based\n" +
+                "on specific learning needs.\n \n" +
+                "Encourage collaboration and communication\n" +
+                "with built-in social networking tools.\n \n" +
+                "Keep learning active with IWBs, student\n" +
+                "response systems, and hundreds of\n" +
+                "multimedia resources."
+            },
+            'classroom': {
+              'link': 'Your\nClassroom',
+              'title': 'Your Classroom',
+              'subtitle': 'Personalize the experience',
+              'text': "Wherever your classroom is in the digital\n" +
+                "transition, CINCH is right there with you\n" +
+                "helping you make the most of your school’s\n" +
+                "technology resources.\n \n" +
+                "Access and edit content from any device –\n" +
+                "desktops, laptops, IWBs, tablets or smartphones.\n" +
+                "Plan, assess and communicate on-the-go\n" +
+                "with the CINCH app.\n \n" +
+                "Always have the latest resources aligned to the\n" +
+                "most current standards with real-time updates.\n" +
+                "Integrate print and digital with print\n" +
+                "on demand options."
+            }
+          };
+
+          // Create text element in Raphael
+          var link = paper.text(aboutAttributes.cx[i], aboutAttributes.cy[i], aboutCopy[b.code].link).attr({
+            'text-anchor': 'middle',
+            'stroke-opacity': 0,
+            'font-family': 'Arial, sans',
+            'fill': '#ffffff',
+            'font-size': 16,
+            'fill-opacity': 1,
+            'cursor': 'pointer'
+          }).rotate(-180);
+
+          // Add reference to bubble object to text objects for events
+          link['bubbleObject'] = b;
+          link.mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
+
+          var textSet = paper.set();
+          var title = paper.text(1460, 1755, aboutCopy[b.code].title).attr({
+            'text-anchor': 'end',
+            'stroke-opacity': 0,
+            'fill': '#ffffff',
+            'font-family': 'Arial, sans',
+            'font-size': 32,
+            'fill-opacity': 0,
+            'width': 275
+          }).rotate(-180);
+          textSet.push(title);
+
+          var subtitle = paper.text(1460, 1715, aboutCopy[b.code].subtitle).attr({
+            'text-anchor': 'end',
+            'stroke-opacity': 0,
+            'fill': '#ffffff',
+            'font-family': 'Arial, sans',
+            'font-size': 26,
+            'fill-opacity': 0,
+            'width': 275
+          }).rotate(-180);
+          textSet.push(subtitle);
+
+          var textLines = aboutCopy[b.code].text.split('\n');
+          for(var j=0; textLines[j]; j++) {
+            textSet.push(
+              paper.text(1460, 1680-j*20, textLines[j]).attr({
+                'text-anchor': 'end',
+                'stroke-opacity': 0,
+                'fill': '#ffffff',
+                'font-family': 'Arial, sans',
+                'font-size': 14,
+                'fill-opacity': 0,
+                'width': 275,
+                'height': 20
+              }).rotate(-180)
+            );
+          }
+
+          // Add reference to bubble object to text objects for events
+          textSet['bubbleObject'] = b;
+
+          b['textObjects'] = {
+            link: link,
+            text: textSet
+          };
+
           self.aboutBubbles.push(b);
         }
 
