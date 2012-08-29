@@ -7,6 +7,7 @@
         <data id="bubbles"/>
         <data id="video"/>
         <data id="audio" />
+        <data id="duration"/>
     </datamodel>
 
     <state id="initial-default">
