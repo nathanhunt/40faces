@@ -251,7 +251,8 @@
 
           var clickCallback = function() {
             var clickedBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
-            if(clickedBubble.attrs.r === 50) {
+            if(clickedBubble.attrs.r === 50 && (typeof(self['animateInProgress']) === 'undefined' || self['animateInProgress'] === false)) {
+              self['animateInProgress'] = true;
               var duration = 325;
 
               clickedBubble.animate({
@@ -262,7 +263,9 @@
               }, duration);
 
               clickedBubble.textObjects.link.animate({'fill-opacity': 0}, 100);
-              clickedBubble.textObjects.text.animate({'fill-opacity': 1}, 800);
+              clickedBubble.textObjects.text.animate({'fill-opacity': 1}, 800, '<>', function() {
+                self['animateInProgress'] = false;
+              });
 
               var defaultParams = {r: 50, opacity: .6};
               var viewParams = {
