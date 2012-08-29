@@ -6,8 +6,7 @@
     <datamodel>
         <data id="bubbles"/>
         <data id="video"/>
-        <data id="occluder"/>
-        <data id="duration"/>
+        <data id="audio" />
     </datamodel>
 
     <state id="initial-default">

@@ -49,33 +49,27 @@
 
   /* BUBBLE MAKER
    * yes, it's inside the view binder. */
-  var Bubbles = function() {
+  var Bubbles = function () {
     var self = this;
 
-    this.paper = Raphael('vector-content', 2985, 3174);
+    this.paper = Raphael('vector-content', 2400, 2400);
 
-    this.deploy = function() {
+    this.deploy = function(){
+
       this.bubbles = deployBubbles(this.paper, 3e3, 'easeInOut', 300, 600);
+
       this.ft = this.paper.freeTransform(this.bubbles);
       this.ft.hideHandles();
-//      this.initWindowResizing();
-      return this.bubbles;
-    };
 
-    this.initWindowResizing = function() {
-      console.log('init window resizing');
-      $(window).off('resize').on('resize',function() {
+      $(window).on('resize',function(){
         var anim = self.ft.opts.animate;
         self.ft.opts.animate = false;
         self.ft.attrs.translate.x = ($(window).width() - $('#viewport').width()) / 2;
         self.ft.apply();
         self.ft.opts.animate = anim;
       }).trigger('resize');
-    };
 
-    this.destroyWindowResizing = function() {
-      console.log('destroy window resizing');
-      $(window).off('resize');
+      return this.bubbles;
     };
 
     this.transition = function(toState, fromState, duration, easing){
@@ -117,11 +111,11 @@
 
     function displayIntro(paper){
       var s = paper.set();
-      s.push(paper.circle(450, 350, 200).attr({
+      s.push(paper.circle(400, 300, 200).attr({
         'fill': '0-rgba(0,151,219,0.7)-rgba(0,100,178,0.7)',
         'stroke-opacity': 0
       }).toFront());
-      s.push(paper.text(450, 350, "See how teachers,\nadministrators and\nparents are using\nCinch technology\ntoday.").attr({
+      s.push(paper.text(400, 300, "See how teachers,\nadministrators and\nparents are using\nCinch technology\ntoday.").attr({
         'text-anchor': 'middle',
         'stroke-opacity': 0,
         'fill': '#ffffff',
@@ -132,7 +126,6 @@
 
     function deployBubbles(paper, duration, easing, delta, introFadeOut) {
 
-      self.mainBubbles = [];
       self.aboutBubbles = [];
       self.contactBubbles = [];
 
@@ -149,7 +142,7 @@
       };
 
       var contactAttributes = {
-        cx: [null, null, null, null, null, 1985.667, null, null, null, null, null, null],
+        cx: [null, null, null, null, null, 1965.667, null, null, null, null, null, null],
         cy: [null, null, null, null, null, -168.667, null, null, null, null, null, null],
         r:  [null, null, null, null, null, 156.156,  null, null, null, null, null, null]
       };
@@ -171,7 +164,7 @@
 
       var intro = displayIntro(paper);
 
-      for(i=0; i < mainAttributes.cx.length; i++){
+      for(i=0; i<mainAttributes.cx.length; i+=1){
         var o = (0.2+(Math.random()*0.3)).toFixed(2);
         var fill = '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')';
         var finalAttrs = {
@@ -180,15 +173,7 @@
           r:  mainAttributes.r[i]
         };
         var a = Raphael.animation(finalAttrs, duration, easing);
-        var b = paper.add([_.extend({ fill: fill }, startingAttributes, defaultAttributes)])[0];
-        b.toBack();
-
-        b.mainPos = {
-          cx: mainAttributes.cx[i],
-          cy: mainAttributes.cy[i],
-          r:  mainAttributes.r[i]
-        };
-        self.mainBubbles.push(b);
+        var b = paper.add([_.extend({ fill: fill }, startingAttributes, defaultAttributes)])[0]; b.toBack();
 
         if(aboutAttributes.cx[i] !== null){
           b.aboutPos = {
@@ -207,6 +192,8 @@
           };
           self.contactBubbles.push(b);
         }
+
+        b.mainPos = finalAttrs;
 
         b.animate(a.delay(delta * i));
       }
@@ -238,30 +225,19 @@
   $(document).ready(function(){
 
     scion.urlToModel("scxml/40faces.sc.xml",function(err,model){
+
       if(err) throw err;
 
       var interpreter = new scion.SCXML(model);
+
       interpreter.start();
+
       interpreter.gen({name:"init",data:initData});
 
       function handleEvent(e){
         try{e.preventDefault();}catch(e){}
         interpreter.gen({name : e.type,data: e});
       }
-
-      var duration = 1000;
-      var navCallback = function(event) {
-        event.preventDefault();
-        var target = (event.target.className === 'about' ? 'About' : (event.target.className === 'contact' ? 'Contact' : 'Main'));
-        $(this).off('click').on('click', function(e) {e.preventDefault()});
-        var _this = this;
-        interpreter.gen({name : 'to'+target, data: {bubbles: bubbles, duration: duration}});
-        setTimeout((function() {
-          $(_this).off('click').on('click', navCallback);
-        }), duration+1);
-      };
-
-      $('#nav-link-list a').on('click', navCallback);
 
       //connect all relevant event listeners
       var video, bSet;

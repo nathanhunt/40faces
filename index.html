@@ -39,15 +39,15 @@
     <div class="navbar-inner">
       <div class="container">
         <a class="brand" id="cinch-logo"></a>
-        <ul id='nav-link-list' class="nav pull-right">
+        <ul class="nav pull-right">
           <li>
-            <a href='#' class='main'>40 Faces</a>
+            <a>40 Faces</a>
           </li>
           <li>
-            <a href='#' class='about'>About CINCH</a>
+            <a>About CINCH</a>
           </li>
           <li>
-            <a href='#' class='contact'>Contact</a>
+            <a>Contact</a>
           </li>
         </ul>
       </div>
@@ -59,11 +59,15 @@
     <div role="video" id="video">
       <canvas class="faces"></canvas>
        <!--480 x 360-->
-      <video width="480" height="360" class="faces" id="facesVideo">
-        <source src="video/video.mp4" type="video/mp4" />
-        <source src="video/video.ogv" type="video/ogg" />
-        <source src="video/video.webm" type="video/webm" />
+      <video width="800" height="600" class="faces" id="facesVideo" loop="loop" preload="preload">
+        <source src="video/grid.mp4" type="video/mp4" />
+        <source src="video/grid.ogv" type="video/ogg" />
       </video>
+      <audio id="facesAudio" class="faces" loop="loop" preload="preload">
+        <source src="audio/01.m4a" type="audio/mp4" />
+        <source src="audio/01.mp3" type="audio/mp3" />
+        <source src="audio/01.ogg" type="audio/ogg" />
+      </audio>
     </div>
 
     <div role="occluder" id="occluder"></div>
