@@ -240,23 +240,26 @@
       }
 
       //connect all relevant event listeners
-      var video, bSet;
-      $('body').on('media:complete',function(e, v){
+      var video, audio, introFadeOut;
+      $('body').on('media:complete',function(e, v, a){
         video = v;
+        audio = a;
         checkIfReadyForPlay();
       });
-      $('body').on('bubbles:complete',function(e, b){
-        bSet = b;
+      $('body').on('bubbles:complete',function(e, i){
+        introFadeOut = i;
         checkIfReadyForPlay();
       });
       function checkIfReadyForPlay(){
-        if(typeof video !== 'undefined' && typeof bSet !== 'undefined'){
+        if(typeof video !== 'undefined' && typeof introFadeOut !== 'undefined'){
           window.video = video;
+          introFadeOut.call(this);
+          $('#occluder').fadeOut(2e3);
           interpreter.gen({
             name: 'readyForMain',
             data: {
               video: video,
-              occluder: $('#occluder')
+              audio: audio
             }
           });
         }
@@ -284,6 +287,7 @@
           'display': 'block'
         }), canvas = $canvas.get(0);
         var $vid = $('video.faces'), vid = $vid.get(0);
+        var $aud = $('audio.faces'), aud = $aud.get(0);
 
         fitInside($canvas, $container);
 
@@ -302,7 +306,7 @@
         });
 
         $vid.on('canplaythrough', function(){
-          $body.trigger('media:complete',[vid]);
+          $body.trigger('media:complete',[vid, aud]);
         });
 
         vid.load();
@@ -323,14 +327,17 @@
           left: 0
         });
 
-        v.onLoad(function(){
-
+        v.getClip(0).onBufferFull(function(){
           fitInside($resize, $container);
           centerInside($resize, $container);
-
           $body.trigger('media:complete',[v]);
-
+          v.getClip(0).onBufferFull(function(){});
         });
+
+        console.log('Playing');
+        v.play(0);
+        console.log('Pausing');
+        setTimeout(v.pause, 0, 0);
       }
 
     });
