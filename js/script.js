@@ -201,8 +201,8 @@
       var bubbleSet = paper.setFinish();
 
       function triggerBubblesComplete(){
-        intro.animate({'opacity': 0}, introFadeOut, easing, function(){intro.forEach(function(e){e.remove()})});
-        $('body').trigger('bubbles:complete',[bubbleSet]);
+        var fadeOut = function(){intro.animate({'opacity': 0}, introFadeOut, easing, function(){intro.forEach(function(e){e.remove()})});};
+        $('body').trigger('bubbles:complete',[fadeOut]);
       }
 
       setTimeout(triggerBubblesComplete, ((i * delta) + duration));
