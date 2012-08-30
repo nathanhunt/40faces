@@ -126,21 +126,76 @@
       } else if(fromState === 'about') {
         // Fade out text from about bubbles
       } else if(fromState === 'contact') {
+        // TODO: Check for mini bubbles, and destroy them and text inside of them
+        if(typeof(self.contactBubbles.set) !== 'undefined') {
+          for(var i=0; self.contactBubbles.set[i]; i++) {
+            self.contactBubbles.set[i].remove();
+          }
+          self.contactBubbles.set = [];
+        }
       }
 
       if(toState === 'main') {
         // Video should come from the bottom left
         $('#viewport').animate({top: 0, left: 0}, duration, function() {
-          // Video should start playing
+          // TODO: Video should do something when it enters the viewing area
         });
 
       } else if(toState === 'contact') {
-        // Check for mini bubbles, and destroy them and text inside of them
-
         setTimeout((function() {
-          // Create mini bubbles from the left side of the larger bubble,
-          // around the bottom, counter-clockwise. Add them to their own Raphael set.
-          // Put text into 3rd & 4th bubbles, and set mouseover, mouseout, and click events.
+          // TODO: Create mini bubbles from the left side of the larger bubble, around the bottom, counter-clockwise.
+          var bbox = self.contactBubbles[0].getBBox();
+          var x = bbox.x;
+          var y = bbox.y;
+          var h = bbox.height;
+          var w = bbox.width;
+
+          var x0, x1, x2, x3, y0, y1, y2, y3;
+//          x0 = x;
+//          x1 = x;
+//          x2 = x+w*3/5;
+//          x3 = x+w;
+//
+//          y0 = y+h/2;
+//          y1 = y+h;
+//          y2 = y+h*6/5;
+//          y3 = y+h;
+
+          x0 = x+w/12;
+          x1 = x+w/12;
+          x2 = x+w*3/5;
+          x3 = x+w;
+
+          y0 = y+h*3/4;
+          y1 = y+h*19/20;
+          y2 = y+h*6/5;
+          y3 = y+h;
+
+          var miniBubbles = [];
+          for(var i=0; i < 5; i++) {
+            var o = (0.2+(Math.random()*0.3)).toFixed(2);
+            var b = self.paper.circle(x0, y0, 0).attr({
+              'stroke-opacity': 0,
+              fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')'
+            }).toBack();
+            miniBubbles.push(b);
+          }
+
+          var maxTime = 1000;
+          var maxRadius = 45;
+          for(var i=0; miniBubbles[i]; i++) {
+            var delay = maxTime/5*i+Math.sqrt(i*5000);
+            var duration = maxTime-delay;
+            var finalRadius = maxRadius+Math.pow(i,1.5)*5;
+            if(typeof(miniBubbles[i+1]) === 'undefined') finalRadius = 200;
+            animateBubble(miniBubbles[i], delay, duration, maxTime, makeCBXFunction(x0, x1, x2, x3), makeCBYFunction(y0, y1, y2, y3), finalRadius);
+          }
+
+          // TODO: Put text into 3rd & 4th bubbles, and set mouseover, mouseout, and click events.
+
+
+
+          self.contactBubbles['set'] = miniBubbles;
 
         }), duration+10)
       } else if(toState === 'about') {
@@ -154,6 +209,39 @@
         }), duration)
       }
     };
+
+    function animateBubble(bubble, delay, duration, maxTime, eqX, eqY, finalRadius) {
+      console.log('animate bubble');
+      setTimeout((function() {
+        var timer = 0;
+        var initialRadius = bubble.attrs.r;
+        setInterval((function() {
+          if(timer >= duration) {
+            clearInterval(this);
+          } else {
+            var time = timer/maxTime;
+            var newXT = eqX(time);
+            var newYT = eqY(time);
+            if(!isNaN(newXT) && !isNaN(newYT)) {
+              bubble.attr({cx: newXT, cy: newYT, r: time*(finalRadius-initialRadius)});
+            }
+            timer += 10;
+          }
+        }), 10);
+      }), delay);
+    }
+
+    function makeCBXFunction(x0, x1, x2, x3) {
+      return function(t) {
+        return (1-t)*(1-t)*(1-t)*x0 + 3*t*(1-t)*(1-t)*x1 + 3*t*t*(1-t)*x2 + t*t*t*x3;
+      };
+    }
+
+    function makeCBYFunction(y0, y1, y2, y3) {
+      return function(t) {
+        return (1-t)*(1-t)*(1-t)*y0 + 3*t*(1-t)*(1-t)*y1 + 3*t*t*(1-t)*y2 + t*t*t*y3;
+      };
+    }
 
     function displayIntro(paper){
       var s = paper.set();
@@ -216,7 +304,7 @@
 
       var intro = displayIntro(paper);
 
-      for(i=0; i<mainAttributes.cx.length; i+=1){
+      for(i=0; i < mainAttributes.cx.length; i++){
         var o = (0.2+(Math.random()*0.3)).toFixed(2);
         var fill = '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')';
         var finalAttrs = {
@@ -225,7 +313,8 @@
           r:  mainAttributes.r[i]
         };
         var a = Raphael.animation(finalAttrs, duration, easing);
-        var b = paper.add([_.extend({ fill: fill }, startingAttributes, defaultAttributes)])[0]; b.toBack();
+        var b = paper.add([_.extend({ fill: fill }, startingAttributes, defaultAttributes)])[0];
+        b.toBack();
 
         b.mainPos = {
           cx: mainAttributes.cx[i],
@@ -234,18 +323,22 @@
         };
         self.mainBubbles.push(b);
 
-        if(aboutAttributes.cx[i] !== null){
+        if(aboutAttributes.cx[i] !== null) {
+          var defaultOpacity = .8;
+          var hoverOpacity = 1;
+          var disabledOpacity = .1;
+
           var mouseOverCallback = function() {
             var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
-            if(tempBubble.attrs.r === 50) {
-              tempBubble.attr({'opacity': .8, 'cursor': 'pointer'});
+            if(tempBubble.attrs.r === 50 && (typeof(self['animateInProgress']) === 'undefined' || self['animateInProgress'] === false)) {
+              tempBubble.attr({'opacity': hoverOpacity, 'cursor': 'pointer'});
             }
           };
 
           var mouseOutCallback = function() {
             var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
-            if(tempBubble.attrs.r === 50) {
-              tempBubble.attr('opacity', .6);
+            if(tempBubble.attrs.r === 50 && (typeof(self['animateInProgress']) === 'undefined' || self['animateInProgress'] === false)) {
+              tempBubble.attr('opacity', defaultOpacity);
             }
           };
 
@@ -259,15 +352,20 @@
                 cx: 1310,
                 cy: 1575,
                 r: 275,
-                opacity: .8
+                opacity: hoverOpacity
               }, duration);
 
               clickedBubble.textObjects.link.animate({'fill-opacity': 0}, 100);
               clickedBubble.textObjects.text.animate({'fill-opacity': 1}, 800, '<>', function() {
                 self['animateInProgress'] = false;
+                for(var j=0; self.aboutBubbles[j]; j++) {
+                  if(self.aboutBubbles[j].attrs['fill-opacity'] < defaultOpacity) {
+                    self.aboutBubbles[j].attr({'fill-opacity': defaultOpacity});
+                  }
+                }
               });
 
-              var defaultParams = {r: 50, opacity: .6};
+              var defaultParams = {r: 50, opacity: defaultOpacity};
               var viewParams = {
                 'cinch': {cx: 1060, cy: 1765},
                 'course': {cx: 1010, cy: 1670},
@@ -279,6 +377,8 @@
               for(var j=0; self.aboutBubbles[j]; j++) {
                 if(self.aboutBubbles[j].code !== clickedBubble.code && self.aboutBubbles[j].attrs.r > 50) {
                   bub = self.aboutBubbles[j];
+                } else if(self.aboutBubbles[j].code !== clickedBubble.code && self.aboutBubbles[j].attrs.r === 50) {
+                  self.aboutBubbles[j].attr({'fill-opacity': disabledOpacity});
                 }
               }
               if(bub !== null) {
@@ -399,9 +499,8 @@
             'fill': '#ffffff',
             'font-family': 'Arial, sans',
             'font-size': 32,
-            'fill-opacity': 0,
-            'width': 275
-          }).rotate(-180);
+            'fill-opacity': 0
+          });
           textSet.push(title);
 
           var subtitle = paper.text(1460, 1715, aboutCopy[b.code].subtitle).attr({
@@ -410,9 +509,8 @@
             'fill': '#ffffff',
             'font-family': 'Arial, sans',
             'font-size': 26,
-            'fill-opacity': 0,
-            'width': 275
-          }).rotate(-180);
+            'fill-opacity': 0
+          });
           textSet.push(subtitle);
 
           var textLines = aboutCopy[b.code].text.split('\n');
@@ -424,21 +522,17 @@
                 'fill': '#ffffff',
                 'font-family': 'Arial, sans',
                 'font-size': 14,
-                'fill-opacity': 0,
-                'width': 275,
-                'height': 20
-              }).rotate(-180)
+                'fill-opacity': 0
+              })
             );
           }
 
-          // Add reference to bubble object to text objects for events
+          textSet.rotate(-180);
           textSet['bubbleObject'] = b;
-
           b['textObjects'] = {
             link: link,
             text: textSet
           };
-
           self.aboutBubbles.push(b);
         }
 
@@ -448,11 +542,11 @@
             cy: contactAttributes.cy[i],
             r:  contactAttributes.r[i]
           };
+          b.attr({'fill-opacity': 1});
           self.contactBubbles.push(b);
         }
 
         b.mainPos = finalAttrs;
-
         b.animate(a.delay(delta * i));
       }
 
