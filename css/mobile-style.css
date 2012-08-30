@@ -270,78 +270,18 @@ td { vertical-align: top; }
 /* Page */
 
 body {
-    overflow: hidden;
-    padding-top: 40px;
-}
-
-#viewport {
-    width: 800px;
-    height: 600px;
-    margin: 0 0 0 45px;
-    position: relative;
-    z-index: 8;
-}
-
-/* Video */
-
-canvas.faces, video, video object, #facesVideo_control {
-    width: 480px;
-    height: 360px;
-    z-index: 3;
-}
-
-canvas.faces {
-    background: transparent;
-}
-
-video, video object {
-    display: none !important;
-}
-
-#video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    z-index:5;
-}
-
-#occluder {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 7;
-    background: white;
-}
-
-#facesVideo_control {
-    background: url( 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' ) repeat;
-    z-index: 999;
+    padding: 0; margin: 0;
 }
 
 /* Background */
 
-#vector-content{
+.fixed-top-bar {
+    display: block;
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
-    background: none;
-    z-index: 10;
-}
-
-.fixed-top-bar {
-    display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 40px;
+    height: 30px;
     background: #0063b1; /* Old browsers */
     /* IE9 SVG, needs conditional override of 'filter' to 'none' */
     background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzAwOThkYyIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDYzYjEiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
@@ -354,85 +294,24 @@ video, video object {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0098dc', endColorstr='#0063b1',GradientType=1 ); /* IE6-8 */
     z-index: 9999999999999999;
     box-shadow: 0px 1px 5px 1px #333;
-    min-width: 900px;
-}
-
-.fixed-top-bar #cinch-logo {
-    display: block;
-    float: left;
-    margin: 8px 0 0 15px;
-    color: white;
-}
-
-.fixed-top-bar .volume-icon-link {
-    display: block;
-    float: right;
-    margin: 10px 15px 0 0;
-    width: 20px;
-    height: 18px;
-}
-
-.fixed-top-bar .volume-icon-link img {
-    float: left;
-    width: 100%;
-}
-
-.fixed-top-bar .volume-icon-link.on img.on { display: block; }
-.fixed-top-bar .volume-icon-link.on img.off { display: none; }
-.fixed-top-bar .volume-icon-link.off img.on { display: none; }
-.fixed-top-bar .volume-icon-link.off img.off { display: block; }
-
-.fixed-top-bar ul#nav-link-list {
-    display: block;
-    float: right;
-    margin: 10px 10px 0 0;
-    list-style: none;
-    width: 280px;
-    font-size: 14px;
-}
-
-.fixed-top-bar ul#nav-link-list li {
-    display: block;
-    float: left;
-    margin: 0 15px 0 0;
-    color: #a5d7ee;
-    text-shadow: 1px 1px black;
-}
-
-.fixed-top-bar ul#nav-link-list li a {
-    display: block;
-    float: left;
-    color: #a5d7ee;
-    text-decoration: none;
-}
-
-.fixed-top-bar ul#nav-link-list li a:hover,
-.fixed-top-bar ul#nav-link-list li a.active{
-    color: white;
-}
-
-.fixed-top-bar ul#nav-link-list li a.active {
-    color: white;
-}
-
-.fixed-bottom-bar {
-    display: block;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 30px;
     text-align: center;
-    z-index: 9999999999999999;
 }
 
-.fixed-bottom-bar a, .fixed-bottom-bar span {
-    display: inline;
-    color: #0076c1;
-    text-decoration: none;
-    font-size: 12px;
-    padding: 20px 5px;
+.fixed-top-bar a {
+    display: inline-block;
+    padding-top: 4px;
 }
+
+#mobile-vector-content{
+    display: block;
+    float: left;
+    overflow: hidden;
+    width: 100%;
+    height: 2000px;
+    background: none;
+    z-index: 10;
+}
+
 
 /* ==|== media queries ======================================================
    EXAMPLE Media Query for Responsive Design.

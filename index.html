@@ -12,7 +12,7 @@
        More info: h5bp.com/i/378 -->
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-  <title></title>
+  <title>CINCH Learning</title>
   <meta name="description" content="">
 
   <!-- Mobile viewport optimized: h5bp.com/viewport -->
@@ -22,8 +22,7 @@
 
   <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
 
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/bootstrap.css">
+  <link type='text/css' rel="stylesheet" href="css/bootstrap.css">
 
   <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
 
@@ -37,36 +36,7 @@
        chromium.org/developers/how-tos/chrome-frame-getting-started -->
   <!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
 
-  <div class='fixed-top-bar'>
-      <a id="cinch-logo"></a>
-      <a href='#' class='volume-icon-link on'>
-          <img class='on' src='img/volume-on.png' />
-          <img class='off' src='img/volume-off.png' />
-      </a>
-      <ul id='nav-link-list' class="float-right">
-          <li><a href='#' class='main active'>40 Faces</a></li>
-          <li><span>|</span></li>
-          <li><a href='#' class='about'>About CINCH</a></li>
-          <li><span>|</span></li>
-          <li><a href='#' class='contact'>Contact</a></li>
-      </ul>
-  </div>
-
-  <div class='fixed-bottom-bar'>
-      <a href='http://www.mcgraw-hill.com/site/tools/terms-of-use' target='_blank'>Terms of User</a>
-      <span>|</span>
-      <a href='https://www.mheonline.com/pages/display/privacynotice_view' target='_blank'>Privacy Notice</a>
-      <span>|</span>
-      <a href='https://www.mheonline.com/' target='_blank'>McGraw Hill Education</a>
-  </div>
-
-  <div role="viewport" id="viewport">
-    <div role="video" id="video"></div>
-    <div role="occluder" id="occluder"></div>
-  </div>
-
-  <div id="vector-content"></div>
-
+  <div id="app"></div>
 
   <!-- JavaScript at the bottom for fast page loading -->
   <script type='text/javascript' src="js/libs/es5-shim.js"></script>
@@ -76,6 +46,7 @@
   <script type='text/javascript'>window.jQuery || document.write('<script type="text/javascript" src="js/libs/jquery-1.8.0.js"><\/script>')</script>
   <script type="text/javascript" src="js/libs/underscore.js"></script>
   <script type="text/javascript" src="js/libs/raphael.js"></script>
+  <script type="text/javascript" src="js/libs/raphael.free_transform.js"></script>
   <script type="text/javascript" src="js/plugins.js"></script>
 
   <script type='text/javascript'>
@@ -98,6 +69,7 @@
     };
     jQuery(function($) {
       if(!isMobile.any()) {
+        $('head').append('<link type="text/css" rel="stylesheet" href="css/style.css" \/>');
         var videoHTML = '\
           <canvas class="faces"><\/canvas> \
           <video width="800" height="600" class="faces" id="facesVideo" loop="loop" preload="preload"> \
@@ -121,9 +93,34 @@
               <source src="audio/'+num+'.mp3" type="audio/mpeg" \/> \
             <\/audio>'
         }
-        $('#video').html(videoHTML);
+        $('#app').html('\
+          <div class="standard fixed-top-bar"> \
+            <a id="cinch-logo"><\/a> \
+            <a href="#" class="volume-icon-link on"> \
+              <img class="on" src="img/volume-on.png" \/> \
+              <img class="off" src="img/volume-off.png" \/> \
+            <\/a> \
+            <ul id="nav-link-list" class="float-right"> \
+              <li><a href="#" class="main active">40 Faces<\/a><\/li> \
+              <li><span>|<\/span><\/li> \
+              <li><a href="#" class="about">About CINCH<\/a><\/li> \
+              <li><span>|<\/span><\/li> \
+              <li><a href="#" class="contact">Contact<\/a><\/li> \
+            <\/ul> \
+          <\/div> \
+          <div class="standard fixed-bottom-bar"> \
+            <a href="http://www.mcgraw-hill.com/site/tools/terms-of-use" target="_blank">Terms of User<\/a> \
+            <span>|<\/span> \
+            <a href="https://www.mheonline.com/pages/display/privacynotice_view" target="_blank">Privacy Notice<\/a> \
+            <span>|<\/span> \
+            <a href="https://www.mheonline.com/" target="_blank">McGraw Hill Education<\/a> \
+          <\/div> \
+          <div role="viewport" id="viewport" class="standard"> \
+            <div role="video" id="video">'+videoHTML+'<\/div> \
+            <div role="occluder" id="occluder"><\/div> \
+          <\/div> \
+          <div id="vector-content" class="standard"><\/div>');
         $(document).append('<script type="text/javascript" src="js/libs/scion.js"><\/script> \
-          <script type="text/javascript" src="js/libs/raphael.free_transform.js"><\/script> \
           <script type="text/javascript" src="js/script.js"><\/script>');
       } else {
         $(document).append('<script type="text/javascript" src="js/mobile-script.js"><\/script>');
