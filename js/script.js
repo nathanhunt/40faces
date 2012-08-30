@@ -151,16 +151,6 @@
           var w = bbox.width;
 
           var x0, x1, x2, x3, y0, y1, y2, y3;
-//          x0 = x;
-//          x1 = x;
-//          x2 = x+w*3/5;
-//          x3 = x+w;
-//
-//          y0 = y+h/2;
-//          y1 = y+h;
-//          y2 = y+h*6/5;
-//          y3 = y+h;
-
           x0 = x+w/12;
           x1 = x+w/12;
           x2 = x+w*3/5;
@@ -192,8 +182,9 @@
           }
 
           // TODO: Put text into 3rd & 4th bubbles, and set mouseover, mouseout, and click events.
+          setTimeout((function() {
 
-
+          }), maxTime);
 
           self.contactBubbles['set'] = miniBubbles;
 
@@ -303,6 +294,9 @@
       paper.setStart();
 
       var intro = displayIntro(paper);
+      var defaultOpacity = .8;
+      var hoverOpacity = 1;
+      var disabledOpacity = .1;
 
       for(i=0; i < mainAttributes.cx.length; i++){
         var o = (0.2+(Math.random()*0.3)).toFixed(2);
@@ -324,10 +318,6 @@
         self.mainBubbles.push(b);
 
         if(aboutAttributes.cx[i] !== null) {
-          var defaultOpacity = .8;
-          var hoverOpacity = 1;
-          var disabledOpacity = .1;
-
           var mouseOverCallback = function() {
             var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
             if(tempBubble.attrs.r === 50 && (typeof(self['animateInProgress']) === 'undefined' || self['animateInProgress'] === false)) {
@@ -373,26 +363,22 @@
                 'classroom': {cx: 1015, cy: 1460}
               };
 
-              var bub = null;
               for(var j=0; self.aboutBubbles[j]; j++) {
-                if(self.aboutBubbles[j].code !== clickedBubble.code && self.aboutBubbles[j].attrs.r > 50) {
-                  bub = self.aboutBubbles[j];
-                } else if(self.aboutBubbles[j].code !== clickedBubble.code && self.aboutBubbles[j].attrs.r === 50) {
+                if(self.aboutBubbles[j].code !== clickedBubble.code) {
                   self.aboutBubbles[j].attr({'fill-opacity': disabledOpacity});
+                  var params = _.extend(defaultParams, viewParams[self.aboutBubbles[j].code]);
+                  self.aboutBubbles[j].animate(params, duration, '<>', function() {
+                    this.attr({
+                      'fill-opacity': defaultOpacity
+                    }).textObjects.link.attr({
+                        x: this.attrs.cx,
+                        y: this.attrs.cy
+                      }).animate({
+                        'fill-opacity': 1
+                      }, 100);
+                  });
+                  self.aboutBubbles[j].textObjects.text.animate({'fill-opacity': 0}, 100);
                 }
-              }
-              if(bub !== null) {
-                var params = _.extend(defaultParams, viewParams[bub.code]);
-                bub.animate(params, duration, '<>', function() {
-                  bub.textObjects.link.attr({
-                    x: params['cx'],
-                    y: params['cy']
-                  }).animate({
-                      'fill-opacity': 1
-                  }, 100);
-
-                });
-                bub.textObjects.text.animate({'fill-opacity': 0}, 100);
               }
             }
           };
