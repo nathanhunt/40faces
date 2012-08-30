@@ -35,23 +35,27 @@
        chromium.org/developers/how-tos/chrome-frame-getting-started -->
   <!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
 
-  <div role="nav" class="navbar navbar-fixed-top">
-    <div class="navbar-inner">
-      <div class="container">
-        <a class="brand" id="cinch-logo"></a>
-        <ul id='nav-link-list' class="nav pull-right">
-          <li>
-            <a href='#' class='main'>40 Faces</a>
-          </li>
-          <li>
-            <a href='#' class='about'>About CINCH</a>
-          </li>
-          <li>
-            <a href='#' class='contact'>Contact</a>
-          </li>
-        </ul>
-      </div>
-    </div>
+  <div class='fixed-top-bar'>
+      <a id="cinch-logo"></a>
+      <a href='#' class='volume-icon-link on'>
+          <img class='on' src='img/volume-on.png' />
+          <img class='off' src='img/volume-off.png' />
+      </a>
+      <ul id='nav-link-list' class="float-right">
+          <li><a href='#' class='main active'>40 Faces</a></li>
+          <li><span>|</span></li>
+          <li><a href='#' class='about'>About CINCH</a></li>
+          <li><span>|</span></li>
+          <li><a href='#' class='contact'>Contact</a></li>
+      </ul>
+  </div>
+
+  <div class='fixed-bottom-bar'>
+      <a href='http://www.mcgraw-hill.com/site/tools/terms-of-use' target='_blank'>Terms of User</a>
+      <span>|</span>
+      <a href='https://www.mheonline.com/pages/display/privacynotice_view' target='_blank'>Privacy Notice</a>
+      <span>|</span>
+      <a href='https://www.mheonline.com/' target='_blank'>McGraw Hill Education</a>
   </div>
 
   <div role="viewport" id="viewport">

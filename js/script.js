@@ -127,11 +127,17 @@
         // Fade out text from about bubbles
       } else if(fromState === 'contact') {
         // TODO: Check for mini bubbles, and destroy them and text inside of them
-        if(typeof(self.contactBubbles.set) !== 'undefined') {
-          for(var i=0; self.contactBubbles.set[i]; i++) {
-            self.contactBubbles.set[i].remove();
+        if(typeof(self.contactBubbles.bubbleSet) !== 'undefined') {
+          for(var i=0; self.contactBubbles.bubbleSet[i]; i++) {
+            self.contactBubbles.bubbleSet[i].remove();
           }
-          self.contactBubbles.set = [];
+          self.contactBubbles.bubbleSet = [];
+        }
+        if(typeof(self.contactBubbles.textSet) !== 'undefined') {
+          for(var i=0; self.contactBubbles.textSet[i]; i++) {
+            self.contactBubbles.textSet[i].remove();
+          }
+          self.contactBubbles.textSet = [];
         }
       }
 
@@ -166,7 +172,8 @@
             var o = (0.2+(Math.random()*0.3)).toFixed(2);
             var b = self.paper.circle(x0, y0, 0).attr({
               'stroke-opacity': 0,
-              fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')'
+              fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
+              'fill-opacity': .4
             }).toBack();
             miniBubbles.push(b);
           }
@@ -181,13 +188,70 @@
             animateBubble(miniBubbles[i], delay, duration, maxTime, makeCBXFunction(x0, x1, x2, x3), makeCBYFunction(y0, y1, y2, y3), finalRadius);
           }
 
-          // TODO: Put text into 3rd & 4th bubbles, and set mouseover, mouseout, and click events.
+          self.contactBubbles['bubbleSet'] = miniBubbles;
+
+          // TODO: Put text into largest two bubbles, and set mouseover, mouseout, and click events.
           setTimeout((function() {
+            self.contactBubbles['textSet'] = [];
+            var defaultOpacity = .8;
+            var hoverOpacity = 1;
 
-          }), maxTime);
+            var mouseOverCallback = function() {
+              var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
+              tempBubble.attr({'opacity': hoverOpacity, 'cursor': 'pointer'});
+            };
 
-          self.contactBubbles['set'] = miniBubbles;
+            var mouseOutCallback = function() {
+              var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
+              tempBubble.attr({'opacity': defaultOpacity, 'cursor': 'pointer'});
+            };
 
+            var clickCallback = function() {
+              var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
+              if(tempBubble.textObject.code === 'emailUs') {
+                window.open('mailto:', '_blank');
+              } else {
+                window.open('http://mheducation.force.com/MHE/SEG_Sampling_Leads?id=701C0000000UKSx', '_blank');
+              }
+            };
+
+            var bbox = self.contactBubbles.bubbleSet[1].getBBox();
+            var emailLink = self.paper.text(bbox.x+bbox.width/2, bbox.y+bbox.height/2, 'Email us').attr({
+              'text-anchor': 'middle',
+              'stroke-opacity': 0,
+              'font-family': 'Arial, sans',
+              'fill': '#ffffff',
+              'font-size': 15,
+              'fill-opacity': 0,
+              'cursor': 'pointer'
+            }).animate({'fill-opacity':1}, 500);
+
+            emailLink.mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
+            self.contactBubbles.bubbleSet[1].attr({'cursor': 'pointer'}).animate({'fill-opacity': defaultOpacity}, 500);
+            emailLink['bubbleObject'] = self.contactBubbles.bubbleSet[1];
+            emailLink['code'] = 'emailUs';
+            self.contactBubbles.bubbleSet[1]['textObject'] = emailLink;
+            self.contactBubbles['textSet'].push(emailLink);
+
+            bbox = self.contactBubbles.bubbleSet[0].getBBox();
+            var contactLink = self.paper.text(bbox.x+bbox.width/2, bbox.y+bbox.height/2, 'Contact\nForm').attr({
+              'text-anchor': 'middle',
+              'stroke-opacity': 0,
+              'font-family': 'Arial, sans',
+              'fill': '#ffffff',
+              'font-size': 17,
+              'fill-opacity': 0,
+              'cursor': 'pointer'
+            }).animate({'fill-opacity':1}, 500);
+
+            contactLink.mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
+            self.contactBubbles.bubbleSet[0].attr({'cursor': 'pointer'}).animate({'fill-opacity': defaultOpacity}, 500);
+            contactLink['bubbleObject'] = self.contactBubbles.bubbleSet[0];
+            contactLink['code'] = 'contactForm';
+            self.contactBubbles.bubbleSet[0]['textObject'] = contactLink;
+            self.contactBubbles['textSet'].push(contactLink);
+
+          }), maxTime+200);
         }), duration+10)
       } else if(toState === 'about') {
         setTimeout((function() {
@@ -202,7 +266,6 @@
     };
 
     function animateBubble(bubble, delay, duration, maxTime, eqX, eqY, finalRadius) {
-      console.log('animate bubble');
       setTimeout((function() {
         var timer = 0;
         var initialRadius = bubble.attrs.r;
@@ -463,7 +526,6 @@
             }
           };
 
-          // Create text element in Raphael
           var link = paper.text(aboutAttributes.cx[i], aboutAttributes.cy[i], aboutCopy[b.code].link).attr({
             'text-anchor': 'middle',
             'stroke-opacity': 0,
@@ -529,6 +591,44 @@
             r:  contactAttributes.r[i]
           };
           b.attr({'fill-opacity': 1});
+
+          var contactCopy = {
+            'title': 'Contact Us',
+            'text': "For more information, about\n" +
+              "please CINCH Learning, please\n" +
+              "email us or use our contact form."
+          };
+
+          var contactTextSet = paper.set();
+          var contactTitle = paper.text(2030, -280, contactCopy.title).attr({
+            'text-anchor': 'middle',
+            'stroke-opacity': 0,
+            'fill': '#ffffff',
+            'font-family': 'Arial, sans',
+            'font-size': 32,
+            'fill-opacity': 1
+          });
+          contactTextSet.push(contactTitle);
+
+          var contactTextLines = contactCopy.text.split('\n');
+          for(var k=0; contactTextLines[k]; k++) {
+            contactTextSet.push(
+              paper.text(1995-k*20, -280, contactTextLines[k]).attr({
+                'text-anchor': 'middle',
+                'stroke-opacity': 0,
+                'fill': '#ffffff',
+                'font-family': 'Arial, sans',
+                'font-size': 14,
+                'fill-opacity': 1
+              })
+            );
+          }
+
+          contactTextSet.rotate(90).attr({'text-anchor': 'start'});
+          contactTextSet['bubbleObject'] = b;
+          b['textObjects'] = {
+            text: contactTextSet
+          };
           self.contactBubbles.push(b);
         }
 
@@ -539,8 +639,12 @@
       var bubbleSet = paper.setFinish();
 
       function triggerBubblesComplete(){
-        var fadeOut = function(){intro.animate({'opacity': 0}, introFadeOut, easing, function(){intro.forEach(function(e){e.remove()})});};
-        $('body').trigger('bubbles:complete',[fadeOut]);
+        var fadeOut = function() {
+          intro.animate({'opacity': 0}, introFadeOut, easing, function() {
+            intro.forEach(function(e) {e.remove()})
+          });
+        };
+        $('body').trigger('bubbles:complete', [fadeOut]);
       }
 
       setTimeout(triggerBubblesComplete, ((i * delta) + duration));

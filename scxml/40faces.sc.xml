@@ -36,6 +36,8 @@
             <assign location="duration" expr="_event.data.duration"/>
             <script>
                 bubbles.transition('about', 'main', duration, 'easeInOut');
+                $('#nav-link-list a').not('.about').removeClass('active');
+                $('#nav-link-list a.about').addClass('active');
             </script>
         </transition>
         <transition event="toContact" target="contactView">
@@ -43,6 +45,8 @@
             <assign location="duration" expr="_event.data.duration"/>
             <script>
                 bubbles.transition('contact', 'main', duration, 'easeInOut');
+                $('#nav-link-list a').not('.contact').removeClass('active');
+                $('#nav-link-list a.contact').addClass('active');
             </script>
         </transition>
     </state>
@@ -53,6 +57,8 @@
             <assign location="duration" expr="_event.data.duration"/>
             <script>
                 bubbles.transition('main', 'about', duration, 'easeInOut');
+                $('#nav-link-list a').not('.main').removeClass('active');
+                $('#nav-link-list a.main').addClass('active');
             </script>
         </transition>
         <transition event="toContact" target="contactView">
@@ -60,6 +66,8 @@
             <assign location="duration" expr="_event.data.duration"/>
             <script>
                 bubbles.transition('contact', 'about', duration, 'easeInOut');
+                $('#nav-link-list a').not('.contact').removeClass('active');
+                $('#nav-link-list a.contact').addClass('active');
             </script>
         </transition>
     </state>
@@ -70,6 +78,8 @@
             <assign location="duration" expr="_event.data.duration"/>
             <script>
                 bubbles.transition('main', 'contact', duration, 'easeInOut');
+                $('#nav-link-list a').not('.main').removeClass('active');
+                $('#nav-link-list a.main').addClass('active');
             </script>
         </transition>
         <transition event="toAbout" target="aboutView">
@@ -77,6 +87,8 @@
             <assign location="duration" expr="_event.data.duration"/>
             <script>
                 bubbles.transition('about', 'contact', duration, 'easeInOut');
+                $('#nav-link-list a').not('.about').removeClass('active');
+                $('#nav-link-list a.about').addClass('active');
             </script>
         </transition>
     </state>
