@@ -17,7 +17,7 @@
 
       this.placeLogo();
 
-      this.paper = Raphael('mobile-vector-content', 2000, 2000);
+      this.paper = Raphael('mobile-vector-content', 2000, 4000);
 
       this.initNavigation();
       this.initMainPage();
@@ -28,7 +28,7 @@
 
     this.initNavigation = function() {
       var paper = this.paper;
-      var navBubbles = paper.set();
+      var navBubbleSet = paper.set();
       var attrs = {
         'about': {
           'bubble': {
@@ -72,7 +72,7 @@
           }).toBack();
           bubble.clone().glow({opacity:g.opacity}).translate(g.x, g.y).toBack();
           bubble.click(this.transition(attr));
-          navBubbles.push(bubble);
+          navBubbleSet.push(bubble);
 
           text = paper.text(t.x, t.y, t.text).attr({
             'text-anchor':t.anchor,
@@ -86,10 +86,145 @@
           bubble['textObject'] = text;
         }
       }
+
+      this.navBubbleSet = navBubbleSet;
     };
 
     this.initMainPage = function() {
+      var paper = this.paper;
+      var imageSet = paper.set();
 
+      var num = function(x) { return x < 10 ? '0'+x : x+''; };
+      var x, y, y1, y2, y3;
+      var data = [];
+      var top = 100;
+      for(var i=1; i < 41; i++) {
+        if(Math.random() > .5) {
+          // row of 2 images
+          x = 20 + Math.floor(Math.random()*50);
+          y1 = top;
+          data.push({name:num(i), x:x, y:y1});
+
+          if(i < 40) {
+            i++;
+            x = 170 + Math.floor(Math.random()*50);
+            y2 = top;
+            data.push({name:num(i), x:x, y:y2});
+          }
+          top = Math.max(y1, y2) + 100 + Math.floor(Math.random()*20);
+        } else {
+          // row of 3 images
+          x = 5 + Math.floor(Math.random()*50);
+          y1 = top + Math.floor(Math.random()*20);
+          data.push({name:num(i), x:x, y:y1});
+
+          if(i < 40) {
+            i++;
+            x = 165 + Math.floor(Math.random()*50);
+            y2 = top + Math.floor(Math.random()*20);
+            data.push({name:num(i), x:x, y:y2});
+          }
+
+          if(i < 40) {
+            i++;
+            x = 85 + Math.floor(Math.random()*50);
+            y3 = top + 100 + Math.floor(Math.random()*20);
+            data.push({name:num(i), x:x, y:y3});
+          }
+          top = Math.max(y1, y2, y3) + 100 + Math.floor(Math.random()*20);
+        }
+      }
+
+      var clickCallback = function() {
+        if(typeof(this['opened']) === 'undefined' || this['opened'] === false) {
+          this['opened'] = true;
+          var image = this;
+          var bub = image['bubbleObject'];
+
+          for(var i=0; image.set[i]; i++) {
+            if(image.set[i].bubbleObject.attrs.r > 48) {
+              image.set[i].bubbleObject.animate({
+                r: 48,
+                cx: image.set[i].attrs.x + 50.5,
+                cy: image.set[i].attrs.y + 50
+              }, 325).toBack();
+            }
+          }
+
+          bub.animate({
+            r: 150,
+            cx: 160,
+            cy: Math.max(bub.attrs.cy, 200),
+            opacity:.6
+          }, 325, '<>', function() {
+            // Put all content into an array of lines, soft-wrapped at CHARLIMIT
+            var CHARLIMIT = 32;
+            var bubImage = this['imageObject'];
+            var textLines = [];
+            var tempLine, tempArray;
+            var tempText = bubImage.content;
+            while(tempText.length > 0) {
+              tempLine = $.trim(tempText.substr(0, CHARLIMIT));
+              // Test if we're in the middle of a word
+              if(tempText.charAt(CHARLIMIT) !== ' ' && tempText.charAt(CHARLIMIT) !== '') {
+                // Remove anything after the last space
+                tempArray = tempLine.split(' ');
+                tempArray.pop();
+                tempLine = tempArray.join(' ');
+              }
+              textLines.push(tempLine);
+              tempText = tempText.substr(tempLine.length+1);
+            }
+
+            var textObjects = paper.set();
+            var t;
+            // Create text elements with Raphael and add to set
+            for(var j=0; textLines[j]; j++) {
+              t = paper.text(this.attrs.cx-this.attrs.r *.7, this.attrs.cy-this.attrs.r/2+j*20, textLines[j]).attr({
+                'text-anchor':'start',
+                'stroke-opacity': 0,
+                'font-family': 'Arial, sans',
+                'fill': '#ffffff',
+                'font-size': 14,
+                'fill-opacity': 0
+              });
+              textObjects.push(t);
+            }
+
+            textObjects.animate({'fill-opacity':1}, 500);
+
+            // Add a reference to text object set to image object
+          }).toFront();
+        }
+      };
+
+      var touchEndCallback = function() {
+        clickCallback.call(this);
+      };
+
+      var touchStartCallback = function() {
+        this.touchmove(function() {
+          this.untouchstart(touchStartCallback);
+        }).touchend(touchEndCallback);
+      };
+
+      for(var j=0; data[j]; j++) {
+        var image = paper.image('img/circle-faces/'+data[j].name+'.png', data[j].x, data[j].y, 100, 100);
+        imageSet.push(image);
+
+        var imageBubble = paper.circle(data[j].x+50.5, data[j].y+50, 48).attr({
+          fill: '0-rgb(0,151,219)-rgb(0,100,178)',
+          'stroke-opacity': 0
+        }).toBack();
+        image['bubbleObject'] = imageBubble;
+        imageBubble['imageObject'] = image;
+        image['set'] = imageSet;
+        image['content'] = this.callOuts[j];
+
+        image.touchstart(touchStartCallback).click(clickCallback);
+      }
+
+      this.mainImageSet = imageSet;
     };
 
     this.initAboutPage = function() {
@@ -146,6 +281,47 @@
         'stroke-opacity': 0
       });
     };
+
+    this.callOuts = ["Quality digital content for safe student use. Hands-on activities and digital assets complement classroom learning. Designed for group and independent assignments. No pop-ups or ads.",
+      "Complete integration makes the best use of my time. Dynamic and editable yearly planning tool. Instantly pull reports of student comprehension of standards.",
+      "Dynamic lessons with a few classroom devices. Manage the classroom from a single point: present activities using your laptop and IWB. Online labs for seamless collaboration and on-demand printing.",
+      "21st century skill-building. Multi-strategy learning options and assessments available online. Web 2.0 tools prepare students for college and online standardized tests.",
+      "Interactives features get students engaged. Interactive iPad tools for dynamic explanations and learning. Videos, tutorials, virtual labs, and games bring content to life.",
+      "Online personal tutors build confidence. Each lesson has videos and guidance for continuous access to concepts. Games and animation for hands-on learning beyond the classroom.",
+      "Integrate coursework with social media. Students use social networking features to discuss lessons and homework. Monitor the conversation to keep tabs on where students struggle.",
+      "Real-world interactive experiences. Online assessments with simple auto-grade online assessments. Diverse, multimedia homework options for matching learning style to student need.",
+      "Out-of-class support for a flipped classroom. Reading and multimedia assets for at home learning. Collaborative lessons for classroom support flipped learning model.",
+      "Seamlessly blend digital and print. Customize note-taking guides for your program. Print drills and homeworks on demand.",
+      "Real-time progress reports. Teachers and administrators can assess student progress. Seamless integration for administrators.",
+      "Instant Assessment, Remediation, and Enrichment. Instantly assess student learning levels. Access to materials from all grades. Reach content from other grades for reteach and challenge exercises.",
+      "Optimized lessons for ELL students. Emphasis on vocabulary development builds language and skill comprehension. Hands-on, animated supplements provide extra support for language challenge.",
+      "Virtual labs for flawless experiments. Visual and experiential learning despite budgets. Online access to labs for absent students.",
+      "Interactive tools backed by real lessons. Virtual labs, animations, and tutorials keep students engaged. Save all videos and materials you’ve collected in the planner.",
+      "Curated lessons with creative teaching styles. Develop unique programs. Import and house additional material onto CINCH platform.",
+      "Streamline accountability. Pull instant assessments of student progress. Both teachers and administrators can track classroom progress.",
+      "Online, Customized Assessments. Customize assessment for individual students. No more copying: assessments assigned and completed online. Prepares students for new online state assessments.",
+      "Activities that capture student attention. Tools for making lessons more dynamic. Students have fun with wideos, virtual labs, social networking tools.",
+      "Collaboratively plan the week from the CINCH app. Planner tool makes it easy to follow scope and sequence. Plan as a group and tweak day-by-day using the CINCH app.",
+      "Universal access. On-demand printing and smartphone access ensures all students can access homework. Tailor homework help to specific student needs.",
+      "Transforming iPads into classroom tools. Cloud-based system allows you to access, save, and resume work from multiple devices. Tools and resources optimized for iPad integration.",
+      "Teach, assign, assess: all in one place. Cloud-based system allows access from any device. Tailor lessons to your teaching style.",
+      "Customizable IWB activities. Create original, dynamic IWB presentations, preloaded with slides that you can customize. Keep IWB presentations and any digital content in one place.",
+      "Easy to adopt CCSS. Browse, search, and assess student comprehension by standard. Align standard reports with lessons for easy CCSS integration.",
+      "Build a custom scope and sequence. Digitally distribute your curriculum and order custom printing of textbooks and materials. Create unique curriculum to match my curriculum map.",
+      "Easy to use and customize. Easy to navigate and simple customization tool makes it easy to add additional content. Preloaded with resources for standard scope and sequences.",
+      "Cloud-based software works on any device. Works on any device, providing flexibility to update technology as needed. Perfect for adapting to changing classroom technology.",
+      "Makes it easy to align curriculum with CCSS. Align curriculum map with standards and assess students understanding of concepts. Multiple learning models makes it accessible for any student.",
+      "Optimal guide for new teachers. Comes with assets and resources, organized by lesson and standard. One-stop-shop for plans, presentations, and supplemental resources.",
+      "Teach in the order you choose. Collect all your teaching materials in one place: Rearrange content for your teaching style. Make material instantly available to students with a few clicks.",
+      "Easy for parents to stay connected to classroom. Parents can access student progress reports online. Provides refresher material and tutorials online for interested parents.",
+      "The most up-to-date curriculum for your budget. Modern digital platforms and Access to 6-12 curriculum for efficient use of budgets. Universal device optimization for efficient technology spending.",
+      "Works seamlessly on all devices. Cloud-based software works on any device. Safe website for students to surf at school or at home.",
+      "The most current content. Online platform with current content that’s researched, proven, teacher-approved. Universal device optimization for efficient technology spending.",
+      "Customize to your teaching style. Create new or edit existing interactive lesson presentations. Plan, leave notes and assign homework all from one place.",
+      "Cost Effective. Includes supplementary materials for above and below learners. Monitor student progress and administer extra support all from one place.",
+      "Customized Printing. Print workbooks for students with limited technology access. Design unique note-taking pages to help guide students through lessons.",
+      "All your files organized in one place. Easy prep: plan, teach, assess, remediate all from the online platform. Browse multimedia assets, worksheets, and activities by standard or lesson.",
+      "Easy to integrate technology into the classroom. Huge library of engagement resources. Bring labs and lessons online with follow up exercises."]
   };
 
   var mobile = new MobileSite();
