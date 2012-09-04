@@ -7,7 +7,7 @@
 
     this.state = 'main';
 
-    this.initApp = function() {
+    this.initApp = function () {
       $('body').css({
         padding: 0,
         margin: 0
@@ -30,13 +30,20 @@
       $(window).on('resize', this.adjustViewingArea).trigger('resize');
     };
 
-    this.initNavigation = function() {
-      var paper = this.paper;
-      var navBubbleSet = paper.set();
+    this.initNavigation = function () {
       var attrs = {
+        'main': {
+          'bubble': {
+            cx: 5, cy: -10, r: 100, fill: '0-rgb(0,151,219)-rgb(0,100,178)', opacity: 1,
+            glow: { opacity: .7, x: -2, y: 0 }
+          },
+          'text': {
+            x: 10, y: 50, anchor: 'start', text: '40 Faces'
+          }
+        },
         'about': {
           'bubble': {
-            cx: 155, cy: -25, r: 100, fill: '0-rgb(0,151,219)-rgb(0,100,178)', opacity:.9,
+            cx: 155, cy: -25, r: 100, fill: '0-rgb(0,151,219)-rgb(0,100,178)', opacity: .9,
             glow: { opacity: .6, x: -2, y: -2 }
           },
           'text': {
@@ -45,40 +52,45 @@
         },
         'contact': {
           'bubble': {
-            cx: 290, cy: -15, r: 100, fill: '0-rgb(0,151,219)-rgb(0,100,178)', opacity:.4,
-            glow: { opacity:.5, x: -2, y: -2 }
+            cx: 290, cy: -15, r: 100, fill: '0-rgb(0,151,219)-rgb(0,100,178)', opacity: .9,
+            glow: { opacity: .5, x: -2, y: -2 }
           },
           'text': {
             x: 290, y: 55, anchor: 'end', text: 'Contact'
           }
-        },
-        'main': {
-          'bubble': {
-            cx: 5, cy: -10, r: 100, fill: '0-rgb(0,151,219)-rgb(0,100,178)', opacity:1,
-            glow: { opacity:.7, x: -5, y: 0 }
-          },
-          'text': {
-            x: 10, y: 50, anchor: 'start', text: '40 Faces'
-          }
         }
       };
 
-      var b, t, g, bubble, text;
+      var paper = this.paper;
+      var bubbleSet = paper.set();
+      var objectSet = paper.set();
       for(var attr in attrs) {
         if(attrs.hasOwnProperty(attr)) {
-          b = attrs[attr].bubble;
-          t = attrs[attr].text;
-          g = b.glow;
-          bubble = paper.circle(b.cx, b.cy, b.r).attr({
+          var b = attrs[attr].bubble;
+          var t = attrs[attr].text;
+          var g = b.glow;
+          var bubble = paper.circle(b.cx, b.cy, b.r).attr({
             'stroke-opacity': 0,
             fill: b.fill,
-            opacity:b.opacity
+            opacity:b.opacity,
+            cursor: 'pointer'
           }).toBack();
-          bubble.clone().glow({opacity:g.opacity}).translate(g.x, g.y).toBack();
-          bubble.click(this.transition(attr));
-          navBubbleSet.push(bubble);
 
-          text = paper.text(t.x, t.y, t.text).attr({
+          var clone = bubble.clone().toBack();
+          objectSet.push(clone);
+
+          var glow = clone.glow({opacity:g.opacity}).translate(g.x, g.y).toBack();
+          objectSet.push(glow);
+
+          bubble['state'] = attr;
+          bubble.click(function() {
+            self.transition(this['state']);
+          });
+
+          bubbleSet.push(bubble);
+          objectSet.push(bubble);
+
+          var text = paper.text(t.x, t.y, t.text).attr({
             'text-anchor':t.anchor,
             'stroke-opacity': 0,
             'font-family': 'Arial, sans',
@@ -87,18 +99,76 @@
             'fill-opacity': 1,
             'cursor': 'pointer'
           });
+          text['state'] = attr;
+          text.click(function() {
+            self.transition(this['state']);
+          });
           bubble['textObject'] = text;
+          objectSet.push(text);
         }
       }
 
-      this.navBubbleSet = navBubbleSet;
+      this.navBubbleSet = bubbleSet;
+      this.navObjectSet = objectSet;
+
+      var navFT = paper.freeTransform(this.navObjectSet);
+      navFT.hideHandles();
+      navFT.opts.animate = false;
+      navFT.attrs.translate.x = ($(window).width() - 320) / 2;
+      navFT.apply();
+      this.navFT = navFT;
     };
 
-    this.initMainPage = function() {
+    this.initMainPage = function () {
       var paper = this.paper;
 
+      var data = this.getMainBubblePositionData();
+
+      var clickCallback = function () {
+        self.mainBubbleClickCallback.call(this);
+      };
+      var touchEndCallback = function () {
+        clickCallback.call(this);
+      };
+      var touchStartCallback = function () {
+        this.touchmove(function () {
+          this.untouchstart(touchStartCallback);
+        }).touchend(touchEndCallback);
+      };
+
+      var imageSet = paper.set();
+      var objectSet = paper.set();
+      for(var j=0; data[j]; j++) {
+        var image = paper.image('img/circle-faces/'+data[j].name+'.png', data[j].x, data[j].y, 100, 100);
+        imageSet.push(image);
+        objectSet.push(image);
+
+        var imageBubble = paper.circle(data[j].x + 50.5, data[j].y + 50, 48).attr({
+          fill: '0-rgb(0,151,219)-rgb(0,100,178)',
+          'stroke-opacity': 0
+        }).toBack();
+        objectSet.push(imageBubble);
+        image['bubbleObject'] = imageBubble;
+        imageBubble['imageObject'] = image;
+        image['set'] = imageSet;
+        image['content'] = this.callOuts[j];
+
+        image.touchstart(touchStartCallback).click(clickCallback);
+      }
+
+      this.mainObjectSet = objectSet;
+
+      var mainFT = paper.freeTransform(this.mainObjectSet);
+      mainFT.hideHandles();
+      mainFT.opts.animate = false;
+      mainFT.attrs.translate.x = ($(window).width() - 320) / 2;
+      mainFT.apply();
+      this.mainFT = mainFT;
+    };
+
+    this.getMainBubblePositionData = function () {
       var num = function(x) { return x < 10 ? '0'+x : x+''; };
-      var x, y, y1, y2, y3;
+      var x, y1, y2, y3;
       var data = [];
       var top = 100;
       for(var i=1; i < 41; i++) {
@@ -137,117 +207,149 @@
           top = Math.max(y1, y2, y3) + 100 + Math.floor(Math.random()*20);
         }
       }
+      return data;
+    };
 
-      var clickCallback = function() {
-        if(typeof(this['opened']) === 'undefined' || this['opened'] === false) {
-          var image = this;
-          image['opened'] = true;
-          var bub = image['bubbleObject'];
+    this.textToLines = function (text, CHARLIMIT) {
+      if(typeof(CHARLIMIT) === 'undefined') CHARLIMIT = 32;
+      var textLines = [];
+      var tempLine, tempArray;
+      var tempText = text;
+      while(tempText.length > 0) {
+        tempLine = $.trim(tempText.substr(0, CHARLIMIT));
+        // Test if we're in the middle of a word
+        if(tempText.charAt(CHARLIMIT) !== ' ' && tempText.charAt(CHARLIMIT) !== '') {
+          // Remove anything after the last space
+          tempArray = tempLine.split(' ');
+          tempArray.pop();
+          tempLine = tempArray.join(' ');
+        }
+        textLines.push(tempLine);
+        tempText = tempText.substr(tempLine.length+1);
+      }
+      return textLines;
+    };
 
-          for(var i=0; image.set[i]; i++) {
-            if(image.set[i].bubbleObject.attrs.r > 48) {
-              image.set[i]['textObjects'].animate({opacity:0}, 200, '<>', function() {
-                this.remove();
-              });
-              image.set[i]['closeImage'].animate({opacity:0}, 200, '<>', function() {
-                this.remove();
-              });
-              image.set[i].bubbleObject.animate({
-                r: 48,
-                cx: image.set[i].attrs.x + 50.5,
-                cy: image.set[i].attrs.y + 50
-              }, 325, '<>', function() {
-                this['imageObject']['opened'] = false;
-              }).toBack();
-            }
+    this.mainBubbleClickCallback = function () {
+      if(typeof(this['opened']) === 'undefined' || this['opened'] === false) {
+        var image = this;
+        image['opened'] = true;
+        var bub = image['bubbleObject'];
+
+        for(var i=0; image.set[i]; i++) {
+          if(image.set[i].bubbleObject.attrs.r > 48) {
+            self.mainBubblePopupClose(image.set[i]);
+          }
+        }
+
+        bub.animate({
+          r: 150,
+          cx: $(window).width() / 2 - self.mainFT.attrs.translate.x,
+          cy: Math.max(bub.attrs.cy, 200),
+          opacity: .6
+        }, 325, '<>', function() {
+          var bub = this;
+          var bubImage = bub['imageObject'];
+          var textLines = self.textToLines(bubImage.content, 32);
+
+          var paper = self.paper;
+          var textObjects = paper.set();
+          // Create text elements with Raphael and add to set
+          for(var j=0; textLines[j]; j++) {
+            var x = bub.attrs.cx - bub.attrs.r * .7 + self.mainFT.attrs.translate.x;
+            var y = bub.attrs.cy - bub.attrs.r / 2 + j * 20;
+            var t = paper.text(x, y, textLines[j]).attr({
+              'text-anchor': 'start',
+              'stroke-opacity': 0,
+              'font-family': 'Arial, sans',
+              'fill': '#ffffff',
+              'font-size': 14,
+              'fill-opacity': 0
+            });
+            textObjects.push(t);
           }
 
-          bub.animate({
-            r: 150,
-            cx: 160,
-            cy: Math.max(bub.attrs.cy, 200),
-            opacity:.6
-          }, 325, '<>', function() {
-            var bub = this;
-            // Put all content into an array of lines, soft-wrapped at CHARLIMIT
-            var CHARLIMIT = 32;
-            var bubImage = bub['imageObject'];
-            var textLines = [];
-            var tempLine, tempArray;
-            var tempText = bubImage.content;
-            while(tempText.length > 0) {
-              tempLine = $.trim(tempText.substr(0, CHARLIMIT));
-              // Test if we're in the middle of a word
-              if(tempText.charAt(CHARLIMIT) !== ' ' && tempText.charAt(CHARLIMIT) !== '') {
-                // Remove anything after the last space
-                tempArray = tempLine.split(' ');
-                tempArray.pop();
-                tempLine = tempArray.join(' ');
-              }
-              textLines.push(tempLine);
-              tempText = tempText.substr(tempLine.length+1);
-            }
+          textObjects.animate({'fill-opacity': 1}, 500);
 
-            var textObjects = paper.set();
-            var t;
-            // Create text elements with Raphael and add to set
-            for(var j=0; textLines[j]; j++) {
-              t = paper.text(bub.attrs.cx-bub.attrs.r *.7, bub.attrs.cy-bub.attrs.r/2+j*20, textLines[j]).attr({
-                'text-anchor':'start',
-                'stroke-opacity': 0,
-                'font-family': 'Arial, sans',
-                'fill': '#ffffff',
-                'font-size': 14,
-                'fill-opacity': 0
-              });
-              textObjects.push(t);
-            }
+          // circle-close-x.png is 46x46 pixels
+          var x = bub.attrs.cx - 23 + self.mainFT.attrs.translate.x;
+          var y = bub.attrs.cy+bub.attrs.r - 51;
+          var closeImage = paper.image('img/circle-close-x.png', x, y, 46, 46).attr({
+            opacity: 0,
+            'stroke-opacity': 0,
+            cursor: 'pointer'
+          }).toFront().animate({opacity: 1}, 500);
+          closeImage['textObjects'] = textObjects;
+          closeImage['bubbleObject'] = bub;
 
-            textObjects.animate({'fill-opacity':1}, 500);
+          bubImage['textObjects'] = textObjects;
+          bubImage['closeImage'] = closeImage;
 
-            // circle-close-x.png is 46x46 pixels
-            var closeImage = paper.image('img/circle-close-x.png', bub.attrs.cx-23, bub.attrs.cy+bub.attrs.r-51, 46, 46).attr({
-              opacity: 0,
-              'stroke-opacity': 0
-            }).toFront().animate({opacity: 1}, 500);
-            closeImage['textObjects'] = textObjects;
-            closeImage['bubbleObject'] = bub;
+          var clickCallback = function() {
+            self.mainBubblePopupClose(this['bubbleObject']['imageObject']);
+          };
 
-            bubImage['textObjects'] = textObjects;
-            bubImage['closeImage'] = closeImage;
+          var touchEndCallback = function() {
+            clickCallback.call(this);
+          };
 
-            var clickCallback = function() {
-              this.animate({opacity:0}, 200, '<>', function() {
-                this.remove();
-              });
-              this['textObjects'].animate({opacity:0}, 200, '<>', function() {
-                this.remove();
-              });
-              this['bubbleObject'].animate({
-                r: 48,
-                cx: this['bubbleObject']['imageObject'].attrs.x + 50.5,
-                cy: this['bubbleObject']['imageObject'].attrs.y + 50
-              }, 325, '<>', function() {
-                this['imageObject']['opened'] = false;
-              }).toBack();
-            };
+          var touchStartCallback = function() {
+            this.touchmove(function() {
+              this.untouchstart(touchStartCallback);
+            }).touchend(touchEndCallback);
+          };
 
-            var touchEndCallback = function() {
-              clickCallback.call(this);
-            };
+          closeImage.click(clickCallback).touchstart(touchStartCallback);
+        }).toFront();
+      }
+    };
 
-            var touchStartCallback = function() {
-              this.touchmove(function() {
-                this.untouchstart(touchStartCallback);
-              }).touchend(touchEndCallback);
-            };
+    this.mainBubblePopupClose = function (imageObject) {
+      imageObject['closeImage'].animate({opacity: 0}, 200, '<>', function() {
+        this.remove();
+      });
+      imageObject['textObjects'].animate({opacity:0}, 200, '<>', function() {
+        this.remove();
+      });
+      imageObject['bubbleObject'].animate({
+        r: 48,
+        cx: imageObject.attrs.x + 50.5,
+        cy: imageObject.attrs.y + 50
+      }, 325, '<>', function() {
+        this['imageObject']['opened'] = false;
+      }).toBack();
+    };
 
-            closeImage.click(clickCallback).touchstart(touchStartCallback);
-
-            // Add a reference to text object set to image object
-          }).toFront();
+    this.initAboutPage = function () {
+      var aboutBubbleData = [
+        {
+          state: 'cinch',
+          text: 'CINCH\nLearning',
+          cx: 105,
+          cy: 175,
+          r: 50
+        }, {
+          state: 'students',
+          text: 'Your\nStudents',
+          cx: 210,
+          cy: 260,
+          r: 50
+        }, {
+          state: 'course',
+          text: 'Your\nCourse',
+          cx: 80,
+          cy: 310,
+          r: 50
+        }, {
+          state: 'classroom',
+          text: 'Your\nClassroom',
+          cx: 190,
+          cy: 400,
+          r: 50
         }
-      };
+      ];
+
+      var clickCallback = this.aboutBubbleClickCallback;
 
       var touchEndCallback = function() {
         clickCallback.call(this);
@@ -259,67 +361,339 @@
         }).touchend(touchEndCallback);
       };
 
-      var imageSet = paper.set();
+      var paper = this.paper;
+      var bubbleSet = paper.set();
       var objectSet = paper.set();
-      for(var j=0; data[j]; j++) {
-        var image = paper.image('img/circle-faces/'+data[j].name+'.png', data[j].x, data[j].y, 100, 100);
-        imageSet.push(image);
-        objectSet.push(image);
-
-        var imageBubble = paper.circle(data[j].x+50.5, data[j].y+50, 48).attr({
+      for(var i=0; aboutBubbleData[i]; i++) {
+        var data = aboutBubbleData[i];
+        var bubble = paper.circle(data.cx, data.cy, data.r).attr({
           fill: '0-rgb(0,151,219)-rgb(0,100,178)',
-          'stroke-opacity': 0
-        }).toBack();
-        objectSet.push(imageBubble);
-        image['bubbleObject'] = imageBubble;
-        imageBubble['imageObject'] = image;
-        image['set'] = imageSet;
-        image['content'] = this.callOuts[j];
+          'stroke-opacity': 0,
+          opacity: .8,
+          cursor: 'pointer'
+        });
 
-        image.touchstart(touchStartCallback).click(clickCallback);
+        var text = paper.text(data.cx, data.cy, data.text).attr({
+          'text-anchor': 'middle',
+          'stroke-opacity': 0,
+          'font-family': 'Arial, sans',
+          'fill': '#ffffff',
+          'font-size': 16,
+          cursor: 'pointer'
+        }).toFront();
+
+        bubble['textObject'] = text;
+        text['bubbleObject'] = bubble;
+        bubble['state'] = data.state;
+        text['state'] = data.state;
+
+        bubble.touchstart(touchStartCallback).click(clickCallback);
+        text.touchstart(touchStartCallback).click(clickCallback);
+
+        bubbleSet.push(bubble);
+        objectSet.push(bubble, text);
       }
 
-      this.mainObjectSet = objectSet;
+      this.aboutObjectSet = objectSet;
+      this.aboutPopup = null;
+
+      var aboutFT = paper.freeTransform(this.aboutObjectSet);
+      aboutFT.hideHandles();
+      aboutFT.opts.animate = false;
+      aboutFT.attrs.translate.x = $(window).width();
+      aboutFT.apply();
+      this.aboutFT = aboutFT;
     };
 
-    this.initAboutPage = function() {
+    this.aboutBubbleClickCallback = function () {
+      if(self.aboutPopup !== null) {
+        self.aboutPopup.remove();
+        self.aboutPopup = null;
+      }
 
+      var bub = typeof(this.bubbleObject) !== 'undefined' ? this.bubbleObject : this;
+
+      var paper = self.paper;
+      var margin = ($(window).width() - 320) / 2;
+
+      var cx = bub.attrs.cx + margin;
+      var cy = bub.attrs.cy;
+      var popup = paper.circle(cx, cy, 1).attr({
+        fill: '0-rgb(0,151,219)-rgb(0,100,178)',
+        'stroke-opacity': 0
+      }).toFront().animate({r: 700}, 500);
+
+      var objectSet = paper.set();
+
+      var textTop = 65;
+
+      var title = paper.text(margin + 30, textTop, self.aboutCopy[bub.state].title).attr({
+        'text-anchor': 'start',
+        'stroke-opacity': 0,
+        'font-family': 'Arial, sans',
+        'fill': '#ffffff',
+        'font-size': 28,
+        'fill-opacity': 0
+      });
+      objectSet.push(title);
+
+      textTop += 36;
+
+      var subtitle = paper.text(margin + 30, textTop, self.aboutCopy[bub.state].subtitle).attr({
+        'text-anchor': 'start',
+        'stroke-opacity': 0,
+        'font-family': 'Arial, sans',
+        'fill': '#ffffff',
+        'font-size': 22,
+        'fill-opacity': 0
+      });
+      objectSet.push(subtitle);
+
+      textTop += 28;
+
+      var k = 0;
+      for(var i=0; self.aboutCopy[bub.state].text[i]; i++, k++) {
+        var lines = self.textToLines(self.aboutCopy[bub.state].text[i], 38);
+
+        for(var j=0; lines[j]; j++, k++) {
+          var text = paper.text(margin + 30, textTop + k * 20, lines[j]).attr({
+            'text-anchor': 'start',
+            'stroke-opacity': 0,
+            'font-family': 'Arial, sans',
+            'fill': '#ffffff',
+            'font-size': 14,
+            'fill-opacity': 0
+          });
+          objectSet.push(text);
+        }
+      }
+
+      var clickCallback = function () {
+        self.aboutPopupCloseClickCallback.call(this);
+      };
+      var touchEndCallback = function () {
+        clickCallback.call(bub);
+      };
+      var touchStartCallback = function () {
+        this.touchmove(function () {
+          this.untouchstart(touchStartCallback);
+        }).touchend(touchEndCallback);
+      };
+
+      var topClose = paper.image('img/circle-close-x.png', margin + 320 - 56, 40, 46, 46).attr({
+        cursor: 'pointer',
+        opacity: 0
+      }).animate({opacity: 1}, 1000);
+      topClose['popupObject'] = popup;
+      topClose.touchstart(touchStartCallback).click(clickCallback);
+      objectSet.push(topClose);
+
+      var bottomClose = paper.image('img/circle-close-x.png', margin + 320 - 56, textTop + (k-1) * 20, 46, 46).attr({
+        cursor: 'pointer',
+        opacity: 0
+      }).animate({opacity: 1}, 1000);
+      bottomClose['popupObject'] = popup;
+      bottomClose.touchstart(touchStartCallback).click(clickCallback);
+      objectSet.push(bottomClose);
+
+      objectSet.animate({'fill-opacity': 1}, 500);
+      popup['objectSet'] = objectSet;
+      self.aboutPopup = popup;
     };
 
-    this.initContactPage = function() {
-
+    this.aboutPopupCloseClickCallback = function () {
+      var popup = this.popupObject;
+      popup.objectSet.animate({opacity: 0}, 200);
+      popup.animate({r: 0}, 500, '<>', function () {
+        this.objectSet.remove();
+        this.objectSet = null;
+      });
     };
 
-    this.adjustViewingArea = function() {
+    this.initContactPage = function () {
+      var contactBubbleData = [
+        {
+          title: 'Contact Us',
+          copy: "For more information,\nabout please CINCH\nLearning, please email\nus or use our contact form.",
+          type: 'text',
+          cx: 145,
+          cy: 205,
+          r: 115
+        }, {
+          text: 'Email us',
+          type: 'link',
+          href: "mailto:",
+          cx: 170,
+          cy: 348,
+          r: 40
+        }, {
+          text: 'Contact\nForm',
+          type: 'link',
+          href: "http://mheducation.force.com/MHE/SEG_Sampling_Leads?id=701C0000000UKSx",
+          cx: 252,
+          cy: 312,
+          r: 45
+        }
+      ];
+
+      var clickCallback = this.contactBubbleClickCallback;
+
+      var touchEndCallback = function() {
+        clickCallback.call(this);
+      };
+
+      var touchStartCallback = function() {
+        this.touchmove(function() {
+          this.untouchstart(touchStartCallback);
+        }).touchend(touchEndCallback);
+      };
+
+      var paper = this.paper;
+      var objectSet = paper.set();
+      for(var i=0; contactBubbleData[i]; i++) {
+        var data = contactBubbleData[i];
+        var bubble = paper.circle(data.cx, data.cy, data.r).attr({
+          fill: '0-rgb(0,151,219)-rgb(0,100,178)',
+          'stroke-opacity': 0,
+          opacity: .8,
+          cursor: data.type === 'link' ? 'pointer' : 'default'
+        });
+
+        if(data.type === 'link') {
+
+          var text = paper.text(data.cx, data.cy, data.text).attr({
+            'text-anchor': 'middle',
+            'stroke-opacity': 0,
+            'font-family': 'Arial, sans',
+            'fill': '#ffffff',
+            'font-size': 16,
+            cursor: 'pointer'
+          });
+          objectSet.push(text);
+
+          bubble['textObject'] = text;
+          text['bubbleObject'] = bubble;
+          text['href'] = data.href;
+
+          bubble.touchstart(touchStartCallback).click(clickCallback);
+          text.touchstart(touchStartCallback).click(clickCallback);
+
+          objectSet.push(text);
+
+        } else {
+
+          var title = paper.text(data.cx - data.r*.7, data.cy - data.r/2, data.title).attr({
+            'text-anchor': 'start',
+            'stroke-opacity': 0,
+            'font-family': 'Arial, sans',
+            'fill': '#ffffff',
+            'font-size': 24,
+            cursor: 'pointer'
+          }).toFront();
+          objectSet.push(title);
+
+          var textLines = data.copy.split('\n');
+          for(var j=0; textLines[j]; j++) {
+            var line = paper.text(data.cx - data.r*.7, data.cy - data.r/2 + 30 + j*20, textLines[j]).attr({
+              'text-anchor': 'start',
+              'stroke-opacity': 0,
+              'font-family': 'Arial, sans',
+              'fill': '#ffffff',
+              'font-size': 14,
+              cursor: 'pointer'
+            }).toFront();
+            objectSet.push(line);
+          }
+
+        }
+
+        objectSet.push(bubble);
+      }
+
+      this.contactObjectSet = objectSet;
+
+      var contactFT = paper.freeTransform(this.contactObjectSet);
+      contactFT.hideHandles();
+      contactFT.opts.animate = false;
+      contactFT.attrs.translate.x = $(window).width();
+      contactFT.apply();
+      this.contactFT = contactFT;
+    };
+
+    this.contactBubbleClickCallback = function () {
+      var text = typeof(this['textObject']) !== 'undefined' ? this['textObject'] : this;
+      window.open(text.href, '_blank');
+    };
+
+    this.adjustViewingArea = function () {
 
     };
 
     this.transition = function(toState) {
-      if(this.state === 'transition') return;
-
-      var paper = this.paper;
       var state = this.state.toLowerCase();
-      var validStates = ['main', 'about', 'contact'];
+      if(state === 'transition') return;
 
+      var validStates = ['main', 'about', 'contact'];
       if(validStates.indexOf(state) === -1) state = 'main';
       if(validStates.indexOf(toState) === -1) toState = 'main';
       if(state === toState) return;
 
       this.state = 'transition';
 
-      //var fromFT = paper.freeTransform(this[state+'ObjectSet']).hideHandles();
-      //var toFT = paper.freeTransform(this[toState+'ObjectSet']);
-
-      if(validStates.indexOf(state) < validStates.indexOf(toState)) {
-
-      } else {
-
+      for(var i=0; this.navBubbleSet[i]; i++) {
+        if(this.navBubbleSet[i]['state'] === toState) {
+          this.navBubbleSet[i].toFront();
+          this.navBubbleSet[i]['textObject'].toFront();
+        }
       }
 
+      var fromFT = this[state+'FT'];
+      var toFT = this[toState+'FT'];
 
+      var windowWidth = $(window).width();
+      var margin = (windowWidth-320) / 2;
+      if(validStates.indexOf(state) < validStates.indexOf(toState)) {
+        fromFT.attrs.translate.x = -windowWidth;
+        toFT.attrs.translate.x = windowWidth;
+        toFT.apply();
+        toFT.attrs.translate.x = margin;
+      } else {
+        fromFT.attrs.translate.x = windowWidth;
+        toFT.attrs.translate.x = -windowWidth;
+        toFT.apply();
+        toFT.attrs.translate.x = margin;
+      }
+
+      fromFT.opts.animate = {
+        delay: 500,
+        easing: '<>'
+      };
+      fromFT.apply();
+
+      toFT.opts.animate = {
+        delay: 500,
+        easing: '<>'
+      };
+      toFT.apply();
+
+      setTimeout((function () {
+        self.state = toState;
+        $(window).scrollTop(0);
+        switch(toState) {
+          case 'main':
+            $('#mobile-vector-content').css('height', 3000);
+            break;
+          case 'about':
+            $('#mobile-vector-content').css('height', 650);
+            break;
+          case 'contact':
+            $('#mobile-vector-content').css('height', 500);
+            break;
+        }
+      }), 500);
     };
 
-    this.placeLogo = function() {
+    this.placeLogo = function () {
       var paper = Raphael('mobile-cinch-logo', 235, 22);
       var logo = paper.path(
         'M10.547,0.49c1.781,0,3.689,0.451,5.726,1.351v4.913c-2.18-1.311-4.089-1.965-5.726-1.965c-1.639,0-2.947,0.562-3.93,1.688' +
@@ -397,10 +771,69 @@
       "Cost Effective. Includes supplementary materials for above and below learners. Monitor student progress and administer extra support all from one place.",
       "Customized Printing. Print workbooks for students with limited technology access. Design unique note-taking pages to help guide students through lessons.",
       "All your files organized in one place. Easy prep: plan, teach, assess, remediate all from the online platform. Browse multimedia assets, worksheets, and activities by standard or lesson.",
-      "Easy to integrate technology into the classroom. Huge library of engagement resources. Bring labs and lessons online with follow up exercises."]
+      "Easy to integrate technology into the classroom. Huge library of engagement resources. Bring labs and lessons online with follow up exercises."];
+
+    this.aboutCopy = {
+      'cinch': {
+        'link': 'About\nCINCH',
+        'title': 'CINCH Learning',
+        'subtitle': 'Make it Personal',
+        'text': [
+          "No one else connects with, engages or excites students exactly like you. With CINCH Learning you’re " +
+            "in control of how and what you teach like never before. CINCH Learning provides convenient cloud-based " +
+            "access to quality math and science content for grades 5-12 along with robust planning and assessment tools. " +
+            "Choose what you want to teach, what resources you want to use, and what device you want to use to deliver " +
+            "the lesson. Put it all together to create a compelling learning experience that is uniquely yours and " +
+            "highly personalized to your students.",
+          "Get up close and personal with CINCH. Explore this site and then contact us for a product demo."
+        ]
+      },
+      'course': {
+        'link': 'Your\nCourse',
+        'title': 'Your Course',
+        'subtitle': 'Personalize content',
+        'text': [
+          "You know what you want to teach and how you want to teach it. CINCH puts all the resources you " +
+            "need in one place to use any way you want.",
+          "Choose from thousands of pre-built lessons to create your own unique scope and sequence.",
+          "Customize lessons to match your personal teaching style. Add and use your own favorite content.",
+          "Integrate videos, games, interactive labs and other multimedia assets."
+        ]
+      },
+      'students': {
+        'link': 'Your\nStudents',
+        'title': 'Your Students',
+        'subtitle': 'Personalize learning',
+        'text': [
+          "You’ve got students who love math and science and students who haven’t yet unlocked the secrets. " +
+            "With CINCH, you can meet all their needs.",
+          "Assign content, assessments, homework, and even games to each individual student based on specific " +
+            "learning needs.",
+          "Encourage collaboration and communication with built-in social networking tools.",
+          "Keep learning active with IWBs, student response systems, and hundreds of multimedia resources."
+        ]
+      },
+      'classroom': {
+        'link': 'Your\nClassroom',
+        'title': 'Your Classroom',
+        'subtitle': 'Personalize the experience',
+        'text': [
+          "Wherever your classroom is in the digital transition, CINCH is right there with you helping you make " +
+            "the most of your school’s technology resources.",
+          "Access and edit content from any device – desktops, laptops, IWBs, tablets or smartphones. Plan, " +
+            "assess and communicate on-the-go with the CINCH app.",
+          "Always have the latest resources aligned to the most current standards with real-time updates. " +
+            "Integrate print and digital with print on demand options."
+        ]
+      }
+    };
+
   };
+
 
   var mobile = new MobileSite();
   mobile.initApp();
+
+  window.MobileSite = mobile;
 
 })(window, jQuery, Raphael, _);
