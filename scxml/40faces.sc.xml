@@ -5,9 +5,9 @@
 
     <datamodel>
         <data id="bubbles"/>
-        <data id="video"/>
-        <data id="audio"/>
+        <data id="media"/>
         <data id="duration"/>
+        <data id="track"/>
     </datamodel>
 
     <state id="initial-default">
@@ -21,16 +21,15 @@
 
     <state id="loading">
         <transition event="readyForMain" target="mainView">
-            <assign location="video" expr="_event.data.video"/>
-            <assign location="audio" expr="_event.data.audio"/>
+            <assign location="media" expr="_event.data.media"/>
             <script>
-                video.play();
-                audio.play();
+                media.play();
             </script>
         </transition>
     </state>
 
     <state id="mainView">
+
         <transition event="toAbout" target="aboutView">
             <assign location="bubbles" expr="_event.data.bubbles"/>
             <assign location="duration" expr="_event.data.duration"/>
@@ -45,6 +44,43 @@
                 bubbles.transition('contact', 'main', duration, 'easeInOut');
             </script>
         </transition>
+
+        <state id="general">
+            <transition event="toSpecific" target="loadSpecific">
+                <assign location="track" expr="_event.data.track"/>
+            </transition>
+        </state>
+
+        <state id="loadSpecific">
+            <onentry>
+                <script>
+                    media.load(track);
+                </script>
+            </onentry>
+            <transition event="trackLoaded" target="specific"/>
+        </state>
+
+        <state id="leaveSpecific">
+            <onentry>
+                <script>
+                    media.load(0);
+                </script>
+            </onentry>
+            <transition event="leftSpecific" target="general"/>
+        </state>
+
+        <state id="specific">
+            <onentry>
+                <script>
+                    media.play();
+                </script>
+            </onentry>
+            <transition event="leaveSpecific" target="leaveSpecific"/>
+            <transition event="toSpecific" target="loadSpecific">
+                <assign location="track" expr="_event.data.track"/>
+            </transition>
+        </state>
+
     </state>
 
     <state id="aboutView">
