@@ -8,12 +8,16 @@
     this.state = 'main';
 
     this.initApp = function() {
-      $('head').append('<link type="text/css" rel="stylesheet" href="css/mobile-style.css" \/>');
-      $('#app').append('\
-        <div class="mobile fixed-top-bar"> \
-          <a id="mobile-cinch-logo"><\/a> \
-        <\/div> \
-        <div id="mobile-vector-content" class="mobile"><\/div>');
+      $('body').css({
+        padding: 0,
+        margin: 0
+      });
+      $('#app').append('' +
+        '<div class="mobile-fixed-top-bar">' +
+          '<a id="mobile-cinch-logo"></a>' +
+        '</div>' +
+        '<div id="mobile-vector-content" class="mobile"></div>'
+      );
 
       this.placeLogo();
 
@@ -92,7 +96,6 @@
 
     this.initMainPage = function() {
       var paper = this.paper;
-      var imageSet = paper.set();
 
       var num = function(x) { return x < 10 ? '0'+x : x+''; };
       var x, y, y1, y2, y3;
@@ -137,17 +140,25 @@
 
       var clickCallback = function() {
         if(typeof(this['opened']) === 'undefined' || this['opened'] === false) {
-          this['opened'] = true;
           var image = this;
+          image['opened'] = true;
           var bub = image['bubbleObject'];
 
           for(var i=0; image.set[i]; i++) {
             if(image.set[i].bubbleObject.attrs.r > 48) {
+              image.set[i]['textObjects'].animate({opacity:0}, 200, '<>', function() {
+                this.remove();
+              });
+              image.set[i]['closeImage'].animate({opacity:0}, 200, '<>', function() {
+                this.remove();
+              });
               image.set[i].bubbleObject.animate({
                 r: 48,
                 cx: image.set[i].attrs.x + 50.5,
                 cy: image.set[i].attrs.y + 50
-              }, 325).toBack();
+              }, 325, '<>', function() {
+                this['imageObject']['opened'] = false;
+              }).toBack();
             }
           }
 
@@ -157,9 +168,10 @@
             cy: Math.max(bub.attrs.cy, 200),
             opacity:.6
           }, 325, '<>', function() {
+            var bub = this;
             // Put all content into an array of lines, soft-wrapped at CHARLIMIT
             var CHARLIMIT = 32;
-            var bubImage = this['imageObject'];
+            var bubImage = bub['imageObject'];
             var textLines = [];
             var tempLine, tempArray;
             var tempText = bubImage.content;
@@ -180,7 +192,7 @@
             var t;
             // Create text elements with Raphael and add to set
             for(var j=0; textLines[j]; j++) {
-              t = paper.text(this.attrs.cx-this.attrs.r *.7, this.attrs.cy-this.attrs.r/2+j*20, textLines[j]).attr({
+              t = paper.text(bub.attrs.cx-bub.attrs.r *.7, bub.attrs.cy-bub.attrs.r/2+j*20, textLines[j]).attr({
                 'text-anchor':'start',
                 'stroke-opacity': 0,
                 'font-family': 'Arial, sans',
@@ -192,6 +204,45 @@
             }
 
             textObjects.animate({'fill-opacity':1}, 500);
+
+            // circle-close-x.png is 46x46 pixels
+            var closeImage = paper.image('img/circle-close-x.png', bub.attrs.cx-23, bub.attrs.cy+bub.attrs.r-51, 46, 46).attr({
+              opacity: 0,
+              'stroke-opacity': 0
+            }).toFront().animate({opacity: 1}, 500);
+            closeImage['textObjects'] = textObjects;
+            closeImage['bubbleObject'] = bub;
+
+            bubImage['textObjects'] = textObjects;
+            bubImage['closeImage'] = closeImage;
+
+            var clickCallback = function() {
+              this.animate({opacity:0}, 200, '<>', function() {
+                this.remove();
+              });
+              this['textObjects'].animate({opacity:0}, 200, '<>', function() {
+                this.remove();
+              });
+              this['bubbleObject'].animate({
+                r: 48,
+                cx: this['bubbleObject']['imageObject'].attrs.x + 50.5,
+                cy: this['bubbleObject']['imageObject'].attrs.y + 50
+              }, 325, '<>', function() {
+                this['imageObject']['opened'] = false;
+              }).toBack();
+            };
+
+            var touchEndCallback = function() {
+              clickCallback.call(this);
+            };
+
+            var touchStartCallback = function() {
+              this.touchmove(function() {
+                this.untouchstart(touchStartCallback);
+              }).touchend(touchEndCallback);
+            };
+
+            closeImage.click(clickCallback).touchstart(touchStartCallback);
 
             // Add a reference to text object set to image object
           }).toFront();
@@ -208,14 +259,18 @@
         }).touchend(touchEndCallback);
       };
 
+      var imageSet = paper.set();
+      var objectSet = paper.set();
       for(var j=0; data[j]; j++) {
         var image = paper.image('img/circle-faces/'+data[j].name+'.png', data[j].x, data[j].y, 100, 100);
         imageSet.push(image);
+        objectSet.push(image);
 
         var imageBubble = paper.circle(data[j].x+50.5, data[j].y+50, 48).attr({
           fill: '0-rgb(0,151,219)-rgb(0,100,178)',
           'stroke-opacity': 0
         }).toBack();
+        objectSet.push(imageBubble);
         image['bubbleObject'] = imageBubble;
         imageBubble['imageObject'] = image;
         image['set'] = imageSet;
@@ -224,7 +279,7 @@
         image.touchstart(touchStartCallback).click(clickCallback);
       }
 
-      this.mainImageSet = imageSet;
+      this.mainObjectSet = objectSet;
     };
 
     this.initAboutPage = function() {
@@ -240,6 +295,27 @@
     };
 
     this.transition = function(toState) {
+      if(this.state === 'transition') return;
+
+      var paper = this.paper;
+      var state = this.state.toLowerCase();
+      var validStates = ['main', 'about', 'contact'];
+
+      if(validStates.indexOf(state) === -1) state = 'main';
+      if(validStates.indexOf(toState) === -1) toState = 'main';
+      if(state === toState) return;
+
+      this.state = 'transition';
+
+      //var fromFT = paper.freeTransform(this[state+'ObjectSet']).hideHandles();
+      //var toFT = paper.freeTransform(this[toState+'ObjectSet']);
+
+      if(validStates.indexOf(state) < validStates.indexOf(toState)) {
+
+      } else {
+
+      }
+
 
     };
 

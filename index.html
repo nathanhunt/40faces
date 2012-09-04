@@ -13,7 +13,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
   <title>CINCH Learning</title>
-  <meta name="description" content="">
+  <meta name="description" content="" />
 
   <!-- Mobile viewport optimized: h5bp.com/viewport -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -22,7 +22,8 @@
 
   <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
 
-  <link type='text/css' rel="stylesheet" href="css/bootstrap.css">
+  <link type='text/css' rel="stylesheet" href="css/bootstrap.css" />
+  <link type="text/css" rel="stylesheet" href="css/style.css" />
 
   <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
 
@@ -69,59 +70,65 @@
     };
     jQuery(function($) {
       if(!isMobile.any()) {
-        $('head').append('<link type="text/css" rel="stylesheet" href="css/style.css" \/>');
-        var videoHTML = '\
-          <canvas class="faces"><\/canvas> \
-          <video width="800" height="600" class="faces" id="facesVideo" loop="loop" preload="preload"> \
-            <source src="video/grid.mp4" type="video/mp4" \/> \
-            <source src="video/grid.ogv" type="video/ogg" \/> \
-          <\/video> \
-          <audio id="facesAudio" class="faces" loop="loop" preload="preload"> \
-            <source src="audio/00.m4a" type="audio/x-m4a" \/> \
-            <source src="audio/00.m4a" type="audio/mp4" \/> \
-            <source src="audio/00.ogg" type="audio/ogg" \/> \
-            <source src="audio/00.mp3" type="audio/mpeg" \/> \
-          <\/audio>';
+        var videoHTML = '' +
+          '<canvas class="faces"></canvas>' +
+          '<video width="800" height="600" class="faces" id="facesVideo" loop="loop" preload="preload">' +
+            '<source src="video/grid.mp4" type="video/mp4" />' +
+            '<source src="video/grid.ogv" type="video/ogg" />' +
+          '</video>' +
+          '<audio id="facesAudio" class="faces" loop="loop" preload="preload">' +
+            '<source src="audio/00.m4a" type="audio/x-m4a" />' +
+            '<source src="audio/00.m4a" type="audio/mp4" />' +
+            '<source src="audio/00.ogg" type="audio/ogg" />' +
+            '<source src="audio/00.mp3" type="audio/mpeg" />' +
+          '</audio>';
         var num;
         for(var i=1; i < 41; i++) {
           num = i < 10 ? '0'+i : i+'';
-          videoHTML += '\
-            <audio id="voice-'+num+'" class="faces" loop="loop"> \
-              <source src="audio/'+num+'.m4a" type="audio/x-m4a" \/> \
-              <source src="audio/'+num+'.m4a" type="audio/mp4" \/> \
-              <source src="audio/'+num+'.ogg" type="audio/ogg" \/> \
-              <source src="audio/'+num+'.mp3" type="audio/mpeg" \/> \
-            <\/audio>'
+          videoHTML += '' +
+            '<audio id="voice-'+num+'" class="faces" loop="loop">' +
+              '<source src="audio/'+num+'.m4a" type="audio/x-m4a" />' +
+              '<source src="audio/'+num+'.m4a" type="audio/mp4" />' +
+              '<source src="audio/'+num+'.ogg" type="audio/ogg" />' +
+              '<source src="audio/'+num+'.mp3" type="audio/mpeg" />' +
+            '</audio>'
         }
-        $('#app').html('\
-          <div class="standard fixed-top-bar"> \
-            <a id="cinch-logo"><\/a> \
-            <a href="#" class="volume-icon-link on"> \
-              <img class="on" src="img/volume-on.png" \/> \
-              <img class="off" src="img/volume-off.png" \/> \
-            <\/a> \
-            <ul id="nav-link-list" class="float-right"> \
-              <li><a href="#" class="main active">40 Faces<\/a><\/li> \
-              <li><span>|<\/span><\/li> \
-              <li><a href="#" class="about">About CINCH<\/a><\/li> \
-              <li><span>|<\/span><\/li> \
-              <li><a href="#" class="contact">Contact<\/a><\/li> \
-            <\/ul> \
-          <\/div> \
-          <div class="standard fixed-bottom-bar"> \
-            <a href="http://www.mcgraw-hill.com/site/tools/terms-of-use" target="_blank">Terms of User<\/a> \
-            <span>|<\/span> \
-            <a href="https://www.mheonline.com/pages/display/privacynotice_view" target="_blank">Privacy Notice<\/a> \
-            <span>|<\/span> \
-            <a href="https://www.mheonline.com/" target="_blank">McGraw Hill Education<\/a> \
-          <\/div> \
-          <div role="viewport" id="viewport" class="standard"> \
-            <div role="video" id="video">'+videoHTML+'<\/div> \
-            <div role="occluder" id="occluder"><\/div> \
-          <\/div> \
-          <div id="vector-content" class="standard"><\/div>');
-        $(document).append('<script type="text/javascript" src="js/libs/scion.js"><\/script> \
-          <script type="text/javascript" src="js/script.js"><\/script>');
+        $('body').css({
+          overflow: 'hidden',
+          'padding-top': 40
+        });
+        $('#app').html('' +
+          '<div class="standard fixed-top-bar">' +
+            '<a id="cinch-logo"></a>' +
+            '<a href="#" class="volume-icon-link on">' +
+              '<img class="on" src="img/volume-on.png" />' +
+              '<img class="off" src="img/volume-off.png" />' +
+            '</a>' +
+            '<ul id="nav-link-list" class="float-right">' +
+              '<li><a href="#" class="main active">40 Faces</a></li>' +
+              '<li><span>|</span></li>' +
+              '<li><a href="#" class="about">About CINCH</a></li>' +
+              '<li><span>|</span></li>' +
+              '<li><a href="#" class="contact">Contact</a></li>' +
+            '</ul>' +
+          '</div>' +
+          '<div class="standard fixed-bottom-bar">' +
+            '<a href="http://www.mcgraw-hill.com/site/tools/terms-of-use" target="_blank">Terms of User</a>' +
+            '<span>|</span>' +
+            '<a href="https://www.mheonline.com/pages/display/privacynotice_view" target="_blank">Privacy Notice</a>' +
+            '<span>|</span>' +
+            '<a href="https://www.mheonline.com/" target="_blank">McGraw Hill Education</a>' +
+          '</div>' +
+          '<div role="viewport" id="viewport" class="standard">' +
+            '<div role="video" id="video">'+videoHTML+'</div>' +
+            '<div role="occluder" id="occluder"></div>' +
+          '</div>' +
+          '<div id="vector-content" class="standard"></div>'
+        );
+        $(document).append('' +
+            '<script type="text/javascript" src="js/libs/scion.js"><\/script>' +
+            '<script type="text/javascript" src="js/script.js"><\/script>'
+        );
       } else {
         $(document).append('<script type="text/javascript" src="js/mobile-script.js"><\/script>');
       }

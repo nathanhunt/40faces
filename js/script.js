@@ -739,33 +739,33 @@
 
     $body.one('shimsLoaded', function(){
 
-      if(Modernizr.video){
+      if(Modernizr.video) {
 
-        var $canvas = $('canvas.faces').css({
-          'margin': '0 auto',
-          'display': 'block'
-        }), canvas = $canvas.get(0);
-        var $vid = $('video.faces'), vid = $vid.get(0);
-        var $aud = $('audio.faces'), aud = $aud.get(0);
+        var $canvas = $('canvas.faces');
+        var canvas = $canvas.get(0);
 
-        fitInside($canvas, $container);
+        var $vid = $('video.faces');
+        var vid = $vid.get(0);
+
+        var $aud = $('audio.faces');
+        var aud = $aud.get(0);
 
         var context = canvas.getContext('2d');
         var cw, ch;
 
-        $vid.on('play', function(){
+        $vid.on('play', function() {
           draw(this,context,cw,ch);
         });
 
-        $vid.on('canplay', function(){
+        $vid.on('canplay', function() {
           cw = vid.videoWidth;
           ch = vid.videoHeight;
           canvas.width = cw;
           canvas.height = ch;
         });
 
-        $vid.on('canplaythrough', function(){
-          $body.trigger('media:complete',[vid, aud]);
+        $vid.on('canplaythrough', function() {
+          $body.trigger('media:complete', [vid, aud]);
         });
 
         vid.load();
