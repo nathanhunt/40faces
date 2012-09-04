@@ -84,7 +84,7 @@
           objectSet.push(glow);
 
           bubble['state'] = attr;
-          bubble.click(function() {
+          this.bindTapCallback(bubble, function() {
             self.transition(this['state']);
           });
 
@@ -101,7 +101,7 @@
             'cursor': 'pointer'
           });
           text['state'] = attr;
-          text.click(function() {
+          this.bindTapCallback(text, function() {
             self.transition(this['state']);
           });
           bubble['textObject'] = text;
@@ -120,22 +120,28 @@
       this.navFT = navFT;
     };
 
-    this.initMainPage = function () {
-      var paper = this.paper;
-
-      var data = this.getMainBubblePositionData();
-
+    this.bindTapCallback = function (obj, cb) {
       var clickCallback = function () {
-        self.mainBubbleClickCallback.call(this);
+        cb.call(obj);
       };
+
       var touchEndCallback = function () {
-        clickCallback.call(this);
+        clickCallback();
       };
+
       var touchStartCallback = function () {
         this.touchmove(function () {
           this.untouchstart(touchStartCallback);
         }).touchend(touchEndCallback);
       };
+
+      obj.touchstart(touchStartCallback).click(clickCallback);
+    };
+
+    this.initMainPage = function () {
+      var paper = this.paper;
+
+      var data = this.getMainBubblePositionData();
 
       var imageSet = paper.set();
       var objectSet = paper.set();
@@ -156,8 +162,50 @@
         image['set'] = imageSet;
         image['content'] = this.callOuts[j];
 
-        image.touchstart(touchStartCallback).click(clickCallback);
+        this.bindTapCallback(image, self.mainBubbleClickCallback);
       }
+
+      var windowWidth = $(window).width();
+      var margin = (windowWidth - 320) / 2;
+      var ctaBubble = paper.circle(160, 230, 130).attr({
+        fill: '0-rgb(0,151,219)-rgb(0,100,178)',
+        'stroke-opacity': 0,
+        opacity: .7,
+        cursor: 'pointer'
+      }).toFront();
+
+      var ctaText = paper.text(160, 190, 'Call to action here.').attr({
+        'text-anchor': 'middle',
+        'stroke-opacity': 0,
+        'font-family': 'Arial, sans',
+        'fill': '#ffffff',
+        'font-size': 26,
+        cursor: 'pointer'
+      }).toFront();
+
+      var ctaImage = paper.image('img/circle-close-x.png', 160 - 23, 300, 46, 46).attr({
+        cursor: 'pointer'
+      });
+
+      ctaImage['textObject'] = ctaText;
+      ctaImage['bubbleObject'] = ctaBubble;
+
+      this.bindTapCallback(ctaImage, function () {
+        this.animate({opacity:0}, 200, function () {
+          this.remove();
+          self.mainObjectSet.pop();
+          self.mainObjectSet.pop();
+          self.mainObjectSet.pop();
+        });
+        this['textObject'].animate({opacity:0}, 200, function () {
+          this.remove();
+        });
+        this['bubbleObject'].animate({opacity:0}, 200, function () {
+          this.remove();
+        });
+      });
+
+      objectSet.push(ctaImage, ctaText, ctaBubble);
 
       this.mainObjectSet = objectSet;
 
@@ -288,21 +336,10 @@
           bubImage['textObjects'] = textObjects;
           bubImage['closeImage'] = closeImage;
 
-          var clickCallback = function() {
+          self.bindTapCallback(closeImage, function() {
             self.mainBubblePopupClose(this['bubbleObject']['imageObject']);
-          };
+          });
 
-          var touchEndCallback = function() {
-            clickCallback.call(this);
-          };
-
-          var touchStartCallback = function() {
-            this.touchmove(function() {
-              this.untouchstart(touchStartCallback);
-            }).touchend(touchEndCallback);
-          };
-
-          closeImage.click(clickCallback).touchstart(touchStartCallback);
         }).toFront();
       }
     };
@@ -352,18 +389,6 @@
         }
       ];
 
-      var clickCallback = this.aboutBubbleClickCallback;
-
-      var touchEndCallback = function() {
-        clickCallback.call(this);
-      };
-
-      var touchStartCallback = function() {
-        this.touchmove(function() {
-          this.untouchstart(touchStartCallback);
-        }).touchend(touchEndCallback);
-      };
-
       var paper = this.paper;
       var bubbleSet = paper.set();
       var objectSet = paper.set();
@@ -390,8 +415,8 @@
         bubble['state'] = data.state;
         text['state'] = data.state;
 
-        bubble.touchstart(touchStartCallback).click(clickCallback);
-        text.touchstart(touchStartCallback).click(clickCallback);
+        this.bindTapCallback(bubble, this.aboutBubbleClickCallback);
+        this.bindTapCallback(text, this.aboutBubbleClickCallback);
 
         bubbleSet.push(bubble);
         objectSet.push(bubble, text);
@@ -471,24 +496,12 @@
         }
       }
 
-      var clickCallback = function () {
-        self.aboutPopupCloseClickCallback.call(this);
-      };
-      var touchEndCallback = function () {
-        clickCallback.call(bub);
-      };
-      var touchStartCallback = function () {
-        this.touchmove(function () {
-          this.untouchstart(touchStartCallback);
-        }).touchend(touchEndCallback);
-      };
-
       var topClose = paper.image('img/circle-close-x.png', margin + 320 - 56, 40, 46, 46).attr({
         cursor: 'pointer',
         opacity: 0
       }).animate({opacity: 1}, 1000);
       topClose['popupObject'] = popup;
-      topClose.touchstart(touchStartCallback).click(clickCallback);
+      self.bindTapCallback(topClose, self.aboutPopupCloseClickCallback);
       objectSet.push(topClose);
 
       var bottomClose = paper.image('img/circle-close-x.png', margin + 320 - 56, textTop + (k-1) * 20, 46, 46).attr({
@@ -496,7 +509,7 @@
         opacity: 0
       }).animate({opacity: 1}, 1000);
       bottomClose['popupObject'] = popup;
-      bottomClose.touchstart(touchStartCallback).click(clickCallback);
+      self.bindTapCallback(bottomClose, self.aboutPopupCloseClickCallback);
       objectSet.push(bottomClose);
 
       objectSet.animate({'fill-opacity': 1}, 500);
@@ -539,18 +552,6 @@
         }
       ];
 
-      var clickCallback = this.contactBubbleClickCallback;
-
-      var touchEndCallback = function() {
-        clickCallback.call(this);
-      };
-
-      var touchStartCallback = function() {
-        this.touchmove(function() {
-          this.untouchstart(touchStartCallback);
-        }).touchend(touchEndCallback);
-      };
-
       var paper = this.paper;
       var objectSet = paper.set();
       for(var i=0; contactBubbleData[i]; i++) {
@@ -578,8 +579,8 @@
           text['bubbleObject'] = bubble;
           text['href'] = data.href;
 
-          bubble.touchstart(touchStartCallback).click(clickCallback);
-          text.touchstart(touchStartCallback).click(clickCallback);
+          self.bindTapCallback(bubble, this.contactBubbleClickCallback);
+          self.bindTapCallback(text, this.contactBubbleClickCallback);
 
           objectSet.push(text);
 
