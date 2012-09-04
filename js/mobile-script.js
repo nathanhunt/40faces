@@ -6,6 +6,7 @@
     var self = this;
 
     this.state = 'main';
+    this.transitioning = false;
 
     this.initApp = function () {
       $('body').css({
@@ -27,7 +28,7 @@
       this.initMainPage();
       this.initAboutPage();
       this.initContactPage();
-      $(window).on('resize', this.adjustViewingArea).trigger('resize');
+      $(window).on('orientationchange resize', this.adjustViewingArea).trigger('resize');
     };
 
     this.initNavigation = function () {
@@ -139,7 +140,9 @@
       var imageSet = paper.set();
       var objectSet = paper.set();
       for(var j=0; data[j]; j++) {
-        var image = paper.image('img/circle-faces/'+data[j].name+'.png', data[j].x, data[j].y, 100, 100);
+        var image = paper.image('img/circle-faces/'+data[j].name+'.png', data[j].x, data[j].y, 100, 100).attr({
+          cursor: 'pointer'
+        });
         imageSet.push(image);
         objectSet.push(image);
 
@@ -626,19 +629,44 @@
     };
 
     this.adjustViewingArea = function () {
+      // This function is a callback for $(window).resize()
+      if(self.transitioning === true) return;
+      var windowWidth = $(window).width();
+      var validStates = ['main', 'about', 'contact'];
+      var currentState = self.state;
 
+      var navFT = self.navFT;
+      var tempNavOpts = navFT.opts;
+      navFT.opts.animate = false;
+      navFT.attrs.translate.x = (windowWidth - 320) / 2;
+      navFT.apply();
+      navFT.opts = tempNavOpts;
+
+      for(var i=0; validStates[i]; i++) {
+        var stateFT = self[validStates[i]+'FT'];
+        var tempOpts = stateFT.opts;
+        stateFT.opts.animate = false;
+
+        if(validStates[i] === currentState) {
+          stateFT.attrs.translate.x = (windowWidth - 320) / 2;
+        } else {
+          stateFT.attrs.translate.x = windowWidth;
+        }
+        stateFT.apply();
+        stateFT.opts = tempOpts;
+      }
     };
 
     this.transition = function(toState) {
-      var state = this.state.toLowerCase();
-      if(state === 'transition') return;
+      if(this.transitioning === true) return;
 
+      var state = this.state.toLowerCase();
       var validStates = ['main', 'about', 'contact'];
       if(validStates.indexOf(state) === -1) state = 'main';
       if(validStates.indexOf(toState) === -1) toState = 'main';
       if(state === toState) return;
 
-      this.state = 'transition';
+      this.transitioning = true;
 
       for(var i=0; this.navBubbleSet[i]; i++) {
         if(this.navBubbleSet[i]['state'] === toState) {
@@ -664,20 +692,23 @@
         toFT.attrs.translate.x = margin;
       }
 
+      var animationDuration = 500;
+
       fromFT.opts.animate = {
-        delay: 500,
+        delay: animationDuration,
         easing: '<>'
       };
       fromFT.apply();
 
       toFT.opts.animate = {
-        delay: 500,
+        delay: animationDuration,
         easing: '<>'
       };
       toFT.apply();
 
       setTimeout((function () {
         self.state = toState;
+        self.transitioning = false;
         $(window).scrollTop(0);
         switch(toState) {
           case 'main':
@@ -690,7 +721,7 @@
             $('#mobile-vector-content').css('height', 500);
             break;
         }
-      }), 500);
+      }), animationDuration+1);
     };
 
     this.placeLogo = function () {
@@ -829,7 +860,6 @@
     };
 
   };
-
 
   var mobile = new MobileSite();
   mobile.initApp();
