@@ -59,12 +59,11 @@
     <div role="video" id="video">
       <canvas class="faces"></canvas>
        <!--480 x 360-->
-      <div id="hitAreas"></div>
-      <video width="800" height="600" class="faces" id="facesVideo" loop="loop">
+      <video width="800" height="600" class="faces" id="facesVideo">
         <source src="video/grid.mp4" type="video/mp4" />
         <source src="video/grid.ogv" type="video/ogg" />
       </video>
-      <audio id="facesAudio" class="faces" />
+      <audio id="facesAudio" class="faces"/>
     </div>
 
     <div role="occluder" id="occluder"></div>
@@ -73,6 +72,7 @@
 
   <div id="vector-content"></div>
 
+  <div id="hitAreas"></div>
 
   <!-- JavaScript at the bottom for fast page loading -->
   <script src="js/libs/es5-shim.js"></script>

@@ -274,12 +274,23 @@ body {
     padding-top: 40px;
 }
 
-#viewport {
+#viewport, #hitAreas {
     width: 800px;
     height: 600px;
     margin: 0 0 0 45px;
+}
+
+#viewport {
     position: relative;
     z-index: 8;
+}
+
+#hitAreas{
+    position: absolute;
+    top: 40px;
+    left: 0;
+    background: none;
+    z-index: 1001;
 }
 
 .navbar-fixed-top .navbar-inner .container {

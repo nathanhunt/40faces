@@ -1,7 +1,7 @@
 /* Author: Will Shown & Vail Gold */
 
 /* LOGO PUTTER
- *  puts the logo. */
+ * puts the logo. */
 (function(window, $, Raphael, _){
 
   var paper = Raphael('cinch-logo', 235, 22);
@@ -551,6 +551,67 @@
         });
       });
 
+      //SWITCHING TRACKS:
+      (function(window, $, Raphael, interpreter){
+
+        var paper = Raphael('hitAreas',800,600);
+        var circleAttrs = {
+          cx:    [294.005, 394.306, 496.028, 596.329,
+            193.482, 293.783, 395.506, 495.807, 595.84,  696.141,
+            143.977, 244.277,     346, 444.301, 544.334, 645.635, 746.802,
+            93.115, 193.416, 295.139, 395.439, 494.473, 594.773, 696.496, 796.797,
+            92.971, 193.271, 294.994, 395.295, 494.328, 594.629, 696.352, 796.652,
+            143.255, 244.556, 346.278, 444.579, 544.612, 645.913, 747.08],
+
+          cy:    [ 90.221,  90.221,  90.221,  90.221,
+            189.901, 189.901, 189.901, 189.901, 189.901, 189.901,
+            291.184, 291.184, 291.184, 291.184, 291.184, 291.184, 291.184,
+            391.505, 391.505, 391.505, 391.505, 391.505, 391.505, 391.505, 391.505,
+            490.827, 490.827, 490.827, 490.827, 490.827, 490.827, 490.827, 490.827,
+            589.289, 589.289, 589.289, 589.289, 589.289, 589.289, 589.289],
+
+          track: [39, 36, 2, 32,
+            27, 4, 29, 10, 14, 5,
+            37, 16, 28, 35, 34, 18, 11,
+            9, 15, 26, 7, 8, 22, 1, 33,
+            19, 6, 38, 17, 3, 40, 25, 13,
+            24, 30, 23, 20, 12, 31, 21]
+        };
+
+        var offset = {
+          x: -45.541,
+          y: -42.119
+        };
+
+        var radius = 48.661, h;
+
+        for(h=0;h<circleAttrs.cx.length;h+=1){
+
+          var c = paper.add([{
+            type: 'circle',
+            cx: circleAttrs.cx[h] + offset.x,
+            cy: circleAttrs.cy[h] + offset.y,
+            r: radius,
+            fill: '#f00',
+            'stroke-opacity': 0,
+            opacity: 0
+          }])[0];
+
+          c.data('track', circleAttrs.track[h]);
+
+          c.click(function(){
+            interpreter.gen({
+              name: 'toSpecific',
+              data: {
+                track: this.data('track')
+              }
+            });
+          });
+
+        }
+
+      }(window, window.jQuery, window.Raphael, interpreter));
+
     });
   });
 
@@ -599,15 +660,18 @@
       var
         videoReady = $.Deferred(function(dfd){
           $vid.on('canplaythrough', function(){
+            console.log('Video ready!');
             dfd.resolve();
           });
         }).promise(),
         mainAudReady = $.Deferred(function(dfd){
           $aud.on('canplaythrough', function(){
+            console.log('Audio ready!');
             dfd.resolve();
           });
         }).promise();
       $.when(videoReady, mainAudReady).done(function(){
+        console.log('Media ready!');
         $body.trigger('media:complete',[self]);
       });
 
@@ -649,11 +713,14 @@
       function loadTrack(track){
         if(self.aud.canPlayType('audio/mp4')){
           self.aud.setAttribute('src','audio/' + zeroPad(track, 2) + '.m4a');
+          self.aud.setAttribute('type', 'audio/mp4');
         }else
         if(self.aud.canPlayType('audio/ogg')){
           self.aud.setAttribute('src','audio/' + zeroPad(track, 2) + '.ogg');
+          self.aud.setAttribute('type', 'audio/ogg');
         }else{
           self.aud.setAttribute('src','audio/' + zeroPad(track, 2) + '.mp3');
+          self.aud.setAttribute('type', 'audio/mpeg');
         }
         self.aud.load();
       }
