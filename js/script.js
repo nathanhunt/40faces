@@ -393,8 +393,8 @@
 
           var mouseOutCallback = function() {
             var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
-            if(tempBubble.attrs.r === 50) {
-              tempBubble.attr('opacity', .6);
+            if(tempBubble.attrs.r === 50 && (typeof(self['animateInProgress']) === 'undefined' || self['animateInProgress'] === false)) {
+              tempBubble.attr('opacity', defaultOpacity);
             }
           };
 
@@ -408,15 +408,20 @@
                 cx: 1310,
                 cy: 1575,
                 r: 275,
-                opacity: .8
+                opacity: hoverOpacity
               }, duration);
 
               clickedBubble.textObjects.link.animate({'fill-opacity': 0}, 100);
               clickedBubble.textObjects.text.animate({'fill-opacity': 1}, 800, '<>', function() {
                 self['animateInProgress'] = false;
+                for(var j=0; self.aboutBubbles[j]; j++) {
+                  if(self.aboutBubbles[j].attrs['fill-opacity'] < defaultOpacity) {
+                    self.aboutBubbles[j].attr({'fill-opacity': defaultOpacity});
+                  }
+                }
               });
 
-              var defaultParams = {r: 50, opacity: .6};
+              var defaultParams = {r: 50, opacity: defaultOpacity};
               var viewParams = {
                 'cinch': {cx: 1060, cy: 1765},
                 'course': {cx: 1010, cy: 1670},
@@ -546,9 +551,8 @@
             'fill': '#ffffff',
             'font-family': 'Arial, sans',
             'font-size': 32,
-            'fill-opacity': 0,
-            'width': 275
-          }).rotate(-180);
+            'fill-opacity': 0
+          });
           textSet.push(title);
 
           var subtitle = paper.text(1460, 1715, aboutCopy[b.code].subtitle).attr({
@@ -557,9 +561,8 @@
             'fill': '#ffffff',
             'font-family': 'Arial, sans',
             'font-size': 26,
-            'fill-opacity': 0,
-            'width': 275
-          }).rotate(-180);
+            'fill-opacity': 0
+          });
           textSet.push(subtitle);
 
           var textLines = aboutCopy[b.code].text.split('\n');
@@ -571,21 +574,17 @@
                 'fill': '#ffffff',
                 'font-family': 'Arial, sans',
                 'font-size': 14,
-                'fill-opacity': 0,
-                'width': 275,
-                'height': 20
-              }).rotate(-180)
+                'fill-opacity': 0
+              })
             );
           }
 
-          // Add reference to bubble object to text objects for events
+          textSet.rotate(-180);
           textSet['bubbleObject'] = b;
-
           b['textObjects'] = {
             link: link,
             text: textSet
           };
-
           self.aboutBubbles.push(b);
         }
 
@@ -638,7 +637,6 @@
         }
 
         b.mainPos = finalAttrs;
-
         b.animate(a.delay(delta * i));
       }
 
