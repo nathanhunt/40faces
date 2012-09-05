@@ -34,13 +34,13 @@
 
   <!-- Mobile viewport optimized: h5bp.com/viewport -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <meta name="HandheldFriendly" content="true" />
 
   <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
 
   <link type='text/css' rel="stylesheet" href="css/bootstrap.css" />
-  <link type="text/css" rel="stylesheet" href="css/style.css" />
+  <link type='text/css' rel="stylesheet" href="css/style.css" />
 
   <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
 
@@ -64,29 +64,28 @@
   <script type='text/javascript'>window.jQuery || document.write('<script type="text/javascript" src="js/libs/jquery-1.8.0.js"><\/script>')</script>
   <script type="text/javascript" src="js/libs/underscore.js"></script>
   <script type="text/javascript" src="js/libs/raphael.js"></script>
-  <script type="text/javascript" src="js/libs/raphael.free_transform.js"></script>
   <script type="text/javascript" src="js/plugins.js"></script>
 
   <script type='text/javascript'>
     var isMobile = {
       Android: function() {
-        return navigator.userAgent.match(/Android/i) ? true : false;
+        return navigator.userAgent.match(/Android/i) !== null;
       },
       BlackBerry: function() {
-        return navigator.userAgent.match(/BlackBerry/i) ? true : false;
+        return navigator.userAgent.match(/BlackBerry/i) !== null;
       },
       iOS: function() {
-        return navigator.userAgent.match(/iPhone|iPad|iPod/i) ? true : false;
+        return navigator.userAgent.match(/iPhone|iPad|iPod/i) !== null;
       },
       Windows: function() {
-        return navigator.userAgent.match(/IEMobile/i) ? true : false;
+        return navigator.userAgent.match(/IEMobile/i) !== null;
       },
       any: function() {
         return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Windows());
       }
     };
     jQuery(function($) {
-      if(!isMobile.any()) {
+      if(!isMobile.any() && Math.max(window.screen.width, window.screen.height) > 1024) {
         var videoHTML = '' +
           '<canvas class="faces"></canvas>' +
           '<video width="800" height="600" class="faces" id="facesVideo" loop="loop" preload="preload">' +
@@ -114,7 +113,7 @@
           overflow: 'hidden',
           'padding-top': 40
         });
-        $('#app').html('' +
+        $('#app').html(
           '<div class="standard fixed-top-bar">' +
             '<a id="cinch-logo"></a>' +
             '<a href="#" class="volume-icon-link on">' +
@@ -130,7 +129,7 @@
             '</ul>' +
           '</div>' +
           '<div class="standard fixed-bottom-bar">' +
-            '<a href="http://www.mcgraw-hill.com/site/tools/terms-of-use" target="_blank">Terms of User</a>' +
+            '<a href="http://www.mcgraw-hill.com/site/tools/terms-of-use" target="_blank">Terms of Use</a>' +
             '<span>|</span>' +
             '<a href="https://www.mheonline.com/pages/display/privacynotice_view" target="_blank">Privacy Notice</a>' +
             '<span>|</span>' +
@@ -142,8 +141,9 @@
           '</div>' +
           '<div id="vector-content" class="standard"></div>'
         );
-        $(document).append('' +
-            '<script type="text/javascript" src="js/libs/scion.js"><\/script>' +
+        $(document).append(
+          '<script type="text/javascript" src="js/libs/scion.js"><\/script>' +
+            '<script type="text/javascript" src="js/libs/raphael.free_transform.js"><\/script>' +
             '<script type="text/javascript" src="js/script.js"><\/script>'
         );
       } else {

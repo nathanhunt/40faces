@@ -3,6 +3,7 @@
 (function(window, $, Raphael, _) {
 
   var MobileSite = function () {
+
     var self = this;
 
     this.state = 'main';
@@ -13,16 +14,27 @@
         padding: 0,
         margin: 0
       });
-      $('#app').append('' +
-        '<div class="mobile-fixed-top-bar">' +
-          '<a id="mobile-cinch-logo"></a>' +
+      $('#app').append(
+        '<div id="navigation-bubbles">' +
+          '<a href="#" class="about"><span>About CINCH</span></a>' +
+          '<a href="#" class="contact"><span>Contact</span></a>' +
+          '<a href="#" class="main"><span>40 Faces</span></a>' +
         '</div>' +
-        '<div id="mobile-vector-content" class="mobile"></div>'
+        '<div class="mobile-fixed-top-bar"><a id="mobile-cinch-logo"></a></div>' +
+        '<div id="mobile-vector-content"></div>' +
+        '<div id="mobile-footer">' +
+          '<a href="http://www.mcgraw-hill.com/site/tools/terms-of-use" target="_blank">Terms</a>' +
+          '<span>|</span>' +
+          '<a href="https://www.mheonline.com/pages/display/privacynotice_view" target="_blank">Privacy</a>' +
+          '<span>|</span>' +
+          '<a href="https://www.mheonline.com/" target="_blank">MHEOnline</a>' +
+        '</div>'
       );
 
       this.placeLogo();
 
       this.paper = Raphael('mobile-vector-content', 2000, 4000);
+      this.paper.canvas.style.zIndex = '100';
 
       this.initNavigation();
       this.initMainPage();
@@ -32,92 +44,22 @@
     };
 
     this.initNavigation = function () {
-      var attrs = {
-        'main': {
-          'bubble': {
-            cx: 5, cy: -10, r: 100, fill: '0-rgb(0,151,219)-rgb(0,100,178)', opacity: 1,
-            glow: { opacity: .7, x: -2, y: 0 }
-          },
-          'text': {
-            x: 10, y: 50, anchor: 'start', text: '40 Faces'
-          }
-        },
-        'about': {
-          'bubble': {
-            cx: 155, cy: -25, r: 100, fill: '0-rgb(0,151,219)-rgb(0,100,178)', opacity: .9,
-            glow: { opacity: .6, x: -2, y: -2 }
-          },
-          'text': {
-            x: 150, y: 50, anchor: 'middle', text: 'About CINCH'
-          }
-        },
-        'contact': {
-          'bubble': {
-            cx: 290, cy: -15, r: 100, fill: '0-rgb(0,151,219)-rgb(0,100,178)', opacity: .9,
-            glow: { opacity: .5, x: -2, y: -2 }
-          },
-          'text': {
-            x: 290, y: 55, anchor: 'end', text: 'Contact'
-          }
-        }
-      };
+      $('#navigation-bubbles a').on('click', function (event) {
+        event.preventDefault();
+        var toState = $.trim(this.className.replace('active', ''));
+        self.transition(toState);
+        $('#navigation-bubbles a').removeClass('active');
+        $('#navigation-bubbles a.'+toState).addClass('active');
 
-      var paper = this.paper;
-      var bubbleSet = paper.set();
-      var objectSet = paper.set();
-      for(var attr in attrs) {
-        if(attrs.hasOwnProperty(attr)) {
-          var b = attrs[attr].bubble;
-          var t = attrs[attr].text;
-          var g = b.glow;
-          var bubble = paper.circle(b.cx, b.cy, b.r).attr({
-            'stroke-opacity': 0,
-            fill: b.fill,
-            opacity:b.opacity,
-            cursor: 'pointer'
-          }).toBack();
+      }).on('touchstart', function () {
+          event.preventDefault();
+          $(this).on('touchend', function () {
+          $(this).trigger('click').off('touchend touchmove');
 
-          var clone = bubble.clone().toBack();
-          objectSet.push(clone);
-
-          var glow = clone.glow({opacity:g.opacity}).translate(g.x, g.y).toBack();
-          objectSet.push(glow);
-
-          bubble['state'] = attr;
-          this.bindTapCallback(bubble, function() {
-            self.transition(this['state']);
+          }).on('touchmove', function () {
+            $(this).off('touchend touchmove');
           });
-
-          bubbleSet.push(bubble);
-          objectSet.push(bubble);
-
-          var text = paper.text(t.x, t.y, t.text).attr({
-            'text-anchor':t.anchor,
-            'stroke-opacity': 0,
-            'font-family': 'Arial, sans',
-            'fill': '#ffffff',
-            'font-size': 15,
-            'fill-opacity': 1,
-            'cursor': 'pointer'
-          });
-          text['state'] = attr;
-          this.bindTapCallback(text, function() {
-            self.transition(this['state']);
-          });
-          bubble['textObject'] = text;
-          objectSet.push(text);
-        }
-      }
-
-      this.navBubbleSet = bubbleSet;
-      this.navObjectSet = objectSet;
-
-      var navFT = paper.freeTransform(this.navObjectSet);
-      navFT.hideHandles();
-      navFT.opts.animate = false;
-      navFT.attrs.translate.x = ($(window).width() - 320) / 2;
-      navFT.apply();
-      this.navFT = navFT;
+      });
     };
 
     this.bindTapCallback = function (obj, cb) {
@@ -171,8 +113,6 @@
         this.bindTapCallback(image, self.mainBubbleClickCallback);
       }
 
-      var windowWidth = $(window).width();
-      var margin = (windowWidth - 320) / 2;
       var ctaBubble = paper.circle(160, 230, 130).attr({
         fill: '0-rgb(0,151,219)-rgb(0,100,178)',
         'stroke-opacity': 0,
@@ -180,12 +120,12 @@
         cursor: 'pointer'
       }).toFront();
 
-      var ctaText = paper.text(160, 190, 'Call to action here.').attr({
+      var ctaText = paper.text(160, 215, "See how teachers,\nadministrators and\nparents are using\nCinch technology\ntoday.").attr({
         'text-anchor': 'middle',
         'stroke-opacity': 0,
         'font-family': 'Arial, sans',
         'fill': '#ffffff',
-        'font-size': 26,
+        'font-size': 20,
         cursor: 'pointer'
       }).toFront();
 
@@ -212,57 +152,44 @@
       });
 
       objectSet.push(ctaImage, ctaText, ctaBubble);
-
       this.mainObjectSet = objectSet;
 
-      var mainFT = paper.freeTransform(this.mainObjectSet);
-      mainFT.hideHandles();
-      mainFT.opts.animate = false;
-      mainFT.attrs.translate.x = ($(window).width() - 320) / 2;
-      mainFT.apply();
-      this.mainFT = mainFT;
+      $('#mobile-vector-content').css('height', 3700);
+      $('#navigation-bubbles a.main').addClass('active');
     };
 
     this.getMainBubblePositionData = function () {
       var num = function(x) { return x < 10 ? '0'+x : x+''; };
-      var x, y1, y2, y3;
       var data = [];
       var top = 100;
       for(var i=1; i < 41; i++) {
-        if(Math.random() > .5) {
-          // row of 2 images
-          x = 20 + Math.floor(Math.random()*50);
-          y1 = top;
-          data.push({name:num(i), x:x, y:y1});
-
-          if(i < 40) {
-            i++;
-            x = 170 + Math.floor(Math.random()*50);
-            y2 = top;
-            data.push({name:num(i), x:x, y:y2});
-          }
-          top = Math.max(y1, y2) + 100 + Math.floor(Math.random()*20);
-        } else {
-          // row of 3 images
-          x = 5 + Math.floor(Math.random()*50);
-          y1 = top + Math.floor(Math.random()*20);
-          data.push({name:num(i), x:x, y:y1});
-
-          if(i < 40) {
-            i++;
-            x = 165 + Math.floor(Math.random()*50);
-            y2 = top + Math.floor(Math.random()*20);
-            data.push({name:num(i), x:x, y:y2});
-          }
-
-          if(i < 40) {
-            i++;
-            x = 85 + Math.floor(Math.random()*50);
-            y3 = top + 100 + Math.floor(Math.random()*20);
-            data.push({name:num(i), x:x, y:y3});
-          }
-          top = Math.max(y1, y2, y3) + 100 + Math.floor(Math.random()*20);
+        data.push({name:num(i), x:10, y:top});
+        i++;
+        if(i < 41) {
+          top += 100;
+          data.push({name:num(i), x:60, y:top});
         }
+        i++;
+        if(i < 41) {
+          top += 65;
+          data.push({name:num(i), x:155, y:top});
+        }
+        i++;
+        if(i < 41) {
+          top += 100;
+          data.push({name:num(i), x:210, y:top});
+        }
+        i++;
+        if(i < 41) {
+          top += 100;
+          data.push({name:num(i), x:155, y:top});
+        }
+        i++;
+        if(i < 41) {
+          top += 65;
+          data.push({name:num(i), x:60, y:top});
+        }
+        top += 100;
       }
       return data;
     };
@@ -299,9 +226,12 @@
           }
         }
 
+        self.mainObjectSet.push(bub);
+        $(window).trigger('resize');
+
         bub.animate({
           r: 150,
-          cx: $(window).width() / 2 - self.mainFT.attrs.translate.x,
+          cx: 160,
           cy: Math.max(bub.attrs.cy, 200),
           opacity: .6
         }, 325, '<>', function() {
@@ -313,7 +243,7 @@
           var textObjects = paper.set();
           // Create text elements with Raphael and add to set
           for(var j=0; textLines[j]; j++) {
-            var x = bub.attrs.cx - bub.attrs.r * .7 + self.mainFT.attrs.translate.x;
+            var x = bub.attrs.cx - bub.attrs.r * .7;
             var y = bub.attrs.cy - bub.attrs.r / 2 + j * 20;
             var t = paper.text(x, y, textLines[j]).attr({
               'text-anchor': 'start',
@@ -324,12 +254,13 @@
               'fill-opacity': 0
             });
             textObjects.push(t);
+            self.mainObjectSet.push(t);
           }
 
           textObjects.animate({'fill-opacity': 1}, 500);
 
           // circle-close-x.png is 46x46 pixels
-          var x = bub.attrs.cx - 23 + self.mainFT.attrs.translate.x;
+          var x = bub.attrs.cx - 23;
           var y = bub.attrs.cy+bub.attrs.r - 51;
           var closeImage = paper.image('img/circle-close-x.png', x, y, 46, 46).attr({
             opacity: 0,
@@ -338,6 +269,9 @@
           }).toFront().animate({opacity: 1}, 500);
           closeImage['textObjects'] = textObjects;
           closeImage['bubbleObject'] = bub;
+
+          self.mainObjectSet.push(closeImage);
+          $(window).trigger('resize');
 
           bubImage['textObjects'] = textObjects;
           bubImage['closeImage'] = closeImage;
@@ -431,13 +365,6 @@
 
       this.aboutObjectSet = objectSet;
       this.aboutPopup = null;
-
-      var aboutFT = paper.freeTransform(this.aboutObjectSet);
-      aboutFT.hideHandles();
-      aboutFT.opts.animate = false;
-      aboutFT.attrs.translate.x = $(window).width();
-      aboutFT.apply();
-      this.aboutFT = aboutFT;
     };
 
     this.aboutBubbleClickCallback = function () {
@@ -461,7 +388,7 @@
 
       var objectSet = paper.set();
 
-      var textTop = 65;
+      var textTop = 130;
 
       var title = paper.text(margin + 30, textTop, self.aboutCopy[bub.state].title).attr({
         'text-anchor': 'start',
@@ -504,7 +431,7 @@
         }
       }
 
-      var topClose = paper.image('img/circle-close-x.png', margin + 320 - 56, 40, 46, 46).attr({
+      var topClose = paper.image('img/circle-close-x.png', margin + 320 - 56, 100, 46, 46).attr({
         cursor: 'pointer',
         opacity: 0
       }).animate({opacity: 1}, 1000);
@@ -624,46 +551,39 @@
       }
 
       this.contactObjectSet = objectSet;
-
-      var contactFT = paper.freeTransform(this.contactObjectSet);
-      contactFT.hideHandles();
-      contactFT.opts.animate = false;
-      contactFT.attrs.translate.x = $(window).width();
-      contactFT.apply();
-      this.contactFT = contactFT;
     };
 
     this.contactBubbleClickCallback = function () {
-      var text = typeof(this['textObject']) !== 'undefined' ? this['textObject'] : this;
-      window.open(text.href, '_blank');
+      if(typeof(this['textObject']) !== 'undefined') return;
+      var text = this;
+      window.open(text.href, 'newWindow');
     };
 
     this.adjustViewingArea = function () {
       // This function is a callback for $(window).resize()
       if(self.transitioning === true) return;
-      var windowWidth = $(window).width();
       var validStates = ['main', 'about', 'contact'];
       var currentState = self.state;
 
-      var navFT = self.navFT;
-      var tempNavOpts = navFT.opts;
-      navFT.opts.animate = false;
-      navFT.attrs.translate.x = (windowWidth - 320) / 2;
-      navFT.apply();
-      navFT.opts = tempNavOpts;
+      var windowWidth = $(window).width();
+      var margin = (windowWidth - 320) / 2;
+
+      $('#navigation-bubbles').find('a').each(function () {
+        var $this = $(this);
+        var offsetLeft = $this.offset().left;
+        if(typeof($this.data('left')) === 'undefined') {
+          $this.data('left', offsetLeft);
+        }
+        $this.css('left', margin+$this.data('left'));
+      });
 
       for(var i=0; validStates[i]; i++) {
-        var stateFT = self[validStates[i]+'FT'];
-        var tempOpts = stateFT.opts;
-        stateFT.opts.animate = false;
-
+        var stateObjectSet = self[validStates[i]+'ObjectSet'];
         if(validStates[i] === currentState) {
-          stateFT.attrs.translate.x = (windowWidth - 320) / 2;
+          stateObjectSet.transform('T'+margin+',0');
         } else {
-          stateFT.attrs.translate.x = windowWidth;
+          stateObjectSet.transform('T'+windowWidth+',0');
         }
-        stateFT.apply();
-        stateFT.opts = tempOpts;
       }
     };
 
@@ -678,43 +598,22 @@
 
       this.transitioning = true;
 
-      for(var i=0; this.navBubbleSet[i]; i++) {
-        if(this.navBubbleSet[i]['state'] === toState) {
-          this.navBubbleSet[i].toFront();
-          this.navBubbleSet[i]['textObject'].toFront();
-        }
-      }
-
-      var fromFT = this[state+'FT'];
-      var toFT = this[toState+'FT'];
+      var fromSet = this[state+'ObjectSet'];
+      var toSet = this[toState+'ObjectSet'];
 
       var windowWidth = $(window).width();
       var margin = (windowWidth-320) / 2;
-      if(validStates.indexOf(state) < validStates.indexOf(toState)) {
-        fromFT.attrs.translate.x = -windowWidth;
-        toFT.attrs.translate.x = windowWidth;
-        toFT.apply();
-        toFT.attrs.translate.x = margin;
-      } else {
-        fromFT.attrs.translate.x = windowWidth;
-        toFT.attrs.translate.x = -windowWidth;
-        toFT.apply();
-        toFT.attrs.translate.x = margin;
-      }
-
       var animationDuration = 500;
 
-      fromFT.opts.animate = {
-        delay: animationDuration,
-        easing: '<>'
-      };
-      fromFT.apply();
+      if(validStates.indexOf(state) < validStates.indexOf(toState)) {
+        fromSet.animate({transform: 'T'+(-windowWidth)+',0'}, animationDuration);
+        toSet.transform('T'+(windowWidth)+',0');
+      } else {
+        fromSet.animate({transform: 'T'+(windowWidth)+',0'}, animationDuration);
+        toSet.transform('T'+(-windowWidth)+',0');
+      }
 
-      toFT.opts.animate = {
-        delay: animationDuration,
-        easing: '<>'
-      };
-      toFT.apply();
+      toSet.animate({transform: 'T'+margin+',0'}, animationDuration);
 
       setTimeout((function () {
         self.state = toState;
@@ -722,10 +621,10 @@
         $(window).scrollTop(0);
         switch(toState) {
           case 'main':
-            $('#mobile-vector-content').css('height', 3000);
+            $('#mobile-vector-content').css('height', 3700);
             break;
           case 'about':
-            $('#mobile-vector-content').css('height', 650);
+            $('#mobile-vector-content').css('height', 1024);
             break;
           case 'contact':
             $('#mobile-vector-content').css('height', 500);
