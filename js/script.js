@@ -631,25 +631,9 @@
     if(canDoVideo){
 
       //VIDEO BUSINESS
-      var $canvas = $('canvas.faces').css({
-        'margin': '0 auto',
-        'display': 'block'
-      }), canvas = $canvas.get(0);
-
       var $vid = $('video.faces');
       this.video = $vid.get(0);
       this.video.$el = $vid;
-
-      fitInside($canvas, $container);
-      var context = canvas.getContext('2d');
-      var cw, ch;
-      $vid.off('play').on('play', function(){
-        draw(this,context,cw,ch);
-      });
-      $vid.off('canplay').on('canplay', function(){
-        canvas.width = cw = self.video.videoWidth;
-        canvas.height = ch = self.video.videoHeight;
-      });
 
       //AUDIO BUSINESS
       var $aud = $('#facesAudio');
@@ -729,7 +713,6 @@
 
       //VIDEO BUSINESS
       this.video = $f(0);
-      $('canvas').hide();
 
       //AUDIO BUSINESS
       this.mainAud = $f(1);
@@ -915,14 +898,6 @@
       $this.height(oH * s);
 
     });
-  }
-
-  var framerate = 20;
-
-  function draw(v,c,w,h) {
-    if(v.paused || v.ended) return false;
-    c.drawImage(v,0,0,w,h);
-    setTimeout(draw,framerate,v,c,w,h);
   }
 
 })(window, window.jQuery, window.Modernizr);
