@@ -715,70 +715,62 @@
       this.video = $f(0);
 
       //AUDIO BUSINESS
-      this.mainAud = $f(1);
-      this.currentAud = this.mainAud;
-
-      var b;
-      this.aud = [];
-      for(b=0;b<=40;b+=1){
-        this.aud[b] = $f(b+1);
-      }
+      this.aud = $f(1);
 
       //TRIGGERING COMPLETE AT THE RIGHT MOMENT
       var
         vReady = $.Deferred(function(dfd){
           self.video.getClip(0).onBufferFull(function(){
-            self.video.pause().seek(0);
             dfd.resolve();
-            self.video.getClip(0).onBufferFull(function(){});
           });
         }).promise(),
         mainAReady = $.Deferred(function(dfd){
-          self.mainAud.getClip(0).onBufferFull(function(){
-            self.mainAud.pause().seek(0);
+          self.aud.getClip(0).onBufferFull(function(){
             dfd.resolve();
-            self.mainAud.getClip(0).onBufferFull(function(){});
           });
         }).promise();
 
+      $.when(vReady).done(function(){
+        self.video.pause().seek(0);
+        console.log('Video ready!');
+      });
+
+      $.when(mainAReady).done(function(){
+        self.aud.pause().seek(0);
+        console.log('Audio ready!');
+      });
+
       $.when(vReady, mainAReady).done(function(){
+        console.log('Media ready!');
         $body.trigger('media:complete',[self]);
       });
 
       //LOAD STUFF
       this.video.play();
-      this.mainAud.play();
+      this.aud.play();
 
       //SET UP API
       this.play = function(){
         this.video.play();
-        this.currentAud.play();
+        this.aud.play();
       };
 
       this.pause = function(){
         this.video.pause();
-        this.currentAud.pause();
+        this.aud.pause();
       };
 
       this.stop = function(){
         this.video.stop();
-        this.currentAud.stop();
+        this.aud.stop();
       };
 
       this.seek = function(t){
         this.video.seek(t);
-        this.currentAud.seek(t);
+        this.aud.seek(t);
       };
 
       this.load = function(track){
-        this.stop();
-        this.currentAud.stopBuffering();
-        this.aud[track].getClip(0).onBufferFull(function(){
-          self.aud[track].pause().seek(0);
-          $body.trigger('audioLoaded',[self, track, self.aud[track]]);
-        });
-        this.aud[track].play();
-        this.currentAud = this.aud[track];
       };
 
     }
