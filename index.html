@@ -60,13 +60,15 @@
   <script type='text/javascript' src="js/libs/es5-shim.js"></script>
 
   <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
-  <script type='text/javascript' src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.js"></script>
+  <script type='text/javascript' src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
   <script type='text/javascript'>window.jQuery || document.write('<script type="text/javascript" src="js/libs/jquery-1.8.0.js"><\/script>')</script>
   <script type="text/javascript" src="js/libs/underscore.js"></script>
   <script type="text/javascript" src="js/libs/raphael.js"></script>
   <script type="text/javascript" src="js/plugins.js"></script>
+  <script type="text/javascript" src="js/mobile-script.js"></script>
 
   <script type='text/javascript'>
+
     var isMobile = {
       Android: function() {
         return navigator.userAgent.match(/Android/i) !== null;
@@ -84,7 +86,8 @@
         return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Windows());
       }
     };
-    jQuery(function($) {
+
+    function init() {
       if(!isMobile.any() && Math.max(window.screen.width, window.screen.height) > 1024) {
         var videoHTML = '' +
           '<canvas class="faces"></canvas>' +
@@ -109,10 +112,12 @@
               '<source src="audio/'+num+'.mp3" type="audio/mpeg" />' +
             '</audio>'
         }
+
         $('body').css({
           overflow: 'hidden',
           'padding-top': 40
         });
+
         $('#app').html(
           '<div class="standard fixed-top-bar">' +
             '<a id="cinch-logo"></a>' +
@@ -141,15 +146,22 @@
           '</div>' +
           '<div id="vector-content" class="standard"></div>'
         );
-        $(document).append(
+        $('body').append(
           '<script type="text/javascript" src="js/libs/scion.js"><\/script>' +
             '<script type="text/javascript" src="js/libs/raphael.free_transform.js"><\/script>' +
             '<script type="text/javascript" src="js/script.js"><\/script>'
         );
       } else {
-        $(document).append('<script type="text/javascript" src="js/mobile-script.js"><\/script>');
+        window.MobileSite.initApp();
       }
-    });
+    }
+
+    if(isMobile.Android()) {
+      init();
+    } else {
+      $(document).ready(init);
+    }
+
   </script>
 
   <!-- Get rid of this and merge + minify the above plugins for production. -->

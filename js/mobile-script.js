@@ -11,11 +11,13 @@
     this.mainPageHeight = 3800;
 
     this.initApp = function () {
+
       $('body').css({
         padding: 0,
         margin: 0
       });
-      $('#app').append(
+
+      $('#app').html(
         '<div id="navigation-bubbles">' +
           '<a href="#" class="about"><span>About CINCH</span></a>' +
           '<a href="#" class="contact"><span>Contact</span></a>' +
@@ -771,9 +773,6 @@
 
   };
 
-  var mobile = new MobileSite();
-  mobile.initApp();
-
-  window.MobileSite = mobile;
+  window.MobileSite = new MobileSite();
 
 })(window, jQuery, Raphael, _);
