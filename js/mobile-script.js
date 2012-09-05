@@ -8,6 +8,7 @@
 
     this.state = 'main';
     this.transitioning = false;
+    this.mainPageHeight = 3800;
 
     this.initApp = function () {
       $('body').css({
@@ -154,7 +155,7 @@
       objectSet.push(ctaImage, ctaText, ctaBubble);
       this.mainObjectSet = objectSet;
 
-      $('#mobile-vector-content').css('height', 3700);
+      $('#mobile-vector-content').css('height', this.mainPageHeight);
       $('#navigation-bubbles a.main').addClass('active');
     };
 
@@ -244,7 +245,7 @@
           // Create text elements with Raphael and add to set
           for(var j=0; textLines[j]; j++) {
             var x = bub.attrs.cx - bub.attrs.r * .7;
-            var y = bub.attrs.cy - bub.attrs.r / 2 + j * 20;
+            var y = bub.attrs.cy - bub.attrs.r / 2 - 5 + j * 20;
             var t = paper.text(x, y, textLines[j]).attr({
               'text-anchor': 'start',
               'stroke-opacity': 0,
@@ -621,7 +622,7 @@
         $(window).scrollTop(0);
         switch(toState) {
           case 'main':
-            $('#mobile-vector-content').css('height', 3700);
+            $('#mobile-vector-content').css('height', self.mainPageHeight);
             break;
           case 'about':
             $('#mobile-vector-content').css('height', 1024);
@@ -672,46 +673,46 @@
       });
     };
 
-    this.callOuts = ["Quality digital content for safe student use. Hands-on activities and digital assets complement classroom learning. Designed for group and independent assignments. No pop-ups or ads.",
-      "Complete integration makes the best use of my time. Dynamic and editable yearly planning tool. Instantly pull reports of student comprehension of standards.",
-      "Dynamic lessons with a few classroom devices. Manage the classroom from a single point: present activities using your laptop and IWB. Online labs for seamless collaboration and on-demand printing.",
-      "21st century skill-building. Multi-strategy learning options and assessments available online. Web 2.0 tools prepare students for college and online standardized tests.",
-      "Interactives features get students engaged. Interactive iPad tools for dynamic explanations and learning. Videos, tutorials, virtual labs, and games bring content to life.",
-      "Online personal tutors build confidence. Each lesson has videos and guidance for continuous access to concepts. Games and animation for hands-on learning beyond the classroom.",
-      "Integrate coursework with social media. Students use social networking features to discuss lessons and homework. Monitor the conversation to keep tabs on where students struggle.",
-      "Real-world interactive experiences. Online assessments with simple auto-grade online assessments. Diverse, multimedia homework options for matching learning style to student need.",
-      "Out-of-class support for a flipped classroom. Reading and multimedia assets for at home learning. Collaborative lessons for classroom support flipped learning model.",
-      "Seamlessly blend digital and print. Customize note-taking guides for your program. Print drills and homeworks on demand.",
-      "Real-time progress reports. Teachers and administrators can assess student progress. Seamless integration for administrators.",
-      "Instant Assessment, Remediation, and Enrichment. Instantly assess student learning levels. Access to materials from all grades. Reach content from other grades for reteach and challenge exercises.",
-      "Optimized lessons for ELL students. Emphasis on vocabulary development builds language and skill comprehension. Hands-on, animated supplements provide extra support for language challenge.",
-      "Virtual labs for flawless experiments. Visual and experiential learning despite budgets. Online access to labs for absent students.",
-      "Interactive tools backed by real lessons. Virtual labs, animations, and tutorials keep students engaged. Save all videos and materials you’ve collected in the planner.",
-      "Curated lessons with creative teaching styles. Develop unique programs. Import and house additional material onto CINCH platform.",
-      "Streamline accountability. Pull instant assessments of student progress. Both teachers and administrators can track classroom progress.",
-      "Online, Customized Assessments. Customize assessment for individual students. No more copying: assessments assigned and completed online. Prepares students for new online state assessments.",
-      "Activities that capture student attention. Tools for making lessons more dynamic. Students have fun with wideos, virtual labs, social networking tools.",
-      "Collaboratively plan the week from the CINCH app. Planner tool makes it easy to follow scope and sequence. Plan as a group and tweak day-by-day using the CINCH app.",
-      "Universal access. On-demand printing and smartphone access ensures all students can access homework. Tailor homework help to specific student needs.",
-      "Transforming iPads into classroom tools. Cloud-based system allows you to access, save, and resume work from multiple devices. Tools and resources optimized for iPad integration.",
-      "Teach, assign, assess: all in one place. Cloud-based system allows access from any device. Tailor lessons to your teaching style.",
-      "Customizable IWB activities. Create original, dynamic IWB presentations, preloaded with slides that you can customize. Keep IWB presentations and any digital content in one place.",
-      "Easy to adopt CCSS. Browse, search, and assess student comprehension by standard. Align standard reports with lessons for easy CCSS integration.",
-      "Build a custom scope and sequence. Digitally distribute your curriculum and order custom printing of textbooks and materials. Create unique curriculum to match my curriculum map.",
-      "Easy to use and customize. Easy to navigate and simple customization tool makes it easy to add additional content. Preloaded with resources for standard scope and sequences.",
-      "Cloud-based software works on any device. Works on any device, providing flexibility to update technology as needed. Perfect for adapting to changing classroom technology.",
-      "Makes it easy to align curriculum with CCSS. Align curriculum map with standards and assess students understanding of concepts. Multiple learning models makes it accessible for any student.",
-      "Optimal guide for new teachers. Comes with assets and resources, organized by lesson and standard. One-stop-shop for plans, presentations, and supplemental resources.",
-      "Teach in the order you choose. Collect all your teaching materials in one place: Rearrange content for your teaching style. Make material instantly available to students with a few clicks.",
-      "Easy for parents to stay connected to classroom. Parents can access student progress reports online. Provides refresher material and tutorials online for interested parents.",
-      "The most up-to-date curriculum for your budget. Modern digital platforms and Access to 6-12 curriculum for efficient use of budgets. Universal device optimization for efficient technology spending.",
-      "Works seamlessly on all devices. Cloud-based software works on any device. Safe website for students to surf at school or at home.",
-      "The most current content. Online platform with current content that’s researched, proven, teacher-approved. Universal device optimization for efficient technology spending.",
-      "Customize to your teaching style. Create new or edit existing interactive lesson presentations. Plan, leave notes and assign homework all from one place.",
-      "Cost Effective. Includes supplementary materials for above and below learners. Monitor student progress and administer extra support all from one place.",
-      "Customized Printing. Print workbooks for students with limited technology access. Design unique note-taking pages to help guide students through lessons.",
-      "All your files organized in one place. Easy prep: plan, teach, assess, remediate all from the online platform. Browse multimedia assets, worksheets, and activities by standard or lesson.",
-      "Easy to integrate technology into the classroom. Huge library of engagement resources. Bring labs and lessons online with follow up exercises."];
+    this.callOuts = ["I love how CINCH provides quality digital content that's safe for students, no pop-ups or ads. It has hands-on activities and digital assets for group and independent assignments that complement classroom learning.",
+      "The complete integration of teaching tools makes the best use of my time. I can instantly pull reports of student comprehension of standards and plan or edit my lessons from the same place.",
+      "I can manage the classroom from a single point, making for dynamic lessons with just my laptop and IWB. I can even print on-demand! My students can also use the online labs for seamless collaboration.",
+      "I can use the online assessments to help me line up student needs with the multi-strategy learning options and tools. What's more, the Web 2.0 tools help me prepare students for college and online standardized tests.",
+      "I love how the interactive features get students engaged. There are iPad tools for dynamic explanations and learning. The videos, tutorials, virtual labs, and games bring content to life.",
+      "The online personal tutors really help build confidence for my students. Each lesson comes with videos and guidance, games and animation for hands-on learning beyond the classroom.",
+      "I love that CINCH integrates coursework with social media. My students use social networking features to discuss lessons and homework, while I monitor the conversation to keep tabs on where they struggle.",
+      "The diverse, multimedia homework options help me matching learning style to student need with real-world interactive experiences. What's even better is the simple auto-grade function for online assessments. ",
+      "I love the out-of-class support for my flipped classroom. The reading and multimedia assets are great for at home learning, while the collaborative lessons really support the in-class lessons.",
+      "It's so easy to seamlessly blend digital and print learning. I customize note-taking guides for my program and print drills and homework on demand.",
+      "The real-time progress reports make it so easy to assess student progress. And it's integrated for administrators, too.",
+      "I'm able to instantly assess student learning levels, and remediate by pulling materials from other grades levels. I can also use the content from other grades for reteach and challenge exercises.",
+      "The optimized lessons for ELL students make my job so much easier. The emphasis on vocabulary development builds language and skill comprehension. Plus, the hands-on, animated supplements provide extra support for language challenge.",
+      "Virtual labs make for flawless experiments. I love that I can bring visual and experiential learning to the classroom despite my tight budget, and how online labs means access absent students, too.",
+      "I really like how the interactive tools are backed by real lessons, because it's the virtual labs, animations, and tutorials that keep students engaged. I can also save all videos and materials I’ve collected in the planner.",
+      "I love that I can curate my lessons to match my creative teaching style. I can develop unique programs by importing additional material onto CINCH platform.",
+      "I can pull instant assessments of student progress. Both teachers and administrators can keep track of the classroom, which really helps streamline accountability.",
+      "The online assessment tool let's me customize assessments for individual students. I never worry about copying: assessments are assigned and completed online. And I'm preparing students for the new online state assessments.",
+      "I really appreciate how the activities capture student attention. There are great tools for making lessons more dynamic. Students have fun with the videos, virtual labs, social networking tools.",
+      "I love collaboratively planning the week from the CINCH app. The planner tool makes it easy to follow scope and sequence. We plan as a group then independently tweak day-by-day using the CINCH app.",
+      "On-demand printing and smartphone access reassures me that all my students can access the homework. I also love how I can tailor homework help to specific student needs.",
+      "CINCH has helped me transform our iPads into classroom tools. The cloud-based system allows me to access, save, and resume work from any device, plus all the tools and resources optimized for iPad integration.",
+      "I love being able to teach, assign, assess all from one place. Because it's cloud-based, I can access CINCH from from any device, which makes it easy for me to tailor lessons to my teaching style.",
+      "I really like using the customizable IWB activities. I can customize the preloaded with slides to create an original, dynamic IWB presentation. I save all my IWB presentations in the same place where I save all my digital content.",
+      "CINCH made it easy for me to adopt CCSS. I love how I can browse, search, and assess student comprehension by standard. I can even align standard reports with lessons for easy integration.",
+      "I was able easily build and distribute our district's scope and sequence. I can also order custom printing of textbooks and materials. It's really easy to create a unique curriculum to match my curriculum map.",
+      "CINCH is so easy for me to navigate. The simple customization tool makes it easy to add additional content, too. Plus I love how it's preloaded with resources for standard scope and sequences.",
+      "It's essential that the cloud-based software works on any device, because it gives me the flexibility to update technology as needed. It's really perfect for adapting to changing classroom technology.",
+      "Using CINCH makes it easy to align our curriculum map with CCSS and also assess students understanding of the standards. I'm always using the multiple learning models to make the lessons accessible for all of my students.",
+      "CINCH has been the optimal guide for me as a new teacher. It comes with assets and resources, organized by lesson and standard. It's been my one-stop-shop for plans, presentations, and supplemental resources.",
+      "I like teaching in an order I choose. I use CINCH to collect all my teaching materials in one place, and rearrange the content for my teaching style. I can also make those material available to my students with a few clicks.",
+      "I love how easy it is for parents to stay connected to classroom. I can access my son's progress reports online. The online refresher material and tutorials make it easy for me to help with homework, too.",
+      "CINCH gives me confidence that I'm getting the most up-to-date curriculum for my budget. It has modern digital platforms and access to 6-12 curriculum. Plus I feel that the universal device optimization is efficient technology spending.",
+      "I really appreciate how the cloud-based software works seamlessly on all devices. I also find it reassuring that I'm sending my students to a safe website for school or home.",
+      "I love knowing that we've adopted a platform that uses the most current content, that’s researched, proven, teacher-approved. It's an efficient use of my technology budget because it's optimized for every device.",
+      "I'm always creating new or editing existing interactive lesson presentations. I also love planning, leaving notes and assigning homework all from the same place.",
+      "CINCH has been really cost effective for our district. I really like that it includes supplementary materials for above and below learners, and that it comes with a system to monitor student progress and administer that extra support.",
+      "I use the customized printing all the time. I print workbooks for my students who have limited technology access. I also design unique note-taking pages to help guide my students through our lessons.",
+      "I love having all my files organized in one place. It makes for easy prep: plan, teach, assess, remediate all from the online platform. I really like being able to browse multimedia assets, worksheets, and activities by standard or lesson.",
+      "I always refer to the huge library of engagement resources to integrate technology into my classroom. I always try to bring our labs and lessons online with follow up exercises."];
 
     this.aboutCopy = {
       'cinch': {
