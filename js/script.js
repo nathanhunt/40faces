@@ -678,6 +678,8 @@
 
       interpreter.start();
 
+      window.interpreter = interpreter;
+
       interpreter.gen({name:"init",data:initData});
 
       function handleEvent(e){
@@ -685,6 +687,9 @@
         interpreter.gen({name : e.type,data: e});
       }
 
+      //connect all relevant event listeners:
+
+      //NAVIGATION:
       var duration = 1000;
       var navCallback = function(event) {
         event.preventDefault();
@@ -699,31 +704,100 @@
 
       $('#nav-link-list a').on('click', navCallback);
 
-      //connect all relevant event listeners
-      var video, audio, introFadeOut;
-      $('body').on('media:complete',function(e, v, a){
-        video = v;
-        audio = a;
-        checkIfReadyForPlay();
+      //LOADING MEDIA:
+      var media, introFadeOut,
+        mediaComplete = $.Deferred(function(dfd){
+          $body.off('media:complete').on('media:complete',function(e, m){
+            media = m;
+            dfd.resolve();
       });
-      $('body').on('bubbles:complete',function(e, i){
+        }).promise(),
+        bubblesComplete = $.Deferred(function(dfd){
+          $body.off('bubbles:complete').on('bubbles:complete',function(e, i){
         introFadeOut = i;
-        checkIfReadyForPlay();
+            dfd.resolve();
       });
-      function checkIfReadyForPlay(){
-        if(typeof video !== 'undefined' && typeof introFadeOut !== 'undefined'){
+        }).promise();
+      $.when(mediaComplete, bubblesComplete).done(function(){
           window.video = video;
           introFadeOut.call(this);
           $('#occluder').fadeOut(2e3);
           interpreter.gen({
             name: 'readyForMain',
             data: {
-              video: video,
-              audio: audio
+            media: media
             }
           });
+      });
+
+      //SWITCHING MEDIA:
+      $body.off('audioLoaded').on('audioLoaded',function(e, m, track, a){
+        interpreter.gen({
+          name: 'trackLoaded'
+        });
+      });
+
+      //SWITCHING TRACKS:
+      (function(window, $, Raphael, interpreter){
+
+        var paper = Raphael('hitAreas',800,600);
+        var circleAttrs = {
+          cx:    [294.005, 394.306, 496.028, 596.329,
+            193.482, 293.783, 395.506, 495.807, 595.84,  696.141,
+            143.977, 244.277,     346, 444.301, 544.334, 645.635, 746.802,
+            93.115, 193.416, 295.139, 395.439, 494.473, 594.773, 696.496, 796.797,
+            92.971, 193.271, 294.994, 395.295, 494.328, 594.629, 696.352, 796.652,
+            143.255, 244.556, 346.278, 444.579, 544.612, 645.913, 747.08],
+
+          cy:    [ 90.221,  90.221,  90.221,  90.221,
+            189.901, 189.901, 189.901, 189.901, 189.901, 189.901,
+            291.184, 291.184, 291.184, 291.184, 291.184, 291.184, 291.184,
+            391.505, 391.505, 391.505, 391.505, 391.505, 391.505, 391.505, 391.505,
+            490.827, 490.827, 490.827, 490.827, 490.827, 490.827, 490.827, 490.827,
+            589.289, 589.289, 589.289, 589.289, 589.289, 589.289, 589.289],
+
+          track: [39, 36, 2, 32,
+            27, 4, 29, 10, 14, 5,
+            37, 16, 28, 35, 34, 18, 11,
+            9, 15, 26, 7, 8, 22, 1, 33,
+            19, 6, 38, 17, 3, 40, 25, 13,
+            24, 30, 23, 20, 12, 31, 21]
+        };
+
+        var offset = {
+          x: -45.541,
+          y: -42.119
+        };
+
+        var radius = 48.661, h;
+
+        for(h=0;h<circleAttrs.cx.length;h+=1){
+
+          var c = paper.add([{
+            type: 'circle',
+            cx: circleAttrs.cx[h] + offset.x,
+            cy: circleAttrs.cy[h] + offset.y,
+            r: radius,
+            fill: '#f00',
+            'stroke-opacity': 0,
+            opacity: 0.5
+          }])[0];
+
+          c.data('track', circleAttrs.track[h]);
+
+          c.click(function(){
+            interpreter.gen({
+              name: 'toSpecific',
+              data: {
+                track: this.data('track')
         }
+            });
+          });
+
       }
+
+      }(window, window.jQuery, window.Raphael, interpreter));
+
     });
   });
 
@@ -1002,14 +1076,6 @@
       $this.height(oH * s);
 
     });
-  }
-
-  var framerate = 20;
-
-  function draw(v,c,w,h) {
-    if(v.paused || v.ended) return false;
-    c.drawImage(v,0,0,w,h);
-    setTimeout(draw,framerate,v,c,w,h);
   }
 
 })(window, window.jQuery, window.Modernizr);
