@@ -1,7 +1,7 @@
 /* Author: Will Shown & Vail Gold */
 
 /* LOGO PUTTER
- *  puts the logo. */
+ * puts the logo. */
 (function(window, $, Raphael, _){
 
   var paper = Raphael('cinch-logo', 235, 22);
@@ -45,7 +45,7 @@
 
 /* VIEW BINDER
  * binds views. */
-(function(window, $, Raphael, _, require) {
+(function(window, $, Raphael, _, require){
 
   /* BUBBLE MAKER
    * yes, it's inside the view binder. */
@@ -364,7 +364,7 @@
       var hoverOpacity = 1;
       var disabledOpacity = .1;
 
-      for(i=0; i < mainAttributes.cx.length; i++){
+      for(i=0; i<mainAttributes.cx.length; i+=1){
         var o = (0.2+(Math.random()*0.3)).toFixed(2);
         var fill = '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')';
         var finalAttrs = {
@@ -393,8 +393,8 @@
 
           var mouseOutCallback = function() {
             var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
-            if(tempBubble.attrs.r === 50 && (typeof(self['animateInProgress']) === 'undefined' || self['animateInProgress'] === false)) {
-              tempBubble.attr('opacity', defaultOpacity);
+            if(tempBubble.attrs.r === 50) {
+              tempBubble.attr('opacity', .6);
             }
           };
 
@@ -408,20 +408,15 @@
                 cx: 1310,
                 cy: 1575,
                 r: 275,
-                opacity: hoverOpacity
+                opacity: .8
               }, duration);
 
               clickedBubble.textObjects.link.animate({'fill-opacity': 0}, 100);
               clickedBubble.textObjects.text.animate({'fill-opacity': 1}, 800, '<>', function() {
                 self['animateInProgress'] = false;
-                for(var j=0; self.aboutBubbles[j]; j++) {
-                  if(self.aboutBubbles[j].attrs['fill-opacity'] < defaultOpacity) {
-                    self.aboutBubbles[j].attr({'fill-opacity': defaultOpacity});
-                  }
-                }
               });
 
-              var defaultParams = {r: 50, opacity: defaultOpacity};
+              var defaultParams = {r: 50, opacity: .6};
               var viewParams = {
                 'cinch': {cx: 1060, cy: 1765},
                 'course': {cx: 1010, cy: 1670},
@@ -529,6 +524,7 @@
             }
           };
 
+          // Create text element in Raphael
           var link = paper.text(aboutAttributes.cx[i], aboutAttributes.cy[i], aboutCopy[b.code].link).attr({
             'text-anchor': 'middle',
             'stroke-opacity': 0,
@@ -550,8 +546,9 @@
             'fill': '#ffffff',
             'font-family': 'Arial, sans',
             'font-size': 32,
-            'fill-opacity': 0
-          });
+            'fill-opacity': 0,
+            'width': 275
+          }).rotate(-180);
           textSet.push(title);
 
           var subtitle = paper.text(1460, 1715, aboutCopy[b.code].subtitle).attr({
@@ -560,8 +557,9 @@
             'fill': '#ffffff',
             'font-family': 'Arial, sans',
             'font-size': 26,
-            'fill-opacity': 0
-          });
+            'fill-opacity': 0,
+            'width': 275
+          }).rotate(-180);
           textSet.push(subtitle);
 
           var textLines = aboutCopy[b.code].text.split('\n');
@@ -573,17 +571,21 @@
                 'fill': '#ffffff',
                 'font-family': 'Arial, sans',
                 'font-size': 14,
-                'fill-opacity': 0
-              })
+                'fill-opacity': 0,
+                'width': 275,
+                'height': 20
+              }).rotate(-180)
             );
           }
 
-          textSet.rotate(-180);
+          // Add reference to bubble object to text objects for events
           textSet['bubbleObject'] = b;
+
           b['textObjects'] = {
             link: link,
             text: textSet
           };
+
           self.aboutBubbles.push(b);
         }
 
@@ -636,18 +638,15 @@
         }
 
         b.mainPos = finalAttrs;
+
         b.animate(a.delay(delta * i));
       }
 
       var bubbleSet = paper.setFinish();
 
       function triggerBubblesComplete(){
-        var fadeOut = function() {
-          intro.animate({'opacity': 0}, introFadeOut, easing, function() {
-            intro.forEach(function(e) {e.remove()})
-          });
-        };
-        $('body').trigger('bubbles:complete', [fadeOut]);
+        var fadeOut = function(){intro.animate({'opacity': 0}, introFadeOut, easing, function(){intro.forEach(function(e){e.remove()})});};
+        $('body').trigger('bubbles:complete',[fadeOut]);
       }
 
       setTimeout(triggerBubblesComplete, ((i * delta) + duration));
@@ -669,7 +668,9 @@
 
   $(document).ready(function(){
 
-    scion.urlToModel("scxml/40faces.sc.xml", function(err,model) {
+    var $body = $('body');
+
+    scion.urlToModel("scxml/40faces.sc.xml",function(err,model){
 
       if(err) throw err;
 
@@ -728,76 +729,216 @@
 
 }(window, window.jQuery, window.Raphael, window._, window.require));
 
-/* MEDIA SUBSTRATE
- * media:complete is fired on <body> when everything is ready. */
+/* MEDIA SUBSTRATE */
 (function(window, $, Modernizr){
 
-  $(function() {
+  var Media = function(canDoVideo){
+
+    var $body = $('body');
+    var $container = $('.faces').parent();
+
+    this.video = {};
+    var self = this;
+
+    if(canDoVideo){
+
+      //VIDEO BUSINESS
+      var $vid = $('video.faces');
+      this.video = $vid.get(0);
+      this.video.$el = $vid;
+
+      //AUDIO BUSINESS
+      var $aud = $('#facesAudio');
+      this.aud = $aud.get(0);
+      this.aud.$el = $aud;
+
+      //TRIGGERING COMPLETE AT THE RIGHT MOMENT
+      var
+        videoReady = $.Deferred(function(dfd){
+          $vid.on('canplaythrough', function(){
+            console.log('Video ready!');
+            dfd.resolve();
+          });
+        }).promise(),
+        mainAudReady = $.Deferred(function(dfd){
+          $aud.on('canplaythrough', function(){
+            console.log('Audio ready!');
+            dfd.resolve();
+          });
+        }).promise();
+      $.when(videoReady, mainAudReady).done(function(){
+        console.log('Media ready!');
+        $body.trigger('media:complete',[self]);
+      });
+
+      //LOAD STUFF
+      this.video.load();
+      loadTrack(0);
+
+      //SET UP API
+      this.play = function(){
+        this.video.play();
+        this.aud.play();
+      };
+
+      this.pause = function(){
+        this.video.pause();
+        this.aud.pause();
+      };
+
+      this.stop = function(){
+        this.pause();
+        this.seek(0);
+      };
+
+      this.seek = function(t){
+        this.video.currentTime = t;
+        this.aud.currentTime = t;
+      };
+
+      this.load = function(track){
+        this.stop();
+
+        $aud.off('canplaythrough').on('canplaythrough',function(){
+          $body.trigger('audioLoaded',[self, track, self.aud]);
+        });
+
+        loadTrack(track);
+      };
+
+      function loadTrack(track){
+        if(self.aud.canPlayType('audio/mp4')){
+          self.aud.setAttribute('src','audio/' + zeroPad(track, 2) + '.m4a');
+          self.aud.setAttribute('type', 'audio/mp4');
+        }else
+        if(self.aud.canPlayType('audio/ogg')){
+          self.aud.setAttribute('src','audio/' + zeroPad(track, 2) + '.ogg');
+          self.aud.setAttribute('type', 'audio/ogg');
+        }else{
+          self.aud.setAttribute('src','audio/' + zeroPad(track, 2) + '.mp3');
+          self.aud.setAttribute('type', 'audio/mpeg');
+        }
+        self.aud.load();
+      }
+
+    }else{ ////////////////////////////////////////////////////////////////////
+
+      //VIDEO BUSINESS
+      this.video = $f(0);
+
+      //AUDIO BUSINESS
+      this.aud = $f(1);
+
+      //TRIGGERING COMPLETE AT THE RIGHT MOMENT
+      var
+        vReady = $.Deferred(function(dfd){
+          self.video.getClip(0).onBufferFull(function(){
+            dfd.resolve();
+          });
+        }).promise(),
+        mainAReady = $.Deferred(function(dfd){
+          self.aud.getClip(0).onBufferFull(function(){
+            dfd.resolve();
+          });
+        }).promise();
+
+      $.when(vReady).done(function(){
+        self.video.pause().seek(0);
+        console.log('Video ready!');
+      });
+
+      $.when(mainAReady).done(function(){
+        self.aud.pause().seek(0);
+        console.log('Audio ready!');
+      });
+
+      $.when(vReady, mainAReady).done(function(){
+        console.log('Media ready!');
+        $body.trigger('media:complete',[self]);
+      });
+
+      //LOAD STUFF
+      this.video.play();
+      this.aud.play();
+
+      //SET UP API
+      this.play = function(){
+        this.video.play();
+        this.aud.play();
+      };
+
+      this.pause = function(){
+        this.video.pause();
+        this.aud.pause();
+      };
+
+      this.stop = function(){
+        this.video.stop();
+        this.aud.stop();
+      };
+
+      this.seek = function(t){
+        this.video.seek(t);
+        this.aud.seek(t);
+      };
+
+      this.load = function(track){
+      };
+
+    }
+
+    function zeroPad(num, places) {
+      var zero = places - num.toString().length + 1;
+      return Array(+(zero > 0 && zero)).join("0") + num;
+    }
+
+  };
+
+  $(function(){
 
     var $body = $('body');
     var $container = $('.faces').parent();
 
     $body.one('shimsLoaded', function(){
 
-      if(Modernizr.video) {
+      //NEW CODE:
 
-        var $canvas = $('canvas.faces');
-        var canvas = $canvas.get(0);
+      var media = new Media(Modernizr.video);
 
-        var $vid = $('video.faces');
-        var vid = $vid.get(0);
+      //OLD CODE:
 
-        var $aud = $('audio.faces');
-        var aud = $aud.get(0);
-
-        var context = canvas.getContext('2d');
-        var cw, ch;
-
-        $vid.on('play', function() {
-          draw(this,context,cw,ch);
-        });
-
-        $vid.on('canplay', function() {
-          cw = vid.videoWidth;
-          ch = vid.videoHeight;
-          canvas.width = cw;
-          canvas.height = ch;
-        });
-
-        $vid.on('canplaythrough', function() {
-          $body.trigger('media:complete', [vid, aud]);
-        });
-
-        vid.load();
-
-      }else{
-
-        $('canvas').hide();
-        var v = window.$f(0), $v = $('#facesVideo');
-
-        $v.before('<div id="facesVideo_control"></div>');
-        var $c = $('#facesVideo_control').on('click', function(e){
-          e.preventDefault();
-        });
-        var $resize = $v.add($c);
-        $resize.css({
-          position: 'absolute',
-          top: 0,
-          left: 0
-        });
-
-        v.getClip(0).onBufferFull(function(){
-          fitInside($resize, $container);
-          centerInside($resize, $container);
-          $body.trigger('media:complete',[v]);
-          v.getClip(0).onBufferFull(function(){});
-        });
-
-        console.log('Playing');
-        v.play(0);
-        console.log('Pausing');
-        setTimeout(v.pause, 0, 0);
-      }
+//      if(Modernizr.video){
+//
+//
+//
+//      }else{
+//
+//        $('canvas').hide();
+//        var v = window.$f(0), $v = $('#facesVideo');
+//
+//        $v.before('<div id="facesVideo_control"></div>');
+//        var $c = $('#facesVideo_control').on('click', function(e){
+//          e.preventDefault();
+//        });
+//        var $resize = $v.add($c);
+//        $resize.css({
+//          position: 'absolute',
+//          top: 0,
+//          left: 0
+//        });
+//
+//        v.getClip(0).onBufferFull(function(){
+//          fitInside($resize, $container);
+//          centerInside($resize, $container);
+//          $body.trigger('media:complete',[v]);
+//          v.getClip(0).onBufferFull(function(){});
+//        });
+//
+//        console.log('Playing');
+//        v.play(0);
+//        console.log('Pausing');
+//        setTimeout(v.pause, 0, 0);
+//      }
 
     });
 
