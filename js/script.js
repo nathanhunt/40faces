@@ -751,6 +751,7 @@
             var navCallback = function(event) {
               event.preventDefault();
               var target = (event.target.className === 'about' ? 'About' : (event.target.className === 'contact' ? 'Contact' : 'Main'));
+              window.blurb.removeObjectSet();
               $(this).off('click').on('click', function(e) {e.preventDefault()});
               var _this = this;
               interpreter.gen({name : 'to'+target, data: {bubbles: bubbles, duration: duration}});
@@ -806,7 +807,8 @@
             //SWITCHING TRACKS:
             (function(window, $, Raphael, interpreter){
 
-              var paper = Raphael('hitAreas', 800, 600);
+              $('#hitAreas').css('left', -200);
+              var paper = Raphael('hitAreas', 1200, 800);
               var circleAttrs = {
                 cx:    [294.005, 394.306, 496.028, 596.329,
                   193.482, 293.783, 395.506, 495.807, 595.84,  696.141,
@@ -831,7 +833,7 @@
               };
 
               var offset = {
-                x: -45.541,
+                x: 200-45.541,
                 y: -42.119
               };
 
@@ -1021,23 +1023,21 @@
           };
 
           this.display = function (circle) {
-            if(this.objectSet !== null) {
-              var tempObjectSet = this.objectSet;
-              this.objectSet = null;
-              tempObjectSet.animate({opacity: 0}, 300, '<>', function () {
-                this.remove();
-              })
-            }
+            this.removeObjectSet();
 
             var track = circle.data('track');
-            if([39, 36, 27, 4, 29, 37, 16, 28, 35].indexOf(track) > -1) {
+            if([39, 36, 27, 4, 29].indexOf(track) > -1) {
               this.direction = 'bottomright';
-            } else if([2, 32, 10, 14, 5, 34, 18, 11].indexOf(track) > -1) {
+
+            } else if([2, 32, 10, 14, 5].indexOf(track) > -1) {
               this.direction = 'bottomleft';
-            } else if([9, 15, 26, 7, 19, 6, 38, 17, 24, 30, 23, 20].indexOf(track) > -1) {
+
+            } else if([37, 16, 28, 35, 9, 15, 26, 7, 19, 6, 38, 17, 24, 30, 23, 20].indexOf(track) > -1) {
               this.direction = 'topright';
-            } else if([8, 22, 1, 33, 3, 40, 25, 13, 12, 31, 21].indexOf(track) > -1) {
+
+            } else if([34, 18, 11, 8, 22, 1, 33, 3, 40, 25, 13, 12, 31, 21].indexOf(track) > -1) {
               this.direction = 'topleft';
+
             } else {
               // this shouldn't happen
               this.direction = 'bottomright';
@@ -1058,11 +1058,11 @@
               p = paper.path(initialPath).attr({
                 fill: '0-rgb(0,151,219)-rgb(0,100,178)',
                 'stroke-opacity': 0,
-                opacity:.5
+                opacity:.7
               });
 
               finalPath = "M" + (middle + 0.5) + "," + bbox.y +
-                "A150,150 0 1,1 " + (middle - 0.5) + "," + bbox.y +
+                "A200,200 0 1,1 " + (middle - 0.5) + "," + bbox.y +
                 "A" + (bbox.width / 2 - 1) + "," + (bbox.width / 2 - 1) + " 0 1,0 " + (middle + 0.5) + "," + bbox.y + "Z";
 
               rotation = this.direction === 'topright' ? -135 : 135;
@@ -1077,11 +1077,11 @@
               p = paper.path(initialPath).attr({
                 fill: '0-rgb(0,151,219)-rgb(0,100,178)',
                 'stroke-opacity': 0,
-                opacity:.5
+                opacity:.7
               });
 
               finalPath = "M" + (middle - 0.5) + "," + (bbox.y + bbox.height) +
-                "A150,150 0 1,1 " + (middle + 0.5) + "," + (bbox.y + bbox.height) +
+                "A200,200 0 1,1 " + (middle + 0.5) + "," + (bbox.y + bbox.height) +
                 "A" + (bbox.width / 2 - 1) + "," + (bbox.width / 2 - 1) + " 0 1,0 " + (middle - 0.5) + "," + (bbox.y + bbox.height) + "Z";
 
               rotation = this.direction === 'bottomleft' ? -180 : 180;
@@ -1095,40 +1095,112 @@
 
             objectSet.push(p);
 
+            var objectAnimationDuration = 1250;
+
+            var x, y;
+            if(this.direction.search('top') > -1) {
+              y = bbox.y - 155;
+
+              if(this.direction.search('right') > -1) {
+                x = bbox.x;
+              } else {
+                x = bbox.x - 210;
+              }
+            } else {
+              y = bbox.y + 120;
+              x = bbox.x - 115;
+            }
+
             var calloutArray = this.callouts[track-1];
-            for(var i=0; calloutArray[i]; i++) {
 
-              var textLines = this.textToLines(calloutArray[i]);
-              for(var j=0; textLines[j]; j++) {
+            var i, j, k, tempY;
+            var textLines = [];
+            for(i=0; calloutArray[i]; i++) {
 
-                var x, y;
-                if(this.direction.search('top') > -1) {
-                  y = bbox.y - 100;
+              textLines.push(this.textToLines(calloutArray[i], i === 0 ? 34 : 48));
+              for(j=0; textLines[i][j]; j++) {
+                tempY = y +
+                  (i > 0 ? 30 * textLines[0].length : 0) +
+                  (i > 1 ? 25 * textLines[1].length : 0) +
+                  (i > 2 ? 25 * textLines[2].length : 0);
 
-                  if(this.direction.search('right') > -1) {
-                    x = bbox.x + 50;
-                  } else {
-                    x = bbox.x - 150;
-                  }
-
-                } else {
-                  y = bbox.y + 100;
-                  x = bbox.x - 50;
-                }
-
-                var t = paper.text(x, y, textLines[j]).attr({
+                var t = paper.text(x, tempY + j * (i === 0 ? 28 : 20), textLines[i][j]).attr({
                   'stroke-opacity': 0,
                   fill: 'white',
                   'text-anchor': 'start',
-                  'font-size': 14,
-                  'font-family': 'Arial, sans-serif'
-                });
+                  'font-size': i === 0 ? 20 : 14,
+                  'font-family': 'Arial, sans-serif',
+                  'fill-opacity': 0
+                }).animate({'fill-opacity': 1}, objectAnimationDuration);
 
                 objectSet.push(t);
               }
             }
 
+            tempY = y +
+              (i > 0 ? 30 * textLines[0].length : 0) +
+              (i > 1 ? 25 * textLines[1].length : 0) +
+              (i > 2 ? 25 * textLines[2].length : 0) +
+              (i > 3 ? 25 * textLines[3].length : 0) + 10;
+
+            var tempX;
+
+            if(this.direction.search('bottom') > -1) {
+              tempX = bbox.x + bbox.width / 2;
+            } else {
+              tempX = this.direction.search('left') > -1 ? bbox.x - 75 : bbox.x + 150;
+            }
+
+            var link = paper.text(tempX, tempY, 'Learn more').attr({
+              'stroke-opacity': 0,
+              fill: 'white',
+              'text-anchor': 'middle',
+              'font-size': 14,
+              'font-weight': 'bold',
+              'font-family': 'Arial, sans-serif',
+              'fill-opacity': 0,
+              cursor: 'pointer'
+            }).animate({'fill-opacity': 1}, objectAnimationDuration).click(function () {
+                $('#nav-link-list a.about').trigger('click');
+              });
+
+            objectSet.push(link);
+
+            var linkBBox = link.getBBox();
+            var linePath = 'M' + linkBBox.x + ',' + (linkBBox.y + linkBBox.height) +
+              'L' + (linkBBox.x + linkBBox.width) + ',' + (linkBBox.y + linkBBox.height) + 'Z';
+            var line = paper.path(linePath).attr({
+              stroke: 'white',
+              'stroke-width': 1,
+              fill: 'white',
+              opacity: 0,
+              cursor: 'pointer'
+            }).animate({opacity: 1}, objectAnimationDuration).click(function () {
+                $('#nav-link-list a.about').trigger('click');
+              });
+
+            objectSet.push(line);
+
+            var image = paper.image('img/circle-close-x.png', tempX - 23, tempY + 30, 46, 46).attr({
+              opacity: 0,
+              cursor: 'pointer'
+            }).animate({opacity: 1}, objectAnimationDuration).click(function () {
+                self.removeObjectSet();
+              });
+
+            objectSet.push(image);
+
             this.objectSet = objectSet;
+          };
+
+          this.removeObjectSet = function () {
+            if(this.objectSet !== null) {
+              var tempObjectSet = this.objectSet;
+              this.objectSet = null;
+              tempObjectSet.animate({opacity: 0}, 150, '<>', function () {
+                this.remove();
+              })
+            }
           };
 
         };
