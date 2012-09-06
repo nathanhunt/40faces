@@ -734,6 +734,11 @@
           name: 'trackLoaded'
         });
       });
+      $body.off('blurbs:animationComplete').on('blurbs:animationComplete',function(e, b){
+        interpreter.gen({
+          name: 'animationComplete'
+        });
+      });
 
       //SWITCHING TRACKS:
       (function(window, $, Raphael, interpreter){

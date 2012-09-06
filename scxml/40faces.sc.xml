@@ -61,7 +61,17 @@
                     media.load(track);
                 </script>
             </onentry>
-            <transition event="trackLoaded" target="specific"/>
+
+            <initial>
+                <transition target="stillLoadingAnimating"/>
+            </initial>
+            <state id="stillLoadingAnimating">
+                <transition event="trackLoaded" target="specificStillAnimating"/>
+                <transition event="animationComplete" target="stillLoading"/>
+            </state>
+            <state id="stillLoading">
+                <transition event="trackLoaded" target="specificReady"/>
+            </state>
         </state>
 
         <state id="leaveSpecific">
@@ -79,10 +89,15 @@
                     media.play();
                 </script>
             </onentry>
-            <transition event="leaveSpecific" target="leaveSpecific"/>
-            <transition event="toSpecific" target="loadSpecific">
-                <assign location="track" expr="_event.data.track"/>
-            </transition>
+            <state id="specificStillAnimating">
+                <transition event="animationComplete" target="specificReady"/>
+            </state>
+            <state id="specificReady">
+                <transition event="leaveSpecific" target="leaveSpecific"/>
+                <transition event="toSpecific" target="loadSpecific">
+                    <assign location="track" expr="_event.data.track"/>
+                </transition>
+            </state>
         </state>
 
     </state>
