@@ -6,8 +6,9 @@
     <datamodel>
         <data id="bubbles"/>
         <data id="media"/>
+        <data id="blurb"/>
         <data id="duration"/>
-        <data id="track"/>
+        <data id="circle"/>
     </datamodel>
 
     <state id="initial-default">
@@ -22,6 +23,7 @@
     <state id="loading">
         <transition event="readyForMain" target="mainView">
             <assign location="media" expr="_event.data.media"/>
+            <assign location="blurb" expr="_event.data.blurb"/>
             <script>
                 media.play();
             </script>
@@ -51,14 +53,15 @@
 
         <state id="general">
             <transition event="toSpecific" target="loadSpecific">
-                <assign location="track" expr="_event.data.track"/>
+                <assign location="circle" expr="_event.data.circle"/>
             </transition>
         </state>
 
         <state id="loadSpecific">
             <onentry>
                 <script>
-                    media.load(track);
+                    media.load(circle.data('track'));
+                    blurb.display(circle);
                 </script>
             </onentry>
             <transition event="trackLoaded" target="specific"/>

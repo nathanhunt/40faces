@@ -57,16 +57,17 @@
 
   <div id="app"></div>
 
-  <!-- JavaScript at the bottom for fast page loading -->
-  <script type='text/javascript' src="js/libs/es5-shim.js"></script>
-
   <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
+  <script type='text/javascript' src="js/libs/es5-shim.js"></script>
+  <!--
   <script type='text/javascript' src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+  -->
   <script type='text/javascript'>window.jQuery || document.write('<script type="text/javascript" src="js/libs/jquery-1.8.0.js"><\/script>')</script>
   <script type="text/javascript" src="js/libs/underscore.js"></script>
   <script type="text/javascript" src="js/libs/raphael.js"></script>
   <script type="text/javascript" src="js/plugins.js"></script>
   <script type="text/javascript" src="js/mobile-script.js"></script>
+  <script type="text/javascript" src="js/script.js"></script>
 
   <script type='text/javascript'>
 
@@ -90,58 +91,8 @@
 
     function init() {
       if(!isMobile.any() && Math.max(window.screen.width, window.screen.height) > 1024) {
-
-        $('body').css({
-          overflow: 'hidden',
-          'padding-top': 40
-        });
-
-        $('#app').html(
-          '<div class="standard fixed-top-bar">' +
-            '<a id="cinch-logo"></a>' +
-            '<a href="#" class="volume-icon-link on">' +
-            '<img class="on" src="img/volume-on.png" />' +
-            '<img class="off" src="img/volume-off.png" />' +
-            '</a>' +
-            '<ul id="nav-link-list" class="float-right">' +
-            '<li><a href="#" class="main active">40 Faces</a></li>' +
-            '<li><span>|</span></li>' +
-            '<li><a href="#" class="about">About CINCH</a></li>' +
-            '<li><span>|</span></li>' +
-            '<li><a href="#" class="contact">Contact</a></li>' +
-            '</ul>' +
-            '</div>' +
-            '<div class="standard fixed-bottom-bar">' +
-            '<a href="http://www.mcgraw-hill.com/site/tools/terms-of-use" target="_blank">Terms of Use</a>' +
-            '<span>|</span>' +
-            '<a href="https://www.mheonline.com/pages/display/privacynotice_view" target="_blank">Privacy Notice</a>' +
-            '<span>|</span>' +
-            '<a href="https://www.mheonline.com/" target="_blank">McGraw Hill Education</a>' +
-            '</div>' +
-            ''+
-            '  <div role="viewport" id="viewport">'+
-            ''+
-            '    <div role="video" id="video">'+
-            '      <video class="faces" id="facesVideo">'+
-            '        <source src="video/grid.mp4" type="video/mp4" />'+
-            '        <source src="video/grid.ogv" type="video/ogg" />'+
-            '      </video>'+
-            '      <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/x-m4a"></audio>'+
-            '    </div>'+
-            ''+
-            '    <div role="occluder" id="occluder"></div>'+
-            ''+
-            '  </div>'+
-            ''+
-            '  <div id="vector-content"></div>'+
-            ''+
-            '  <div id="hitAreas"></div>'
-        );
-        $('body').append(
-          '<script type="text/javascript" src="js/libs/scion.js"><\/script>' +
-            '<script type="text/javascript" src="js/libs/raphael.free_transform.js"><\/script>' +
-            '<script type="text/javascript" src="js/script.js"><\/script>'
-        );
+        var cinch = new window.Cinch();
+        cinch.initApp();
       } else {
         window.MobileSite.initApp();
       }
