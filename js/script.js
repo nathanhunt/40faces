@@ -1297,11 +1297,6 @@
               this.aud.pause();
             };
 
-            this.stop = function(){
-              this.pause();
-              this.seek(0);
-            };
-
             this.seek = function(t){
               this.video.currentTime = t;
               this.aud.currentTime = t;
@@ -1340,9 +1335,15 @@
 
             //VIDEO BUSINESS
             this.video = $f(0);
+            setTimeout(function(){
+              self.video.startBuffering();
+            },0);
 
             //AUDIO BUSINESS
             this.aud = $f(1);
+            setTimeout(function(){
+              self.aud.startBuffering();
+            },0);
 
             //TRIGGERING COMPLETE AT THE RIGHT MOMENT
             var
@@ -1372,18 +1373,8 @@
               $body.trigger('media:complete',[self]);
             });
 
-            //LOAD STUFF
-            this.video.play();
-            this.aud.play();
-
             //SET UP API
             this.play = function(){
-              if(typeof this.aud.currentIndex !== 'undefined'){
-                this.aud.play(this.aud.currentIndex);
-              }else{
-                this.aud.play(0);
-                this.video.seek(0);
-              }
             };
 
             this.pause = function(){
@@ -1391,31 +1382,11 @@
               this.aud.pause();
             };
 
-            this.stop = function(){
-              this.video.pause().seek(0);
-              this.aud.pause().seek(0);
-            };
-
             this.seek = function(t){
-              this.video.seek(t);
-              this.aud.seek(t);
             };
-
-            this.aud.onClipAdd(function(Clip, index){
-              self.aud.currentClip = Clip;
-              self.aud.currentIndex = index;
-              Clip.onStart(function(){
-                self.video.seek(0);
-              });
-            });
 
             this.load = function(track){
               this.pause();
-              this.aud.addClip('audio/' + zeroPad(track, 2) + '.m4a');
-              var trigger = function(){
-                $body.trigger('audioLoaded', [self, track, self.aud]);
-              };
-              setTimeout(trigger, 0);
             };
 
           }
@@ -1433,52 +1404,13 @@
           var $container = $('.faces').parent();
 
           $body.one('shimsLoaded', function(){
-
-            //NEW CODE:
-
             var media = new Media(Modernizr.video);
-
-            //OLD CODE:
-
-      //      if(Modernizr.video){
-      //
-      //
-      //
-      //      }else{
-      //
-      //        $('canvas').hide();
-      //        var v = window.$f(0), $v = $('#facesVideo');
-      //
-      //        $v.before('<div id="facesVideo_control"></div>');
-      //        var $c = $('#facesVideo_control').on('click', function(e){
-      //          e.preventDefault();
-      //        });
-      //        var $resize = $v.add($c);
-      //        $resize.css({
-      //          position: 'absolute',
-      //          top: 0,
-      //          left: 0
-      //        });
-      //
-      //        v.getClip(0).onBufferFull(function(){
-      //          fitInside($resize, $container);
-      //          centerInside($resize, $container);
-      //          $body.trigger('media:complete',[v]);
-      //          v.getClip(0).onBufferFull(function(){});
-      //        });
-      //
-      //        console.log('Playing');
-      //        v.play(0);
-      //        console.log('Pausing');
-      //        setTimeout(v.pause, 0, 0);
-      //      }
-
           });
 
           Modernizr.load([
             {
               test: Modernizr.video,
-              nope: ['http://api.html5media.info/1.1.5/html5media.min.js'],
+              nope: ['js/libs/flowplayer.js','js/libs/html5media.js'],
               complete: function(){
                 $body.trigger('shimsLoaded');
               }
