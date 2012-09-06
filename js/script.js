@@ -778,7 +778,7 @@
             r: radius,
             fill: '#f00',
             'stroke-opacity': 0,
-            opacity: 0.5
+            opacity: 0
           }])[0];
 
           c.data('track', circleAttrs.track[h]);
