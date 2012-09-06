@@ -25,13 +25,27 @@
         <transition event="readyForMain" target="mainView">
             <assign location="media" expr="_event.data.media"/>
             <assign location="blurb" expr="_event.data.blurb"/>
-            <script>
-                media.play();
-            </script>
         </transition>
     </state>
 
     <state id="mainView">
+
+        <onexit>
+            <script>
+                media.pause();
+                $('#hitAreas').hide();
+            </script>
+        </onexit>
+
+        <onentry>
+            <script>
+                $('#hitAreas').show();
+            </script>
+        </onentry>
+
+        <initial>
+            <transition target="general"/>
+        </initial>
 
         <transition event="toAbout" target="aboutView">
             <assign location="bubbles" expr="_event.data.bubbles"/>
@@ -53,6 +67,11 @@
         </transition>
 
         <state id="general">
+            <onentry>
+                <script>
+                    media.play(0);
+                </script>
+            </onentry>
             <transition event="toSpecific" target="loadSpecific">
                 <assign location="circle" expr="_event.data.circle"/>
                 <assign location="track" expr="_event.data.track"/>
