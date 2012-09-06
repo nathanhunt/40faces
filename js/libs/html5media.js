@@ -520,8 +520,6 @@
         }
         replacement.style.height = 0;
       }
-      // HACK: Disable autoBuffering, since a flowplayer audio bug can cause uncontrollable autoplaying.
-      playlist[playlist.length - 1].autoBuffering = false;
     }
     // Load the Flowplayer.
     var config = {
