@@ -39,11 +39,11 @@
           '  <div role="viewport" id="viewport">'+
           ''+
           '    <div role="video" id="video">'+
-          '      <video class="faces" id="facesVideo">'+
+          '      <video class="faces" id="facesVideo" preload="auto">'+
           '        <source src="video/grid.mp4" type="video/mp4" />'+
           '        <source src="video/grid.ogv" type="video/ogg" />'+
           '      </video>'+
-          '      <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/x-m4a"></audio>'+
+          '      <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/x-m4a" preload="auto"></audio>'+
           '    </div>'+
           ''+
           '    <div role="occluder" id="occluder"></div>'+
@@ -855,7 +855,8 @@
                   interpreter.gen({
                     name: 'toSpecific',
                     data: {
-                      circle: this
+                      circle: this,
+                      track: this.data('track')
                     }
                   });
                 });
