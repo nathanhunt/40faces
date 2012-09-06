@@ -100,15 +100,6 @@
             </state>
         </state>
 
-        <state id="leaveSpecific">
-            <onentry>
-                <script>
-                    media.load(0);
-                </script>
-            </onentry>
-            <transition event="leftSpecific" target="general"/>
-        </state>
-
         <state id="specific">
             <onentry>
                 <script>
@@ -119,7 +110,7 @@
                 <transition event="animationComplete" target="specificReady"/>
             </state>
             <state id="specificReady">
-                <transition event="leaveSpecific" target="leaveSpecific"/>
+                <transition event="leaveSpecific" target="general"/>
                 <transition event="toSpecific" target="loadSpecific">
                     <assign location="circle" expr="_event.data.circle"/>
                     <assign location="track" expr="_event.data.track"/>

@@ -763,7 +763,7 @@
             $('#nav-link-list a').on('click', navCallback);
 
             //LOADING MEDIA:
-            var media, introFadeOut, blurb;
+            var media, introFadeOut;
 
             var mediaComplete = $.Deferred(function (dfd) {
                 $body.on('media:complete', function (e, m) {
@@ -876,347 +876,350 @@
 
             }(window, $, Raphael, interpreter));
 
+            /* BLURBS */
+            (function(window, $, interpreter){
+
+              var Blurb = function(){
+                var self = this;
+
+                this.objectSet = null;
+                this.callouts = [["Quality digital content for safe student use",
+                  "Hands-on activities and digital assets complement classroom learning",
+                  "Designed for group and independent assignments. No pop-ups or ads."],
+                  ["Complete integration makes the best use of my time",
+                    "Dynamic and editable yearly planning tool",
+                    "Instantly pull reports of student comprehension of standards"],
+                  ["Dynamic lessons with a few classroom devices",
+                    "Manage the classroom from a single point: present activities using your laptop and IWB",
+                    "Online labs for seamless collaboration and on-demand printing"],
+                  ["21st century skill-building",
+                    "Multi-strategy learning options and assessments available online",
+                    "Web 2.0 tools prepare students for college and online standardized tests"],
+                  ["Interactives features get students engaged",
+                    "Interactive iPad tools for dynamic explanations and learning",
+                    "Videos, tutorials, virtual labs, and games bring content to life"],
+                  ["Online personal tutors build confidence",
+                    "Each lesson has videos and guidance for continuous access to concepts",
+                    "Games and animation for hands-on learning beyond the classroom"],
+                  ["Integrate coursework with social media",
+                    "Students use social networking features to discuss lessons and homework",
+                    "Monitor the conversation to keep tabs on where students struggle"],
+                  ["Real-world interactive experiences",
+                    "Online assessments with simple auto-grade online assessments",
+                    "Diverse, multimedia homework options for matching learning style to student need"],
+                  ["Out-of-class support for a flipped classroom",
+                    "Reading and multimedia assets for at home learning",
+                    "Collaborative lessons for classroom support flipped learning model"],
+                  ["Seamlessly blend digital and print",
+                    "Customize note-taking guides for your program",
+                    "Print drills and homeworks on demand"],
+                  ["Real-time progress reports",
+                    "Teachers and administrators can assess student progress",
+                    "Seamless integration for administrators"],
+                  ["Instant Assessment, Remediation, and Enrichment",
+                    "Instantly assess student learning levels",
+                    "Access to materials from all grades",
+                    "Reach content from other grades for reteach and challenge exercises"],
+                  ["Optimized lessons for ELL students",
+                    "Emphasis on vocabulary development builds language and skill comprehension",
+                    "Hands-on, animated supplements provide extra support for language challenge"],
+                  ["Virtual labs for flawless experiments",
+                    "Visual and experiential learning despite budgets",
+                    "Online access to labs for absent students"],
+                  ["Interactive tools backed by real lessons",
+                    "Virtual labs, animations, and tutorials keep students engaged",
+                    "Save all videos and materials you’ve collected in the planner"],
+                  ["Curated lessons with creative teaching styles",
+                    "Develop unique programs",
+                    "Import and house additional material onto CINCH platform"],
+                  ["Streamline accountability",
+                    "Pull instant assessments of student progress",
+                    "Both teachers and administrators can track classroom progress"],
+                  ["Online, Customized Assessments",
+                    "Customize assessment for individual students",
+                    "No more copying: assessments assigned and completed online",
+                    "Prepares students for new online state assessments"],
+                  ["Activities that capture student attention",
+                    "Tools for making lessons more dynamic",
+                    "Students have fun with wideos, virtual labs, social networking tools"],
+                  ["Collaboratively plan the week from the CINCH app",
+                    "Planner tool makes it easy to follow scope and sequence",
+                    "Plan as a group and tweak day-by-day using the CINCH app"],
+                  ["Universal access",
+                    "On-demand printing and smartphone access ensures all students can access homework",
+                    "Tailor homework help to specific student needs"],
+                  ["Transforming iPads into classroom tools",
+                    "Cloud-based system allows you to access, save, and resume work from multiple devices",
+                    "Tools and resources optimized for iPad integration"],
+                  ["Teach, assign, assess: all in one place",
+                    "Cloud-based system allows access from any device",
+                    "Tailor lessons to your teaching style"],
+                  ["Customizable IWB activities",
+                    "Create original, dynamic IWB presentations, preloaded with slides that you can customize",
+                    "Keep IWB presentations and any digital content in one place"],
+                  ["Easy to adopt CCSS",
+                    "Browse, search, and assess student comprehension by standard",
+                    "Align standard reports with lessons for easy CCSS integration"],
+                  ["Build a custom scope and sequence",
+                    "Digitally distribute your curriculum and order custom printing of textbooks and materials",
+                    "Create unique curriculum to match my curriculum map"],
+                  ["Easy to use and customize",
+                    "Easy to navigate and simple customization tool makes it easy to add additional content",
+                    "Preloaded with resources for standard scope and sequences"],
+                  ["Cloud-based software works on any device",
+                    "Works on any device, providing flexibility to update technology as needed",
+                    "Perfect for adapting to changing classroom technology"],
+                  ["Makes it easy to align curriculum with CCSS",
+                    "Align curriculum map with standards and assess students understanding of concepts",
+                    "Multiple learning models makes it accessible for any student"],
+                  ["Optimal guide for new teachers",
+                    "Comes with assets and resources, organized by lesson and standard",
+                    "One-stop-shop for plans, presentations, and supplemental resources"],
+                  ["Teach in the order you choose",
+                    "Collect all your teaching materials in one place: Rearrange content for your teaching style",
+                    "Make material instantly available to students with a few clicks"],
+                  ["Easy for parents to stay connected to classroom",
+                    "Parents can access student progress reports online",
+                    "Provides refresher material and tutorials online for interested parents"],
+                  ["The most up-to-date curriculum for your budget",
+                    "Modern digital platforms and Access to 6-12 curriculum for efficient use of budgets",
+                    "Universal device optimization for efficient technology spending"],
+                  ["Works seamlessly on all devices",
+                    "Cloud-based software works on any device",
+                    "Safe website for students to surf at school or at home"],
+                  ["The most current content",
+                    "Online platform with current content that’s researched, proven, teacher-approved",
+                    "Universal device optimization for efficient technology spending"],
+                  ["Customize to your teaching style",
+                    "Create new or edit existing interactive lesson presentations",
+                    "Plan, leave notes and assign homework all from one place"],
+                  ["Cost Effective",
+                    "Includes supplementary materials for above and below learners",
+                    "Monitor student progress and administer extra support all from one place"],
+                  ["Customized Printing",
+                    "Print workbooks for students with limited technology access",
+                    "Design unique note-taking pages to help guide students through lessons"],
+                  ["All your files organized in one place",
+                    "Easy prep: plan, teach, assess, remediate all from the online platform",
+                    "Browse multimedia assets, worksheets, and activities by standard or lesson"],
+                  ["Easy to integrate technology into the classroom",
+                    "Huge library of engagement resources",
+                    "Bring labs and lessons online with follow up exercises "]];
+
+                this.textToLines = function (text, CHARLIMIT) {
+                  if(typeof(CHARLIMIT) === 'undefined') CHARLIMIT = 32;
+                  var textLines = [];
+                  var tempLine, tempArray;
+                  var tempText = text;
+                  while(tempText.length > 0) {
+                    tempLine = $.trim(tempText.substr(0, CHARLIMIT));
+                    // Test if we're in the middle of a word
+                    if(tempText.charAt(CHARLIMIT) !== ' ' && tempText.charAt(CHARLIMIT) !== '') {
+                      // Remove anything after the last space
+                      tempArray = tempLine.split(' ');
+                      tempArray.pop();
+                      tempLine = tempArray.join(' ');
+                    }
+                    textLines.push(tempLine);
+                    tempText = tempText.substr(tempLine.length+1);
+                  }
+                  return textLines;
+                };
+
+                this.display = function (circle) {
+                  this.removeObjectSet();
+
+                  var track = circle.data('track');
+                  if([39, 36, 27, 4, 29].indexOf(track) > -1) {
+                    this.direction = 'bottomright';
+
+                  } else if([2, 32, 10, 14, 5].indexOf(track) > -1) {
+                    this.direction = 'bottomleft';
+
+                  } else if([37, 16, 28, 35, 9, 15, 26, 7, 19, 6, 38, 17, 24, 30, 23, 20].indexOf(track) > -1) {
+                    this.direction = 'topright';
+
+                  } else if([34, 18, 11, 8, 22, 1, 33, 3, 40, 25, 13, 12, 31, 21].indexOf(track) > -1) {
+                    this.direction = 'topleft';
+
+                  } else {
+                    // this shouldn't happen
+                    this.direction = 'bottomright';
+                  }
+
+                  var paper = circle.paper;
+                  var objectSet = paper.set();
+                  var bbox = circle.getBBox();
+                  var middle = bbox.x + bbox.width/2;
+
+                  var initialPath, p, finalPath, rotation, transformString;
+                  if(['topright', 'topleft'].indexOf(this.direction) > -1) {
+
+                    initialPath = "M" + (middle + 0.5) + "," + bbox.y +
+                      "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,1 " + (middle - 0.5) + "," + bbox.y +
+                      "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,0 " + (middle + 0.5) + "," + bbox.y + "Z";
+
+                    p = paper.path(initialPath).attr({
+                      fill: '0-rgb(0,151,219)-rgb(0,100,178)',
+                      'stroke-opacity': 0,
+                      opacity:.7
+                    });
+
+                    finalPath = "M" + (middle + 0.5) + "," + bbox.y +
+                      "A200,200 0 1,1 " + (middle - 0.5) + "," + bbox.y +
+                      "A" + (bbox.width / 2 - 1) + "," + (bbox.width / 2 - 1) + " 0 1,0 " + (middle + 0.5) + "," + bbox.y + "Z";
+
+                    rotation = this.direction === 'topright' ? -135 : 135;
+                    transformString = "R" + rotation + "," + middle + "," + (bbox.y + bbox.height / 2);
+
+                  } else if(['bottomright', 'bottomleft'].indexOf(this.direction) > -1) {
+
+                    initialPath = "M" + (middle - 0.5) + "," + (bbox.y + bbox.height) +
+                      "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,1 " + (middle + 0.5) + "," + (bbox.y + bbox.height) +
+                      "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,0 " + (middle - 0.5) + "," + (bbox.y + bbox.height) + "Z";
+
+                    p = paper.path(initialPath).attr({
+                      fill: '0-rgb(0,151,219)-rgb(0,100,178)',
+                      'stroke-opacity': 0,
+                      opacity:.7
+                    });
+
+                    finalPath = "M" + (middle - 0.5) + "," + (bbox.y + bbox.height) +
+                      "A200,200 0 1,1 " + (middle + 0.5) + "," + (bbox.y + bbox.height) +
+                      "A" + (bbox.width / 2 - 1) + "," + (bbox.width / 2 - 1) + " 0 1,0 " + (middle - 0.5) + "," + (bbox.y + bbox.height) + "Z";
+
+                    rotation = this.direction === 'bottomleft' ? -180 : 180;
+                    transformString = "R" + rotation + "," + middle + "," + (bbox.y + bbox.height / 2);
+
+                  }
+
+                  p.animate({path: finalPath, transform: transformString}, 500, 'linear', function () {
+                    $('body').trigger('blurbs:animationComplete', [self]);
+                  });
+
+                  objectSet.push(p);
+
+                  var objectAnimationDuration = 1250;
+
+                  var x, y;
+                  if(this.direction.search('top') > -1) {
+                    y = bbox.y - 155;
+
+                    if(this.direction.search('right') > -1) {
+                      x = bbox.x;
+                    } else {
+                      x = bbox.x - 210;
+                    }
+                  } else {
+                    y = bbox.y + 120;
+                    x = bbox.x - 115;
+                  }
+
+                  var calloutArray = this.callouts[track-1];
+
+                  var i, j, k, tempY;
+                  var textLines = [];
+                  for(i=0; calloutArray[i]; i++) {
+
+                    textLines.push(this.textToLines(calloutArray[i], i === 0 ? 34 : 48));
+                    for(j=0; textLines[i][j]; j++) {
+                      tempY = y +
+                        (i > 0 ? 30 * textLines[0].length : 0) +
+                        (i > 1 ? 25 * textLines[1].length : 0) +
+                        (i > 2 ? 25 * textLines[2].length : 0);
+
+                      var t = paper.text(x, tempY + j * (i === 0 ? 28 : 20), textLines[i][j]).attr({
+                        'stroke-opacity': 0,
+                        fill: 'white',
+                        'text-anchor': 'start',
+                        'font-size': i === 0 ? 20 : 14,
+                        'font-family': 'Arial, sans-serif',
+                        'fill-opacity': 0
+                      }).animate({'fill-opacity': 1}, objectAnimationDuration);
+
+                      objectSet.push(t);
+                    }
+                  }
+
+                  tempY = y +
+                    (i > 0 ? 30 * textLines[0].length : 0) +
+                    (i > 1 ? 25 * textLines[1].length : 0) +
+                    (i > 2 ? 25 * textLines[2].length : 0) +
+                    (i > 3 ? 25 * textLines[3].length : 0) + 10;
+
+                  var tempX;
+
+                  if(this.direction.search('bottom') > -1) {
+                    tempX = bbox.x + bbox.width / 2;
+                  } else {
+                    tempX = this.direction.search('left') > -1 ? bbox.x - 75 : bbox.x + 150;
+                  }
+
+                  var link = paper.text(tempX, tempY, 'Learn more').attr({
+                    'stroke-opacity': 0,
+                    fill: 'white',
+                    'text-anchor': 'middle',
+                    'font-size': 14,
+                    'font-weight': 'bold',
+                    'font-family': 'Arial, sans-serif',
+                    'fill-opacity': 0,
+                    cursor: 'pointer'
+                  }).animate({'fill-opacity': 1}, objectAnimationDuration).click(function () {
+                      $('#nav-link-list a.about').trigger('click');
+                    });
+
+                  objectSet.push(link);
+
+                  var linkBBox = link.getBBox();
+                  var linePath = 'M' + linkBBox.x + ',' + (linkBBox.y + linkBBox.height) +
+                    'L' + (linkBBox.x + linkBBox.width) + ',' + (linkBBox.y + linkBBox.height) + 'Z';
+                  var line = paper.path(linePath).attr({
+                    stroke: 'white',
+                    'stroke-width': 1,
+                    fill: 'white',
+                    opacity: 0,
+                    cursor: 'pointer'
+                  }).animate({opacity: 1}, objectAnimationDuration).click(function () {
+                      $('#nav-link-list a.about').trigger('click');
+                    });
+
+                  objectSet.push(line);
+
+                  var image = paper.image('img/circle-close-x.png', tempX - 23, tempY + 30, 46, 46).attr({
+                    opacity: 0,
+                    cursor: 'pointer'
+                  }).animate({opacity: 1}, objectAnimationDuration).click(function () {
+                      interpreter.gen({
+                        name: 'leaveSpecific'
+                      });
+                      self.removeObjectSet();
+                    });
+
+                  objectSet.push(image);
+
+                  this.objectSet = objectSet;
+                };
+
+                this.removeObjectSet = function () {
+                  if(this.objectSet !== null) {
+                    var tempObjectSet = this.objectSet;
+                    this.objectSet = null;
+                    tempObjectSet.animate({opacity: 0}, 150, '<>', function () {
+                      this.remove();
+                    })
+                  }
+                };
+
+              };
+
+              window.blurb = new Blurb();
+
+            }(window, $, interpreter));
+
           });
         });
 
       }(window, $, Raphael, _, require));
-
-      /* BLURBS */
-      (function(window, $){
-
-        var Blurb = function(){
-          var self = this;
-
-          this.objectSet = null;
-          this.callouts = [["Quality digital content for safe student use",
-            "Hands-on activities and digital assets complement classroom learning",
-            "Designed for group and independent assignments. No pop-ups or ads."],
-            ["Complete integration makes the best use of my time",
-              "Dynamic and editable yearly planning tool",
-              "Instantly pull reports of student comprehension of standards"],
-            ["Dynamic lessons with a few classroom devices",
-              "Manage the classroom from a single point: present activities using your laptop and IWB",
-              "Online labs for seamless collaboration and on-demand printing"],
-            ["21st century skill-building",
-              "Multi-strategy learning options and assessments available online",
-              "Web 2.0 tools prepare students for college and online standardized tests"],
-            ["Interactives features get students engaged",
-              "Interactive iPad tools for dynamic explanations and learning",
-              "Videos, tutorials, virtual labs, and games bring content to life"],
-            ["Online personal tutors build confidence",
-              "Each lesson has videos and guidance for continuous access to concepts",
-              "Games and animation for hands-on learning beyond the classroom"],
-            ["Integrate coursework with social media",
-              "Students use social networking features to discuss lessons and homework",
-              "Monitor the conversation to keep tabs on where students struggle"],
-            ["Real-world interactive experiences",
-              "Online assessments with simple auto-grade online assessments",
-              "Diverse, multimedia homework options for matching learning style to student need"],
-            ["Out-of-class support for a flipped classroom",
-              "Reading and multimedia assets for at home learning",
-              "Collaborative lessons for classroom support flipped learning model"],
-            ["Seamlessly blend digital and print",
-              "Customize note-taking guides for your program",
-              "Print drills and homeworks on demand"],
-            ["Real-time progress reports",
-              "Teachers and administrators can assess student progress",
-              "Seamless integration for administrators"],
-            ["Instant Assessment, Remediation, and Enrichment",
-              "Instantly assess student learning levels",
-              "Access to materials from all grades",
-              "Reach content from other grades for reteach and challenge exercises"],
-              ["Optimized lessons for ELL students",
-              "Emphasis on vocabulary development builds language and skill comprehension",
-              "Hands-on, animated supplements provide extra support for language challenge"],
-            ["Virtual labs for flawless experiments",
-              "Visual and experiential learning despite budgets",
-              "Online access to labs for absent students"],
-            ["Interactive tools backed by real lessons",
-              "Virtual labs, animations, and tutorials keep students engaged",
-              "Save all videos and materials you’ve collected in the planner"],
-            ["Curated lessons with creative teaching styles",
-              "Develop unique programs",
-              "Import and house additional material onto CINCH platform"],
-            ["Streamline accountability",
-              "Pull instant assessments of student progress",
-              "Both teachers and administrators can track classroom progress"],
-            ["Online, Customized Assessments",
-              "Customize assessment for individual students",
-              "No more copying: assessments assigned and completed online",
-              "Prepares students for new online state assessments"],
-            ["Activities that capture student attention",
-              "Tools for making lessons more dynamic",
-              "Students have fun with wideos, virtual labs, social networking tools"],
-            ["Collaboratively plan the week from the CINCH app",
-              "Planner tool makes it easy to follow scope and sequence",
-              "Plan as a group and tweak day-by-day using the CINCH app"],
-            ["Universal access",
-              "On-demand printing and smartphone access ensures all students can access homework",
-              "Tailor homework help to specific student needs"],
-            ["Transforming iPads into classroom tools",
-              "Cloud-based system allows you to access, save, and resume work from multiple devices",
-              "Tools and resources optimized for iPad integration"],
-            ["Teach, assign, assess: all in one place",
-              "Cloud-based system allows access from any device",
-              "Tailor lessons to your teaching style"],
-            ["Customizable IWB activities",
-              "Create original, dynamic IWB presentations, preloaded with slides that you can customize",
-              "Keep IWB presentations and any digital content in one place"],
-            ["Easy to adopt CCSS",
-              "Browse, search, and assess student comprehension by standard",
-              "Align standard reports with lessons for easy CCSS integration"],
-            ["Build a custom scope and sequence",
-              "Digitally distribute your curriculum and order custom printing of textbooks and materials",
-              "Create unique curriculum to match my curriculum map"],
-            ["Easy to use and customize",
-              "Easy to navigate and simple customization tool makes it easy to add additional content",
-              "Preloaded with resources for standard scope and sequences"],
-            ["Cloud-based software works on any device",
-              "Works on any device, providing flexibility to update technology as needed",
-              "Perfect for adapting to changing classroom technology"],
-            ["Makes it easy to align curriculum with CCSS",
-              "Align curriculum map with standards and assess students understanding of concepts",
-              "Multiple learning models makes it accessible for any student"],
-            ["Optimal guide for new teachers",
-              "Comes with assets and resources, organized by lesson and standard",
-              "One-stop-shop for plans, presentations, and supplemental resources"],
-            ["Teach in the order you choose",
-              "Collect all your teaching materials in one place: Rearrange content for your teaching style",
-              "Make material instantly available to students with a few clicks"],
-            ["Easy for parents to stay connected to classroom",
-              "Parents can access student progress reports online",
-              "Provides refresher material and tutorials online for interested parents"],
-            ["The most up-to-date curriculum for your budget",
-              "Modern digital platforms and Access to 6-12 curriculum for efficient use of budgets",
-              "Universal device optimization for efficient technology spending"],
-            ["Works seamlessly on all devices",
-              "Cloud-based software works on any device",
-              "Safe website for students to surf at school or at home"],
-            ["The most current content",
-              "Online platform with current content that’s researched, proven, teacher-approved",
-              "Universal device optimization for efficient technology spending"],
-            ["Customize to your teaching style",
-              "Create new or edit existing interactive lesson presentations",
-              "Plan, leave notes and assign homework all from one place"],
-            ["Cost Effective",
-              "Includes supplementary materials for above and below learners",
-              "Monitor student progress and administer extra support all from one place"],
-            ["Customized Printing",
-              "Print workbooks for students with limited technology access",
-              "Design unique note-taking pages to help guide students through lessons"],
-            ["All your files organized in one place",
-              "Easy prep: plan, teach, assess, remediate all from the online platform",
-              "Browse multimedia assets, worksheets, and activities by standard or lesson"],
-            ["Easy to integrate technology into the classroom",
-              "Huge library of engagement resources",
-              "Bring labs and lessons online with follow up exercises "]];
-
-          this.textToLines = function (text, CHARLIMIT) {
-            if(typeof(CHARLIMIT) === 'undefined') CHARLIMIT = 32;
-            var textLines = [];
-            var tempLine, tempArray;
-            var tempText = text;
-            while(tempText.length > 0) {
-              tempLine = $.trim(tempText.substr(0, CHARLIMIT));
-              // Test if we're in the middle of a word
-              if(tempText.charAt(CHARLIMIT) !== ' ' && tempText.charAt(CHARLIMIT) !== '') {
-                // Remove anything after the last space
-                tempArray = tempLine.split(' ');
-                tempArray.pop();
-                tempLine = tempArray.join(' ');
-              }
-              textLines.push(tempLine);
-              tempText = tempText.substr(tempLine.length+1);
-            }
-            return textLines;
-          };
-
-          this.display = function (circle) {
-            this.removeObjectSet();
-
-            var track = circle.data('track');
-            if([39, 36, 27, 4, 29].indexOf(track) > -1) {
-              this.direction = 'bottomright';
-
-            } else if([2, 32, 10, 14, 5].indexOf(track) > -1) {
-              this.direction = 'bottomleft';
-
-            } else if([37, 16, 28, 35, 9, 15, 26, 7, 19, 6, 38, 17, 24, 30, 23, 20].indexOf(track) > -1) {
-              this.direction = 'topright';
-
-            } else if([34, 18, 11, 8, 22, 1, 33, 3, 40, 25, 13, 12, 31, 21].indexOf(track) > -1) {
-              this.direction = 'topleft';
-
-            } else {
-              // this shouldn't happen
-              this.direction = 'bottomright';
-            }
-
-            var paper = circle.paper;
-            var objectSet = paper.set();
-            var bbox = circle.getBBox();
-            var middle = bbox.x + bbox.width/2;
-
-            var initialPath, p, finalPath, rotation, transformString;
-            if(['topright', 'topleft'].indexOf(this.direction) > -1) {
-
-              initialPath = "M" + (middle + 0.5) + "," + bbox.y +
-                "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,1 " + (middle - 0.5) + "," + bbox.y +
-                "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,0 " + (middle + 0.5) + "," + bbox.y + "Z";
-
-              p = paper.path(initialPath).attr({
-                fill: '0-rgb(0,151,219)-rgb(0,100,178)',
-                'stroke-opacity': 0,
-                opacity:.7
-              });
-
-              finalPath = "M" + (middle + 0.5) + "," + bbox.y +
-                "A200,200 0 1,1 " + (middle - 0.5) + "," + bbox.y +
-                "A" + (bbox.width / 2 - 1) + "," + (bbox.width / 2 - 1) + " 0 1,0 " + (middle + 0.5) + "," + bbox.y + "Z";
-
-              rotation = this.direction === 'topright' ? -135 : 135;
-              transformString = "R" + rotation + "," + middle + "," + (bbox.y + bbox.height / 2);
-
-            } else if(['bottomright', 'bottomleft'].indexOf(this.direction) > -1) {
-
-              initialPath = "M" + (middle - 0.5) + "," + (bbox.y + bbox.height) +
-                "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,1 " + (middle + 0.5) + "," + (bbox.y + bbox.height) +
-                "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,0 " + (middle - 0.5) + "," + (bbox.y + bbox.height) + "Z";
-
-              p = paper.path(initialPath).attr({
-                fill: '0-rgb(0,151,219)-rgb(0,100,178)',
-                'stroke-opacity': 0,
-                opacity:.7
-              });
-
-              finalPath = "M" + (middle - 0.5) + "," + (bbox.y + bbox.height) +
-                "A200,200 0 1,1 " + (middle + 0.5) + "," + (bbox.y + bbox.height) +
-                "A" + (bbox.width / 2 - 1) + "," + (bbox.width / 2 - 1) + " 0 1,0 " + (middle - 0.5) + "," + (bbox.y + bbox.height) + "Z";
-
-              rotation = this.direction === 'bottomleft' ? -180 : 180;
-              transformString = "R" + rotation + "," + middle + "," + (bbox.y + bbox.height / 2);
-
-            }
-
-            p.animate({path: finalPath, transform: transformString}, 500, 'linear', function () {
-              $('body').trigger('blurbs:animationComplete', [self]);
-            });
-
-            objectSet.push(p);
-
-            var objectAnimationDuration = 1250;
-
-            var x, y;
-            if(this.direction.search('top') > -1) {
-              y = bbox.y - 155;
-
-              if(this.direction.search('right') > -1) {
-                x = bbox.x;
-              } else {
-                x = bbox.x - 210;
-              }
-            } else {
-              y = bbox.y + 120;
-              x = bbox.x - 115;
-            }
-
-            var calloutArray = this.callouts[track-1];
-
-            var i, j, k, tempY;
-            var textLines = [];
-            for(i=0; calloutArray[i]; i++) {
-
-              textLines.push(this.textToLines(calloutArray[i], i === 0 ? 34 : 48));
-              for(j=0; textLines[i][j]; j++) {
-                tempY = y +
-                  (i > 0 ? 30 * textLines[0].length : 0) +
-                  (i > 1 ? 25 * textLines[1].length : 0) +
-                  (i > 2 ? 25 * textLines[2].length : 0);
-
-                var t = paper.text(x, tempY + j * (i === 0 ? 28 : 20), textLines[i][j]).attr({
-                  'stroke-opacity': 0,
-                  fill: 'white',
-                  'text-anchor': 'start',
-                  'font-size': i === 0 ? 20 : 14,
-                  'font-family': 'Arial, sans-serif',
-                  'fill-opacity': 0
-                }).animate({'fill-opacity': 1}, objectAnimationDuration);
-
-                objectSet.push(t);
-              }
-            }
-
-            tempY = y +
-              (i > 0 ? 30 * textLines[0].length : 0) +
-              (i > 1 ? 25 * textLines[1].length : 0) +
-              (i > 2 ? 25 * textLines[2].length : 0) +
-              (i > 3 ? 25 * textLines[3].length : 0) + 10;
-
-            var tempX;
-
-            if(this.direction.search('bottom') > -1) {
-              tempX = bbox.x + bbox.width / 2;
-            } else {
-              tempX = this.direction.search('left') > -1 ? bbox.x - 75 : bbox.x + 150;
-            }
-
-            var link = paper.text(tempX, tempY, 'Learn more').attr({
-              'stroke-opacity': 0,
-              fill: 'white',
-              'text-anchor': 'middle',
-              'font-size': 14,
-              'font-weight': 'bold',
-              'font-family': 'Arial, sans-serif',
-              'fill-opacity': 0,
-              cursor: 'pointer'
-            }).animate({'fill-opacity': 1}, objectAnimationDuration).click(function () {
-                $('#nav-link-list a.about').trigger('click');
-              });
-
-            objectSet.push(link);
-
-            var linkBBox = link.getBBox();
-            var linePath = 'M' + linkBBox.x + ',' + (linkBBox.y + linkBBox.height) +
-              'L' + (linkBBox.x + linkBBox.width) + ',' + (linkBBox.y + linkBBox.height) + 'Z';
-            var line = paper.path(linePath).attr({
-              stroke: 'white',
-              'stroke-width': 1,
-              fill: 'white',
-              opacity: 0,
-              cursor: 'pointer'
-            }).animate({opacity: 1}, objectAnimationDuration).click(function () {
-                $('#nav-link-list a.about').trigger('click');
-              });
-
-            objectSet.push(line);
-
-            var image = paper.image('img/circle-close-x.png', tempX - 23, tempY + 30, 46, 46).attr({
-              opacity: 0,
-              cursor: 'pointer'
-            }).animate({opacity: 1}, objectAnimationDuration).click(function () {
-                self.removeObjectSet();
-              });
-
-            objectSet.push(image);
-
-            this.objectSet = objectSet;
-          };
-
-          this.removeObjectSet = function () {
-            if(this.objectSet !== null) {
-              var tempObjectSet = this.objectSet;
-              this.objectSet = null;
-              tempObjectSet.animate({opacity: 0}, 150, '<>', function () {
-                this.remove();
-              })
-            }
-          };
-
-        };
-
-        window.blurb = new Blurb();
-
-      }(window, $));
 
       /* MEDIA SUBSTRATE */
       (function(window, $, Modernizr){
@@ -1269,6 +1272,7 @@
               if(track === 0){
                 $aud.off('canplaythrough').one('canplaythrough',function(){
                   self.video.play();
+                  self.aud.currentTime = self.video.currentTime;
                   self.aud.play();
                 });
                 loadTrack(0);
