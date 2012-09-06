@@ -10,6 +10,7 @@
         <data id="duration"/>
         <data id="circle"/>
         <data id="track"/>
+        <data id="startPoint"/>
     </datamodel>
 
     <state id="initial-default">
@@ -75,13 +76,14 @@
             <transition event="toSpecific" target="loadSpecific">
                 <assign location="circle" expr="_event.data.circle"/>
                 <assign location="track" expr="_event.data.track"/>
+                <assign location="startPoint" expr="_event.data.startPoint"/>
             </transition>
         </state>
 
         <state id="loadSpecific">
             <onentry>
                 <script>
-                    media.load(track);
+                    media.load(track, startPoint);
                     blurb.display(circle);
                 </script>
             </onentry>
@@ -121,6 +123,7 @@
                 <transition event="toSpecific" target="loadSpecific">
                     <assign location="circle" expr="_event.data.circle"/>
                     <assign location="track" expr="_event.data.track"/>
+                    <assign location="startPoint" expr="_event.data.startPoint"/>
                 </transition>
             </state>
         </state>

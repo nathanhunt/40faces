@@ -829,7 +829,12 @@
                   19, 6, 38, 17, 3, 40, 25, 13,
                   24, 30, 23, 20, 12, 31, 21],
 
-                seek: []
+                seek: [9, 3, 6, 1.8,
+                  3, 4, 0, 1, 6.5, 3,
+                  3, 5, 1.8, 4, 6.5, 0, 10.3,
+                  1.8, 0.5, 0.8, 0, 9, 7, 9, 0,
+                  1, 1.8, 9, 0.5, 5, 0, 0.5, 0,
+                  4, 3, 0.5, 6, 1.8, 0.5, 7]
               };
 
               var offset = {
@@ -852,13 +857,15 @@
                 }])[0];
 
                 c.data('track', circleAttrs.track[h]);
+                c.data('seek', circleAttrs.seek[h]);
 
                 c.click(function(){
                   interpreter.gen({
                     name: 'toSpecific',
                     data: {
                       circle: this,
-                      track: this.data('track')
+                      track: this.data('track'),
+                      startPoint: this.data('seek')
                     }
                   });
                 });
@@ -1188,15 +1195,18 @@
             //SET UP API
             this.play = function(track){
               if(track === 0){
-                $aud.off('canplaythrough').on('canplaythrough',function(){
+                $aud.off('canplaythrough').one('canplaythrough',function(){
                   self.video.play();
                   self.aud.play();
                 });
                 loadTrack(0);
               }else{
+                $vid.off('playing').one('playing',function(){
+                  self.aud.play();
+                });
                 this.video.play();
-                this.aud.play();
               }
+
             };
 
             this.pause = function(){
@@ -1214,10 +1224,14 @@
               this.aud.currentTime = t;
             };
 
-            this.load = function(track){
-              this.stop();
+            this.load = function(track, seek){
+              this.pause();
 
-              $aud.off('canplaythrough').on('canplaythrough',function(){
+              $aud.off('loadedmetadata').one('loadedmetadata',function(){
+                self.seek(seek);
+              });
+
+              $aud.off('canplaythrough').one('canplaythrough',function(){
                 $body.trigger('audioLoaded',[self, track, self.aud]);
               });
 
