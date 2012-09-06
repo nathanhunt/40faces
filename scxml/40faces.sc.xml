@@ -98,7 +98,7 @@
             <state id="specificReady">
                 <transition event="leaveSpecific" target="leaveSpecific"/>
                 <transition event="toSpecific" target="loadSpecific">
-                    <assign location="track" expr="_event.data.track"/>
+                    <assign location="circle" expr="_event.data.circle"/>
                 </transition>
             </state>
         </state>
