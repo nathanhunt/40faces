@@ -935,8 +935,12 @@
 
       //SET UP API
       this.play = function(){
-        this.video.play();
-        this.aud.play();
+        if(typeof this.aud.currentIndex !== 'undefined'){
+          this.aud.play(this.aud.currentIndex);
+        }else{
+          this.aud.play(0);
+          this.video.seek(0);
+        }
       };
 
       this.pause = function(){
@@ -945,8 +949,8 @@
       };
 
       this.stop = function(){
-        this.video.stop();
-        this.aud.stop();
+        this.video.pause().seek(0);
+        this.aud.pause().seek(0);
       };
 
       this.seek = function(t){
@@ -954,7 +958,21 @@
         this.aud.seek(t);
       };
 
+      this.aud.onClipAdd(function(Clip, index){
+        self.aud.currentClip = Clip;
+        self.aud.currentIndex = index;
+        Clip.onStart(function(){
+          self.video.seek(0);
+        });
+      });
+
       this.load = function(track){
+        this.pause();
+        this.aud.addClip('audio/' + zeroPad(track, 2) + '.m4a');
+        var trigger = function(){
+          $body.trigger('audioLoaded', [self, track, self.aud]);
+        };
+        setTimeout(trigger, 0);
       };
 
     }
