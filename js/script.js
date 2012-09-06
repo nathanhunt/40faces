@@ -1283,6 +1283,12 @@
                 this.video.play();
               }
 
+              $vid.off('ended').on('ended',function(){
+                self.video.currentTime = 0;
+                self.aud.currentTime = 0;
+                self.play();
+              });
+
             };
 
             this.pause = function(){
