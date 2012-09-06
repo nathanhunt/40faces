@@ -829,7 +829,9 @@
                   37, 16, 28, 35, 34, 18, 11,
                   9, 15, 26, 7, 8, 22, 1, 33,
                   19, 6, 38, 17, 3, 40, 25, 13,
-                  24, 30, 23, 20, 12, 31, 21]
+                  24, 30, 23, 20, 12, 31, 21],
+
+                seek: []
               };
 
               var offset = {
@@ -1256,9 +1258,17 @@
             loadTrack(0);
 
             //SET UP API
-            this.play = function(){
-              this.video.play();
-              this.aud.play();
+            this.play = function(track){
+              if(track === 0){
+                $aud.off('canplaythrough').on('canplaythrough',function(){
+                  self.video.play();
+                  self.aud.play();
+                });
+                loadTrack(0);
+              }else{
+                this.video.play();
+                this.aud.play();
+              }
             };
 
             this.pause = function(){
