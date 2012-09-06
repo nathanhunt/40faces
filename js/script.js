@@ -1053,6 +1053,9 @@
                   var middle = bbox.x + bbox.width/2;
 
                   var initialPath, p, finalPath, rotation, transformString;
+
+                  var o = 0.95;
+
                   if(['topright', 'topleft'].indexOf(this.direction) > -1) {
 
                     initialPath = "M" + (middle + 0.5) + "," + bbox.y +
@@ -1060,9 +1063,8 @@
                       "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,0 " + (middle + 0.5) + "," + bbox.y + "Z";
 
                     p = paper.path(initialPath).attr({
-                      fill: '0-rgb(0,151,219)-rgb(0,100,178)',
-                      'stroke-opacity': 0,
-                      opacity:.7
+                      fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
+                      'stroke-opacity': 0
                     });
 
                     finalPath = "M" + (middle + 0.5) + "," + bbox.y +
@@ -1079,9 +1081,8 @@
                       "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,0 " + (middle - 0.5) + "," + (bbox.y + bbox.height) + "Z";
 
                     p = paper.path(initialPath).attr({
-                      fill: '0-rgb(0,151,219)-rgb(0,100,178)',
-                      'stroke-opacity': 0,
-                      opacity:.7
+                      fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
+                      'stroke-opacity': 0
                     });
 
                     finalPath = "M" + (middle - 0.5) + "," + (bbox.y + bbox.height) +
