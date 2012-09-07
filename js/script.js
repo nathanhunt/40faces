@@ -1333,7 +1333,7 @@
 
           }else{ ////////////////////////////////////////////////////////////////////
 
-            this.video = $f(0).startBuffering();
+            this.video = $f(0).play();
             this.aud = $f(1);
 
             //TRIGGERING COMPLETE AT THE RIGHT MOMENT
@@ -1394,8 +1394,10 @@
 //                self.aud.seek(self.aud.currentSeek);
 //                self.video.seek(self.aud.currentSeek);
               });
-              Clip.onBeforeFinish(function(){
-                self.video.stop().play();
+              Clip.onFinish(function(){
+                self.aud.getClip(index).onStart(function(){
+                  self.video.stop().play();
+                });
                 self.aud.stop().play(index);
               });
               self.aud.play(index);
