@@ -275,6 +275,13 @@ td { vertical-align: top; }
     position: relative;
 }
 
+#contactPaper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 99999;
+}
+
 #viewport, #hitAreas {
     width: 800px;
     height: 600px;
