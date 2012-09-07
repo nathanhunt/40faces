@@ -40,7 +40,6 @@
           ''+
           '    <div role="video" id="video">'+
           '      <video class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop">'+
-          '        <source src="video/grid.flv" type="video/x-flv" />'+
           '        <source src="video/grid.mp4" type="video/mp4" />'+
           '        <source src="video/grid.ogv" type="video/ogg" />'+
           '      </video>'+
