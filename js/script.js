@@ -39,11 +39,11 @@
           '  <div role="viewport" id="viewport">'+
           ''+
           '    <div role="video" id="video">'+
-          '      <video class="faces" id="facesVideo" preload="auto">'+
+          '      <video class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto">'+
           '        <source src="video/grid.mp4" type="video/mp4" />'+
           '        <source src="video/grid.ogv" type="video/ogg" />'+
           '      </video>'+
-          '      <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/x-m4a" preload="auto"></audio>'+
+          '      <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/x-m4a" preload="auto" autobuffer="autobuffer"></audio>'+
           '    </div>'+
           ''+
           '    <div role="occluder" id="occluder"></div>'+
@@ -1333,17 +1333,8 @@
 
           }else{ ////////////////////////////////////////////////////////////////////
 
-            //VIDEO BUSINESS
-            this.video = $f(0);
-            setTimeout(function(){
-              self.video.startBuffering();
-            },0);
-
-            //AUDIO BUSINESS
+            this.video = $f(0).startBuffering();
             this.aud = $f(1);
-            setTimeout(function(){
-              self.aud.startBuffering();
-            },0);
 
             //TRIGGERING COMPLETE AT THE RIGHT MOMENT
             var
@@ -1374,7 +1365,18 @@
             });
 
             //SET UP API
-            this.play = function(){
+            this.play = function(track){
+              if(track === 0){
+                this.video.stop().play();
+                this.aud.stop().play(0);
+                this.aud.getClip(0).onBeforeFinish(function(){
+                  self.video.stop().play();
+                  self.aud.stop().play(0);
+                });
+              }else{
+                if(!this.aud.isPlaying()) this.aud.play();
+                if(!this.video.isPlaying()) this.video.play();
+              }
             };
 
             this.pause = function(){
@@ -1382,11 +1384,30 @@
               this.aud.pause();
             };
 
-            this.seek = function(t){
-            };
+            this.aud.onClipAdd(function(Clip, index){
+              self.aud.currentClip = Clip;
+              self.aud.currentIndex = index;
+              Clip.onStart(function(){
+                console.log('New Audio Loaded!');
+                $body.trigger('audioLoaded', [self, self.aud.currentTrack, self.aud]);
+                self.video.play();
+//                self.aud.seek(self.aud.currentSeek);
+//                self.video.seek(self.aud.currentSeek);
+              });
+              Clip.onBeforeFinish(function(){
+                self.video.stop().play();
+                self.aud.stop().play(index);
+              });
+              self.aud.play(index);
+            });
 
-            this.load = function(track){
+            this.load = function(track, seek){
               this.pause();
+              this.aud.currentTrack = track;
+              this.aud.currentSeek = seek;
+              this.aud.addClip({
+                url: 'audio/' + zeroPad(track, 2) + '.m4a'
+              });
             };
 
           }
