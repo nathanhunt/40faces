@@ -39,11 +39,12 @@
           '  <div role="viewport" id="viewport">'+
           ''+
           '    <div role="video" id="video">'+
-          '      <video class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto">'+
+          '      <video class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop">'+
+          '        <source src="video/grid.flv" type="video/x-flv" />'+
           '        <source src="video/grid.mp4" type="video/mp4" />'+
           '        <source src="video/grid.ogv" type="video/ogg" />'+
           '      </video>'+
-          '      <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/x-m4a" preload="auto" autobuffer="autobuffer"></audio>'+
+          '      <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/mp4" preload="auto" autobuffer="autobuffer"></audio>'+
           '    </div>'+
           ''+
           '    <div role="occluder" id="occluder"></div>'+
@@ -1329,78 +1330,75 @@
           }else{ ////////////////////////////////////////////////////////////////////
 
             this.video = $f(0).play();
-            this.aud = $f(1);
+            this.audio = $f(1);
+            this.currentChannel = 0;
+
+            this.vReady = $.Deferred(function(dfd){
+              self.video.getClip(0).onStart(function(){
+                console.log('Video ready!');
+                self.video.pause();
+                dfd.resolve();
+              });
+            }).promise();
+
+            this.aReady = $.Deferred(function(dfd){
+              self.aDfd = dfd;
+            }).promise();
+
+            var loadAudio = function(){
+              self.audio.play();
+            };
+
+            var loadChannels = function(){
+              self.audio.stop();
+              console.log('Getting channels!');
+              self.audio.getClip(0).onBegin(function(){self.video.mute()});
+              var c;
+              for(c=1;c<=40;c+=1){
+                self.audio.addClip({
+                  url: 'audio/' + zeroPad(c, 2) + '.m4a',
+                  autoPlay: false,
+                  autoBuffering: true,
+                  scaling: "fit",
+                  fadeInSpeed: 0,
+                  fadeOutSpeed: 0
+                });
+              }
+              self.aDfd.resolve();
+            };
+
+            this.video.isLoaded() ? loadAudio() : this.video.onLoad(loadAudio);
+            this.audio.isLoaded() ? loadChannels() : this.audio.onLoad(loadChannels);
 
             //TRIGGERING COMPLETE AT THE RIGHT MOMENT
-            var
-              vReady = $.Deferred(function(dfd){
-                self.video.getClip(0).onBufferFull(function(){
-                  dfd.resolve();
-                });
-              }).promise(),
-              mainAReady = $.Deferred(function(dfd){
-                self.aud.getClip(0).onBufferFull(function(){
-                  dfd.resolve();
-                });
-              }).promise();
 
-            $.when(vReady).done(function(){
-              self.video.pause().seek(0);
-            });
-
-            $.when(mainAReady).done(function(){
-              self.aud.pause().seek(0);
-            });
-
-            $.when(vReady, mainAReady).done(function(){
+            $.when(this.vReady, this.aReady).done(function(){
+              console.log('Media ready!');
               $body.trigger('media:complete',[self]);
             });
 
-            //SET UP API
-            this.play = function(track){
-              if(track === 0){
-                this.video.stop().play();
-                this.aud.stop().play(0);
-                this.aud.getClip(0).onBeforeFinish(function(){
-                  self.video.stop().play();
-                  self.aud.stop().play(0);
-                });
-              }else{
-                if(!this.aud.isPlaying()) this.aud.play();
-                if(!this.video.isPlaying()) this.video.play();
-              }
+            //THIS IS THE API::::
+
+            this.start = function(track){
+              console.log('Playing!');
+              if(!this.video.isPlaying()) this.video.play();
+            };
+
+            this.load = function(track){
+              var t = 0;
+              if(typeof track !== 'undefined'){t = track}
+              this.start(t);
+              this.currentChannel = t;
+              this.audio.getClip(t).onBegin(function(){
+                self.audio.seek(self.video.getTime());
+                $body.trigger('audioLoaded', [self, t, self.audio]);
+              });
+              this.audio.play(t);
             };
 
             this.pause = function(){
               this.video.pause();
-              this.aud.pause();
-            };
-
-            this.aud.onClipAdd(function(Clip, index){
-              self.aud.currentClip = Clip;
-              self.aud.currentIndex = index;
-              Clip.onStart(function(){
-                $body.trigger('audioLoaded', [self, self.aud.currentTrack, self.aud]);
-                self.video.play();
-//                self.aud.seek(self.aud.currentSeek);
-//                self.video.seek(self.aud.currentSeek);
-              });
-              Clip.onFinish(function(){
-                self.aud.getClip(index).onStart(function(){
-                  self.video.stop().play();
-                });
-                self.aud.stop().play(index);
-              });
-              self.aud.play(index);
-            });
-
-            this.load = function(track, seek){
-              this.pause();
-              this.aud.currentTrack = track;
-              this.aud.currentSeek = seek;
-              this.aud.addClip({
-                url: 'audio/' + zeroPad(track, 2) + '.m4a'
-              });
+              this.audio.pause();
             };
 
           }

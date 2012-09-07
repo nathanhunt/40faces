@@ -26,6 +26,9 @@
         <transition event="readyForMain" target="mainView">
             <assign location="media" expr="_event.data.media"/>
             <assign location="blurb" expr="_event.data.blurb"/>
+            <script>
+                media.load();
+            </script>
         </transition>
     </state>
 
@@ -68,11 +71,6 @@
         </transition>
 
         <state id="general">
-            <onentry>
-                <script>
-                    media.play(0);
-                </script>
-            </onentry>
             <transition event="toSpecific" target="loadSpecific">
                 <assign location="circle" expr="_event.data.circle"/>
                 <assign location="track" expr="_event.data.track"/>
@@ -101,11 +99,6 @@
         </state>
 
         <state id="specific">
-            <onentry>
-                <script>
-                    media.play();
-                </script>
-            </onentry>
             <state id="specificStillAnimating">
                 <transition event="animationComplete" target="specificReady"/>
             </state>

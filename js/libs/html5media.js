@@ -289,7 +289,8 @@
   var H264_FORMAT = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
   var VORBIS_FORMAT = 'audio/ogg; codecs="vorbis"';
   var WEBM_FORMAT  = 'video/webm;';
-  var M4A_FORMAT = 'audio/x-m4a;';
+  var FLV_FORMAT = 'video/x-flv';
+  var M4A_FORMAT = 'audio/mp4;';
   var MP3_FORMAT = 'audio/mpeg;';
   var WAV_FORMAT = 'audio/wav; codecs="1"';
 
@@ -305,7 +306,7 @@
   /**
    * Formats that the fallback Flash player is able to understand.
    */
-  var fallbackFormats = [H264_FORMAT, M4A_FORMAT, MP3_FORMAT];
+  var fallbackFormats = [FLV_FORMAT, H264_FORMAT, M4A_FORMAT, MP3_FORMAT];
 
   /**
    * Known file extensions that can be used to guess media formats in the
@@ -327,7 +328,8 @@
       "3g2": H264_FORMAT,
       "mpg": H264_FORMAT,
       "mpeg": H264_FORMAT,
-      "webm": WEBM_FORMAT
+      "webm": WEBM_FORMAT,
+      "flv": FLV_FORMAT
     },
     audio: {
       "ogg": VORBIS_FORMAT,
