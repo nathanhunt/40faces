@@ -185,16 +185,11 @@
               // Fade out text from about bubbles
             } else if(fromState === 'contact') {
               // TODO: Check for mini bubbles, and destroy them and text inside of them
-              if(typeof(self.contactBubbles.bubbleSet) !== 'undefined') {
-                for(var i=0; self.contactBubbles.bubbleSet[i]; i++) {
-                  self.contactBubbles.bubbleSet[i].remove();
-                }
+              if(typeof(self.contactBubbles.contactPaper) !== 'undefined' && self.contactBubbles.contactPaper !== null) {
+                self.contactBubbles.contactPaper.clear();
+                self.contactBubbles.contactPaper.remove();
+                self.contactBubbles.contactPaper = null;
                 self.contactBubbles.bubbleSet = [];
-              }
-              if(typeof(self.contactBubbles.textSet) !== 'undefined') {
-                for(var i=0; self.contactBubbles.textSet[i]; i++) {
-                  self.contactBubbles.textSet[i].remove();
-                }
                 self.contactBubbles.textSet = [];
               }
             }
@@ -207,111 +202,91 @@
 
             } else if(toState === 'contact') {
               setTimeout((function() {
-                // Create mini bubbles from the left side of the larger bubble, around the bottom, counter-clockwise.
-                var bbox = self.contactBubbles[0].getBBox();
-                var x = bbox.x;
-                var y = bbox.y;
-                var h = bbox.height;
-                var w = bbox.width;
-
-                var x0, x1, x2, x3, y0, y1, y2, y3;
-                x0 = x+w/12;
-                x1 = x+w/12;
-                x2 = x+w*3/5;
-                x3 = x+w;
-
-                y0 = y+h*3/4;
-                y1 = y+h*19/20;
-                y2 = y+h*6/5;
-                y3 = y+h;
-
+                var x, y, h, w, x0, x1, x2, x3, y0, y1, y2, y3;
                 var miniBubbles = [];
-                for(var i=0; i < 5; i++) {
-                  var o = (0.2+(Math.random()*0.3)).toFixed(2);
-                  var b = self.paper.circle(x0, y0, 0).attr({
-                    'stroke-opacity': 0,
-                    fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
-                    'fill-opacity': .4
-                  }).toBack();
-                  miniBubbles.push(b);
-                }
+                var contactPaper = Raphael('contactPaper', 2000, 2000);
 
-                var maxTime = 1000;
-                var maxRadius = 45;
-                for(var i=0; miniBubbles[i]; i++) {
-                  var delay = maxTime/5*i+Math.sqrt(i*5000);
-                  var duration = maxTime-delay;
-                  var finalRadius = maxRadius+Math.pow(i,1.5)*5;
-                  if(typeof(miniBubbles[i+1]) === 'undefined') finalRadius = 200;
-                  animateBubble(miniBubbles[i], delay, duration, maxTime, makeCBXFunction(x0, x1, x2, x3), makeCBYFunction(y0, y1, y2, y3), finalRadius);
-                }
+                if($.browser.msie) {
+                  x = 333;
+                  y = 118;
+                  h = (275-118)*2;
+                  w = (493-333)*2;
 
-                self.contactBubbles['bubbleSet'] = miniBubbles;
+                  x0 = x+w/12;
+                  x1 = x+w/12;
+                  x2 = x+w*3/5;
+                  x3 = x+w;
 
-                // TODO: Put text into largest two bubbles, and set mouseover, mouseout, and click events.
-                setTimeout((function() {
-                  if(self.contactBubbles.bubbleSet[0] && self.contactBubbles.bubbleSet[1]) {
-                    self.contactBubbles['textSet'] = [];
-                    var defaultOpacity = .8;
-                    var hoverOpacity = 1;
+                  y0 = y+h*3/4;
+                  y1 = y+h*19/20;
+                  y2 = y+h*6/5;
+                  y3 = y+h;
 
-                    var mouseOverCallback = function() {
-                      var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
-                      tempBubble.attr({'opacity': hoverOpacity, 'cursor': 'pointer'});
-                    };
+                  var xt = makeCBXFunction(x0, x1, x2, x3);
+                  var yt = makeCBYFunction(y0, y1, y2, y3);
 
-                    var mouseOutCallback = function() {
-                      var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
-                      tempBubble.attr({'opacity': defaultOpacity, 'cursor': 'pointer'});
-                    };
+                  var radii = [45, 35, 28, 20, 10];
+                  var tValues = [1, .75, .55, .33, .1];
 
-                    var clickCallback = function() {
-                      var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
-                      if(tempBubble.textObject.code === 'emailUs') {
-                        window.open('mailto:', '_blank');
-                      } else {
-                        window.open('http://mheducation.force.com/MHE/SEG_Sampling_Leads?id=701C0000000UKSx', '_blank');
-                      }
-                    };
-
-                    var bbox = self.contactBubbles.bubbleSet[1].getBBox();
-                    var emailLink = self.paper.text(bbox.x+bbox.width/2, bbox.y+bbox.height/2, 'Email us').attr({
-                      'text-anchor': 'middle',
+                  for(i=0; i < 5; i++) {
+                    var o = (0.2 + (Math.random() * 0.3)).toFixed(2);
+                    b = contactPaper.circle(xt(tValues[i]), yt(tValues[i]), radii[i]).attr({
                       'stroke-opacity': 0,
-                      'font-family': 'Arial, sans',
-                      'fill': '#ffffff',
-                      'font-size': 15,
-                      'fill-opacity': 0,
-                      'cursor': 'pointer'
-                    }).animate({'fill-opacity':1}, 500);
-
-                    emailLink.mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
-                    self.contactBubbles.bubbleSet[1].attr({'cursor': 'pointer'}).animate({'fill-opacity': defaultOpacity}, 500);
-                    emailLink['bubbleObject'] = self.contactBubbles.bubbleSet[1];
-                    emailLink['code'] = 'emailUs';
-                    self.contactBubbles.bubbleSet[1]['textObject'] = emailLink;
-                    self.contactBubbles['textSet'].push(emailLink);
-
-                    bbox = self.contactBubbles.bubbleSet[0].getBBox();
-                    var contactLink = self.paper.text(bbox.x+bbox.width/2, bbox.y+bbox.height/2, 'Contact\nForm').attr({
-                      'text-anchor': 'middle',
-                      'stroke-opacity': 0,
-                      'font-family': 'Arial, sans',
-                      'fill': '#ffffff',
-                      'font-size': 17,
-                      'fill-opacity': 0,
-                      'cursor': 'pointer'
-                    }).animate({'fill-opacity':1}, 500);
-
-                    contactLink.mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
-                    self.contactBubbles.bubbleSet[0].attr({'cursor': 'pointer'}).animate({'fill-opacity': defaultOpacity}, 500);
-                    contactLink['bubbleObject'] = self.contactBubbles.bubbleSet[0];
-                    contactLink['code'] = 'contactForm';
-                    self.contactBubbles.bubbleSet[0]['textObject'] = contactLink;
-                    self.contactBubbles['textSet'].push(contactLink);
+                      fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
+                      'fill-opacity': 0
+                    }).toBack().animate({'fill-opacity': .4}, 500);
+                    miniBubbles.push(b);
                   }
-                }), maxTime+200);
-              }), duration+10)
+
+                  self.contactBubbles.bubbleSet = miniBubbles;
+                  self.contactBubbles.contactPaper = contactPaper;
+
+                  bindCallbacksToContactBubbles();
+                } else {
+                  var bbox = self.contactBubbles[0].getBBox();
+                  x = bbox.x;
+                  y = bbox.y + 40;
+                  h = bbox.height;
+                  w = bbox.width;
+
+                  x0 = x+w/12;
+                  x1 = x+w/12;
+                  x2 = x+w*3/5;
+                  x3 = x+w;
+
+                  y0 = y+h*3/4;
+                  y1 = y+h*19/20;
+                  y2 = y+h*6/5;
+                  y3 = y+h;
+
+                  // Create mini bubbles from the left side of the larger bubble, around the bottom, counter-clockwise.
+                  for(var i=0; i < 5; i++) {
+                    var o = (0.2+(Math.random()*0.3)).toFixed(2);
+                    b = contactPaper.circle(x0, y0, 0).attr({
+                      'stroke-opacity': 0,
+                      fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
+                      'fill-opacity': .4
+                    }).toBack();
+                    miniBubbles.push(b);
+                  }
+
+                  var maxTime = 1000;
+                  var maxRadius = 45;
+                  for(var i=0; miniBubbles[i]; i++) {
+                    var delay = maxTime/5*i+Math.sqrt(i*5000);
+                    var duration = maxTime-delay;
+                    var finalRadius = maxRadius+Math.pow(i,1.5)*5;
+                    if(typeof(miniBubbles[i+1]) === 'undefined') finalRadius = 200;
+                    animateBubble(miniBubbles[i], delay, duration, maxTime, makeCBXFunction(x0, x1, x2, x3), makeCBYFunction(y0, y1, y2, y3), finalRadius);
+                  }
+
+                  self.contactBubbles.bubbleSet = miniBubbles;
+                  self.contactBubbles.contactPaper = contactPaper;
+
+                  // TODO: Put text into largest two bubbles, and set mouseover, mouseout, and click events.
+                  setTimeout(bindCallbacksToContactBubbles, maxTime+200);
+                }
+              }), duration+10);
             } else if(toState === 'about') {
               setTimeout((function() {
                 var clickInterval = setInterval((function() {
@@ -320,9 +295,80 @@
                     clearInterval(clickInterval);
                   }
                 }), 10);
-              }), duration)
+              }), duration);
             }
           };
+
+          function bindCallbacksToContactBubbles() {
+            if(self.contactBubbles.bubbleSet[0] && self.contactBubbles.bubbleSet[1]) {
+              self.contactBubbles.textSet = [];
+              var defaultOpacity = .8;
+              var hoverOpacity = 1;
+
+              var mouseOverCallback = function() {
+                var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
+                tempBubble.attr({'opacity': hoverOpacity, 'fill-opacity': hoverOpacity, 'cursor': 'pointer'});
+              };
+
+              var mouseOutCallback = function() {
+                var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
+                tempBubble.attr({'opacity': defaultOpacity, 'fill-opacity': defaultOpacity, 'cursor': 'pointer'});
+              };
+
+              var clickCallback = function() {
+                var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
+                if(tempBubble.textObject.code === 'emailUs') {
+                  window.open('mailto:', '_blank');
+                } else {
+                  window.open('http://mheducation.force.com/MHE/SEG_Sampling_Leads?id=701C0000000UKSx', '_blank');
+                }
+              };
+
+              var x, y, bbox;
+
+              bbox = self.contactBubbles.bubbleSet[1].getBBox();
+              x = bbox.x + bbox.width / 2;
+              y = bbox.y + bbox.height / 2;
+              var emailLink = self.contactBubbles.contactPaper.text(x, y, 'Email us').attr({
+                'text-anchor': 'middle',
+                'stroke-opacity': 0,
+                'font-family': 'Arial, sans',
+                'fill': '#ffffff',
+                'font-size': 15,
+                'fill-opacity': 0,
+                'cursor': 'pointer'
+              }).animate({'fill-opacity':1}, 500);
+
+              emailLink.mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
+              self.contactBubbles.bubbleSet[1].mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
+              self.contactBubbles.bubbleSet[1].attr({'cursor': 'pointer'}).animate({'fill-opacity': defaultOpacity}, 500);
+              emailLink['bubbleObject'] = self.contactBubbles.bubbleSet[1];
+              emailLink['code'] = 'emailUs';
+              self.contactBubbles.bubbleSet[1]['textObject'] = emailLink;
+              self.contactBubbles.textSet.push(emailLink);
+
+              bbox = self.contactBubbles.bubbleSet[0].getBBox();
+              x = bbox.x + bbox.width / 2;
+              y = bbox.y + bbox.height / 2;
+              var contactLink = self.contactBubbles.contactPaper.text(x, y, 'Contact\nForm').attr({
+                'text-anchor': 'middle',
+                'stroke-opacity': 0,
+                'font-family': 'Arial, sans',
+                'fill': '#ffffff',
+                'font-size': 17,
+                'fill-opacity': 0,
+                'cursor': 'pointer'
+              }).animate({'fill-opacity':1}, 500);
+
+              contactLink.mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
+              self.contactBubbles.bubbleSet[0].mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
+              self.contactBubbles.bubbleSet[0].attr({'cursor': 'pointer'}).animate({'fill-opacity': defaultOpacity}, 500);
+              contactLink['bubbleObject'] = self.contactBubbles.bubbleSet[0];
+              contactLink['code'] = 'contactForm';
+              self.contactBubbles.bubbleSet[0]['textObject'] = contactLink;
+              self.contactBubbles.textSet.push(contactLink);
+            }
+          }
 
           function animateBubble(bubble, delay, duration, maxTime, eqX, eqY, finalRadius) {
             setTimeout((function() {
