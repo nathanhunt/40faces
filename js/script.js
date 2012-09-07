@@ -124,7 +124,6 @@
           };
 
           this.initWindowResizing = function() {
-            console.log('init window resizing');
             $(window).off('resize').on('resize',function() {
               var anim = self.ft.opts.animate;
               self.ft.opts.animate = false;
@@ -135,7 +134,6 @@
           };
 
           this.destroyWindowResizing = function() {
-            console.log('destroy window resizing');
             $(window).off('resize');
           };
 
@@ -1249,18 +1247,15 @@
             var
               videoReady = $.Deferred(function(dfd){
                 $vid.on('canplaythrough', function(){
-                  console.log('Video ready!');
                   dfd.resolve();
                 });
               }).promise(),
               mainAudReady = $.Deferred(function(dfd){
                 $aud.on('canplaythrough', function(){
-                  console.log('Audio ready!');
                   dfd.resolve();
                 });
               }).promise();
             $.when(videoReady, mainAudReady).done(function(){
-              console.log('Media ready!');
               $body.trigger('media:complete',[self]);
             });
 
@@ -1351,16 +1346,13 @@
 
             $.when(vReady).done(function(){
               self.video.pause().seek(0);
-              console.log('Video ready!');
             });
 
             $.when(mainAReady).done(function(){
               self.aud.pause().seek(0);
-              console.log('Audio ready!');
             });
 
             $.when(vReady, mainAReady).done(function(){
-              console.log('Media ready!');
               $body.trigger('media:complete',[self]);
             });
 
@@ -1388,7 +1380,6 @@
               self.aud.currentClip = Clip;
               self.aud.currentIndex = index;
               Clip.onStart(function(){
-                console.log('New Audio Loaded!');
                 $body.trigger('audioLoaded', [self, self.aud.currentTrack, self.aud]);
                 self.video.play();
 //                self.aud.seek(self.aud.currentSeek);
