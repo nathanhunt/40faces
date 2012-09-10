@@ -9,7 +9,6 @@
         overflow: 'hidden',
         'padding-top': 40
       }).append(
-        '<script type="text/javascript" src="js/libs/scion.js"><\/script>' +
           '<script type="text/javascript" src="js/libs/raphael.free_transform.js"><\/script>'
       );
 
@@ -40,10 +39,10 @@
           ''+
           '    <div role="video" id="video">'+
           '      <video class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop">'+
-          '        <source src="video/grid.mp4" type="video/mp4" />'+
-          '        <source src="video/grid.ogv" type="video/ogg" />'+
+          '        <source src="video/grid-with-audio.mp4" type="video/mp4" />'+
+          '        <source src="video/grid-with-audio.ogv" type="video/ogg" />'+
           '      </video>'+
-          '      <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/mp4" preload="auto" autobuffer="autobuffer"></audio>'+
+          '      <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/mp4" autobuffer="autobuffer" preload="auto" muted="muted"></audio>'+
           '    </div>'+
           ''+
           '    <div role="occluder" id="occluder"></div>'+
@@ -905,16 +904,43 @@
                 c.data('track', circleAttrs.track[h]);
                 c.data('seek', circleAttrs.seek[h]);
 
-                c.click(function(){
-                  interpreter.gen({
-                    name: 'toSpecific',
-                    data: {
-                      circle: this,
-                      track: this.data('track'),
-                      startPoint: this.data('seek')
-                    }
-                  });
-                });
+                if(Modernizr.video){
+
+                  (function(circle){
+                    var $c = $(circle['0']);
+                    $c.off('mouseenter').on('mouseenter', function(e){
+                      var $c = $(e.target);
+                      var transition = function(circle){
+                        interpreter.gen({
+                          name: 'toSpecific',
+                          data: {
+                            circle: circle,
+                            track: circle.data('track')
+                          }
+                        });
+                      };
+                      var trans = setTimeout(transition, 1500, circle);
+                      $c.off('mouseleave').on('mouseleave',function(e){
+                        clearTimeout(trans);
+                      });
+                    });
+                  }(c));
+
+                }else{
+
+                  var transition = function(circle){
+                    interpreter.gen({
+                      name: 'toSpecific',
+                      data: {
+                        circle: circle,
+                        track: circle.data('track')
+                      }
+                    });
+                  };
+
+                  c.click(transition);
+
+                }
 
             }
 
@@ -1307,30 +1333,11 @@
 
             //LOAD STUFF
             this.video.load();
-            loadTrack(0);
 
             //SET UP API
-            this.play = function(track){
-              if(track === 0){
-                $aud.off('canplaythrough').one('canplaythrough',function(){
-                  self.video.play();
-                  self.aud.currentTime = self.video.currentTime;
-                  self.aud.play();
-                });
-                loadTrack(0);
-              }else{
-                $vid.off('playing').one('playing',function(){
-                  self.aud.play();
-                });
-                this.video.play();
-              }
-
-              $vid.off('ended').on('ended',function(){
-                self.video.currentTime = 0;
-                self.aud.currentTime = 0;
-                self.play();
-              });
-
+            this.resume = function(){
+              this.load(0);
+              this.video.play();
             };
 
             this.pause = function(){
@@ -1338,23 +1345,22 @@
               this.aud.pause();
             };
 
-            this.seek = function(t){
-              this.video.currentTime = t;
-              this.aud.currentTime = t;
-            };
+            this.load = function(track){
 
-            this.load = function(track, seek){
-              this.pause();
-
-              $aud.off('loadedmetadata').one('loadedmetadata',function(){
-                self.seek(seek);
-              });
-
-              $aud.off('canplaythrough').one('canplaythrough',function(){
-                $body.trigger('audioLoaded',[self, track, self.aud]);
-              });
-
-              loadTrack(track);
+              if(track === 0 || typeof track === 'undefined'){
+                $aud.prop('muted', true);
+                $vid.prop('muted', false);
+              }else{
+                this.aud.pause();
+                $aud.off('canplaythrough').one('canplaythrough',function(){
+                  self.aud.currentTime = self.video.currentTime;
+                  self.aud.play();
+                  $body.trigger('audioLoaded',[self, track, self.aud]);
+                  $vid.prop('muted', true);
+                  $aud.prop('muted', false);
+                });
+                loadTrack(track);
+              }
             };
 
             function loadTrack(track){
@@ -1370,6 +1376,9 @@
                 self.aud.setAttribute('type', 'audio/mpeg');
               }
               self.aud.load();
+//              $aud.off('loadedmetadata').on('loadedmetadata',function(){
+//                self.aud.currentTime = self.video.currentTime;
+//              });
             }
 
           }else{ ////////////////////////////////////////////////////////////////////
@@ -1377,11 +1386,14 @@
             this.video = $f(0).play();
             this.audio = $f(1);
             this.currentChannel = 0;
+            this.audioLag = 0.5;
+
+            //TRIGGERING COMPLETE AT THE RIGHT MOMENT
 
             this.vReady = $.Deferred(function(dfd){
               self.video.getClip(0).onStart(function(){
+                $body.trigger('video:loop');
                 console.log('Video ready!');
-                self.video.pause();
                 dfd.resolve();
               });
             }).promise();
@@ -1390,14 +1402,12 @@
               self.aDfd = dfd;
             }).promise();
 
-            var loadAudio = function(){
+            $body.off('video:loop').on('video:loop',function(){
               self.audio.play();
-            };
+            });
 
             var loadChannels = function(){
-              self.audio.stop();
               console.log('Getting channels!');
-              self.audio.getClip(0).onBegin(function(){self.video.mute()});
               var c;
               for(c=1;c<=40;c+=1){
                 self.audio.addClip({
@@ -1412,10 +1422,7 @@
               self.aDfd.resolve();
             };
 
-            this.video.isLoaded() ? loadAudio() : this.video.onLoad(loadAudio);
             this.audio.isLoaded() ? loadChannels() : this.audio.onLoad(loadChannels);
-
-            //TRIGGERING COMPLETE AT THE RIGHT MOMENT
 
             $.when(this.vReady, this.aReady).done(function(){
               console.log('Media ready!');
@@ -1424,26 +1431,33 @@
 
             //THIS IS THE API::::
 
-            this.start = function(track){
+            var sync = function(){
+              self.audioLag = (new Date().getTime() - self.audioStarted) / 1000;
+              self.audio.seek(self.video.getTime() + self.audioLag);
+              $body.trigger('audioLoaded', [self, self.currentChannel, self.audio]);
+            };
+
+            this.start = function(){
               console.log('Playing!');
-              if(!this.video.isPlaying()) this.video.play();
+              this.audio.getClip(this.currentChannel).onBegin(sync);
+              this.audioStarted = new Date().getTime();
             };
 
             this.load = function(track){
               var t = 0;
               if(typeof track !== 'undefined'){t = track}
-              this.start(t);
               this.currentChannel = t;
-              this.audio.getClip(t).onBegin(function(){
-                self.audio.seek(self.video.getTime());
-                $body.trigger('audioLoaded', [self, t, self.audio]);
-              });
-              this.audio.play(t);
+              this.start();
             };
 
             this.pause = function(){
               this.video.pause();
               this.audio.pause();
+            };
+
+            this.resume = function(){
+              this.audio.resume();
+              this.video.resume();
             };
 
           }
