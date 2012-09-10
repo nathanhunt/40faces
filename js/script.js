@@ -26,9 +26,12 @@
           '<li><a href="#" class="about">About CINCH</a></li>' +
           '<li><span>|</span></li>' +
           '<li><a href="#" class="contact">Contact</a></li>' +
+          '   <li><span>|</span></li>' +
+          '   <li><a href="http://www.cinchlearning.com">Login</a></li>' +
           '</ul>' +
           '</div>' +
           '<div class="standard fixed-bottom-bar">' +
+          ' <a class="logoLink" href="https://www.mheonline.com/" target="_blank"><img src="img/mhe_logo_94x26.png" /></a>' +
           '<a href="http://www.mcgraw-hill.com/site/tools/terms-of-use" target="_blank">Terms of Use</a>' +
           '<span>|</span>' +
           '<a href="https://www.mheonline.com/pages/display/privacynotice_view" target="_blank">Privacy Notice</a>' +
@@ -40,10 +43,10 @@
           ''+
           '    <div role="video" id="video">'+
           '      <video class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop">'+
-          '        <source src="video/grid.mp4" type="video/mp4" />'+
-          '        <source src="video/grid.ogv" type="video/ogg" />'+
+          '        <source src="video/grid-with-audio.mp4" type="video/mp4" />'+
+          '        <source src="video/grid-with-audio.ogv" type="video/ogg" />'+
           '      </video>'+
-          '      <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/mp4" preload="auto" autobuffer="autobuffer"></audio>'+
+          '      <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/mp4" autobuffer="autobuffer" preload="auto" muted="muted"></audio>'+
           '    </div>'+
           ''+
           '    <div role="occluder" id="occluder"></div>'+
@@ -55,14 +58,12 @@
           '  <div id="hitAreas"></div>'
       );
 
+      this.putLogo();
+
       this.run();
     };
 
-    this.run = function () {
-      /* LOGO PUTTER
-      * puts the logo. */
-      (function(window, $, Raphael, _){
-
+    this.putLogo = function () {
         var paper = Raphael('cinch-logo', 235, 22);
         var logo = paper.path(
           'M10.547,0.49c1.781,0,3.689,0.451,5.726,1.351v4.913c-2.18-1.311-4.089-1.965-5.726-1.965c-1.639,0-2.947,0.562-3.93,1.688' +
@@ -94,14 +95,13 @@
           'c0,1.124-0.904,2.015-2.051,2.015s-2.063-0.892-2.063-2.015c0-1.123,0.916-2.002,2.076-2.002C88.917,0.862,89.82,1.741,89.82,2.864z' +
           'M89.307,2.876c0-0.892-0.659-1.612-1.55-1.612c-0.867,0-1.539,0.72-1.539,1.599c0,0.892,0.672,1.6,1.563,1.6' +
           'C88.648,4.476,89.307,3.755,89.307,2.876z'
-        );
-        logo.attr({
+      ).attr({
           fill: '#fff',
           'stroke-opacity': 0
         });
+    };
 
-      }(window, $, Raphael, _));
-
+    this.run = function () {
       /* VIEW BINDER
        * binds views. */
       (function(window, $, Raphael, _, require){
@@ -405,11 +405,25 @@
 
           function displayIntro(paper){
             var s = paper.set();
-            s.push(paper.circle(450, 350, 200).attr({
+            var x = 410;
+            var y = 270;
+
+            s.push(paper.circle(x, y, 200).attr({
               'fill': '0-rgba(0,151,219,0.7)-rgba(0,100,178,0.7)',
               'stroke-opacity': 0
             }).toFront());
-            s.push(paper.text(450, 350, "See how teachers,\nadministrators and\nparents are using\nCinch technology\ntoday.").attr({
+            s.push(paper.text(x, y, "See how teachers,\nadministrators and\nparents are using\nCinch technology\ntoday.").attr({
+              'text-anchor': 'middle',
+              'stroke-opacity': 0,
+              'fill': '#ffffff',
+              'font-size': 28
+            }).toFront());
+
+            s.push(paper.circle(x+180, y+180, 100).attr({
+              'fill': '0-rgba(0,151,219,0.9)-rgba(0,100,178,0.9)',
+              'stroke-opacity': 0
+            }).toFront());
+            s.push(paper.text(x+180, y+180, "Make it\npersonal").attr({
               'text-anchor': 'middle',
               'stroke-opacity': 0,
               'fill': '#ffffff',
@@ -507,14 +521,16 @@
                     self['animateInProgress'] = true;
                     var duration = 325;
 
-                    clickedBubble.animate({
+                    // animate clicked small bubble
+                    clickedBubble.attr({cursor: 'default'}).animate({
                       cx: 1310,
                       cy: 1575,
                       r: 275,
                       opacity: hoverOpacity
                     }, duration);
 
-                    clickedBubble.textObjects.link.animate({'fill-opacity': 0}, 100);
+                    // animate clicked small bubble's link text and fade in copy
+                    clickedBubble.textObjects.link.attr({cursor: 'default'}).animate({'fill-opacity': 0}, 100);
                     clickedBubble.textObjects.text.animate({'fill-opacity': 1}, 800, '<>', function() {
                       self['animateInProgress'] = false;
                       for(var j=0; self.aboutBubbles[j]; j++) {
@@ -524,7 +540,7 @@
                       }
                     });
 
-                    var defaultParams = {r: 50, opacity: defaultOpacity};
+                    var defaultParams = {r: 50, opacity: defaultOpacity, cursor: 'pointer'};
                     var viewParams = {
                       'cinch': {cx: 1060, cy: 1765},
                       'course': {cx: 1010, cy: 1670},
@@ -541,7 +557,8 @@
                             'fill-opacity': defaultOpacity
                           }).textObjects.link.attr({
                               x: this.attrs.cx,
-                              y: this.attrs.cy
+                              y: this.attrs.cy,
+                              cursor: 'pointer'
                             }).animate({
                               'fill-opacity': 1
                             }, 100);
@@ -826,7 +843,12 @@
             $.when(mediaComplete, bubblesComplete).done(function(){
                 window.video = video;
                 introFadeOut.call(this);
-                $('#occluder').fadeOut(2e3);
+              $('#occluder').fadeOut(2e3, function () {
+                $('body').data('readyForHint', true);
+                if(typeof(window.hitAreaSet) !== 'undefined') {
+                  window.hitAreaSet.attr({cursor: 'pointer'});
+                }
+              });
                 interpreter.gen({
                   name: 'readyForMain',
                   data: {
@@ -853,6 +875,13 @@
 
               $('#hitAreas').css('left', -200);
               var paper = Raphael('hitAreas', 1200, 800);
+
+              paper.hint = paper.path("M0,0L1,0Z").attr({
+                opacity: 0,
+                fill: 'rgb(0,151,219)',
+                'stroke-opacity': 0
+              });
+
               var circleAttrs = {
                 cx:    [294.005, 394.306, 496.028, 596.329,
                   193.482, 293.783, 395.506, 495.807, 595.84,  696.141,
@@ -888,7 +917,10 @@
                 y: -42.119
               };
 
-              var radius = 48.661, h;
+              var radius = 48.661;
+              var h;
+
+              var hitAreaSet = paper.set();
 
               for(h=0;h<circleAttrs.cx.length;h+=1){
 
@@ -902,14 +934,91 @@
                   opacity: 0
                 }])[0];
 
+                hitAreaSet.push(c);
+
                 c.data('track', circleAttrs.track[h]);
                 c.data('seek', circleAttrs.seek[h]);
+                
+                var hintMouseEnter = function (circle) {
+                  if(typeof($('body').data('readyForHint')) === 'undefined'
+                    || $('body').data('readyForHint') !== true) return;
+
+                  var cx = circle.attrs.cx;
+                  var cy = circle.attrs.cy;
+                  var r = circle.attrs.r;
+
+                  var track = circle.data('track');
+                  var direction;
+                  if([39, 36, 27, 4, 29].indexOf(track) > -1) {
+                    direction = 'bottomright';
+                  } else if([2, 32, 10, 14, 5].indexOf(track) > -1) {
+                    direction = 'bottomleft';
+                  } else if([37, 16, 28, 35, 9, 15, 26, 7, 19, 6, 38, 17, 24, 30, 23, 20].indexOf(track) > -1) {
+                    direction = 'topright';
+                  } else if([34, 18, 11, 8, 22, 1, 33, 3, 40, 25, 13, 12, 31, 21].indexOf(track) > -1) {
+                    direction = 'topleft';
+                  } else {
+                    direction = 'bottomright'; // this shouldn't happen
+                  }
+
+                  var initialPath, finalPath, rotation, transformString;
+                  if(['topright', 'topleft'].indexOf(direction) > -1) {
+                    initialPath = "M" + (cx + 0.5) + "," + (cy - r) +
+                      "A" + (r - 1) + "," + (r - 1) + " 0 1,1 " + (cx - 0.5) + "," + (cy - r) +
+                      "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx + 0.5) + "," + (cy - r) + "Z";
+
+                    finalPath = "M" + (cx + 0.5) + "," + (cy - r) +
+                      "A" + (r * 1.1) + "," + (r * 1.1) + " 0 1,1 " + (cx - 0.5) + "," + (cy - r) +
+                      "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx + 0.5) + "," + (cy - r) + "Z";
+
+                    rotation = direction === 'topright' ? -135 : 135;
+                    transformString = "r" + rotation + "," + cx + "," + cy;
+
+                  } else if(['bottomright', 'bottomleft'].indexOf(direction) > -1) {
+                    initialPath = "M" + (cx - 0.5) + "," + (cy + r) +
+                      "A" + (r - 1) + "," + (r - 1) + " 0 1,1 " + (cx + 0.5) + "," + (cy + r) +
+                      "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx - 0.5) + "," + (cy + r) + "Z";
+
+                    finalPath = "M" + (cx - 0.5) + "," + (cy + r) +
+                      "A" + (r * 1.1) + "," + (r * 1.1) + " 0 1,1 " + (cx + 0.5) + "," + (cy + r) +
+                      "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx - 0.5) + "," + (cy + r) + "Z";
+
+                    rotation = direction === 'bottomleft' ? -180 : 180;
+                    transformString = "r" + rotation + "," + cx + "," + cy;
+
+                  }
+
+                  circle.paper.hint.stop();
+
+                  circle.paper.hint.attr({
+                    opacity: 0,
+                    path: initialPath,
+                    transform: "r0," + cx + "," + cy,
+                    fill: 'rgb(0,151,219)',
+                    'stroke-opacity': 0
+                  });
+
+                  circle.paper.hint.animation = Raphael.animation({
+                    path: finalPath,
+                    transform: transformString,
+                    opacity: .4
+                  }, 325, 'linear');
+
+                  circle.paper.hint.animate(circle.paper.hint.animation);
+
+                };
+
+                var hintMouseLeave = function (circle) {
+                  circle.paper.hint.stop(circle.paper.hint.animation);
+                  circle.paper.hint.attr({opacity: 0});
+                };
 
                 if(Modernizr.video){
 
                   (function(circle){
                     var $c = $(circle['0']);
                     $c.off('mouseenter').on('mouseenter', function(e){
+                      hintMouseEnter(circle);
                       var $c = $(e.target);
                       var transition = function(circle){
                         interpreter.gen({
@@ -921,9 +1030,12 @@
                         });
                       };
                       var trans = setTimeout(transition, 1500, circle);
-                      $c.off('mouseleave').on('mouseleave',function(e){
+                      var clearTrans =
+                      $c.one('mouseleave',function(e){
                         clearTimeout(trans);
                       });
+                    }).on('mouseleave',function(){
+                      hintMouseLeave(circle);
                     });
                   }(c));
 
@@ -934,81 +1046,10 @@
                       name: 'toSpecific',
                       data: {
                         circle: this,
-                        track: this.data('track'),
-                        startPoint: this.data('seek')
+                        track: this.data('track')
                       }
                     });
-                  }).mouseover(function () {
-                      if(typeof($('body').data('readyForHint')) === 'undefined'
-                        || $('body').data('readyForHint') !== true) return;
-
-                      var cx = this.attrs.cx;
-                      var cy = this.attrs.cy;
-                      var r = this.attrs.r;
-
-                      var track = this.data('track');
-                      var direction;
-                      if([39, 36, 27, 4, 29].indexOf(track) > -1) {
-                        direction = 'bottomright';
-                      } else if([2, 32, 10, 14, 5].indexOf(track) > -1) {
-                        direction = 'bottomleft';
-                      } else if([37, 16, 28, 35, 9, 15, 26, 7, 19, 6, 38, 17, 24, 30, 23, 20].indexOf(track) > -1) {
-                        direction = 'topright';
-                      } else if([34, 18, 11, 8, 22, 1, 33, 3, 40, 25, 13, 12, 31, 21].indexOf(track) > -1) {
-                        direction = 'topleft';
-                      } else {
-                        direction = 'bottomright'; // this shouldn't happen
-                      }
-
-                      var initialPath, finalPath, rotation, transformString;
-                      if(['topright', 'topleft'].indexOf(direction) > -1) {
-                        initialPath = "M" + (cx + 0.5) + "," + (cy - r) +
-                          "A" + (r - 1) + "," + (r - 1) + " 0 1,1 " + (cx - 0.5) + "," + (cy - r) +
-                          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx + 0.5) + "," + (cy - r) + "Z";
-
-                        finalPath = "M" + (cx + 0.5) + "," + (cy - r) +
-                          "A" + (r * 1.1) + "," + (r * 1.1) + " 0 1,1 " + (cx - 0.5) + "," + (cy - r) +
-                          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx + 0.5) + "," + (cy - r) + "Z";
-
-                        rotation = direction === 'topright' ? -135 : 135;
-                        transformString = "r" + rotation + "," + cx + "," + cy;
-
-                      } else if(['bottomright', 'bottomleft'].indexOf(direction) > -1) {
-                        initialPath = "M" + (cx - 0.5) + "," + (cy + r) +
-                          "A" + (r - 1) + "," + (r - 1) + " 0 1,1 " + (cx + 0.5) + "," + (cy + r) +
-                          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx - 0.5) + "," + (cy + r) + "Z";
-
-                        finalPath = "M" + (cx - 0.5) + "," + (cy + r) +
-                          "A" + (r * 1.1) + "," + (r * 1.1) + " 0 1,1 " + (cx + 0.5) + "," + (cy + r) +
-                          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx - 0.5) + "," + (cy + r) + "Z";
-
-                        rotation = direction === 'bottomleft' ? -180 : 180;
-                        transformString = "r" + rotation + "," + cx + "," + cy;
-
-                      }
-
-                      this.paper.hint.stop();
-
-                      this.paper.hint.attr({
-                        opacity: 0,
-                        path: initialPath,
-                        transform: "r0," + cx + "," + cy,
-                        fill: 'rgb(0,151,219)',
-                        'stroke-opacity': 0
-                      });
-
-                      this.paper.hint.animation = Raphael.animation({
-                        path: finalPath,
-                        transform: transformString,
-                        opacity: .4
-                      }, 325, 'linear');
-
-                      this.paper.hint.animate(this.paper.hint.animation);
-
-                    }).mouseout(function () {
-                      this.paper.hint.stop(this.paper.hint.animation);
-                      this.paper.hint.attr({opacity: 0});
-                    });
+                  }).mouseover(function(){hintMouseEnter(this)}).mouseout(function(){hintMouseLeave(this)});
 
                 }
 
@@ -1204,11 +1245,6 @@
                       "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,1 " + (middle - 0.5) + "," + bbox.y +
                       "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,0 " + (middle + 0.5) + "," + bbox.y + "Z";
 
-                    p = paper.path(initialPath).attr({
-                      fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
-                      'stroke-opacity': 0
-                    });
-
                     finalPath = "M" + (middle + 0.5) + "," + bbox.y +
                       "A200,200 0 1,1 " + (middle - 0.5) + "," + bbox.y +
                       "A" + (bbox.width / 2 - 1) + "," + (bbox.width / 2 - 1) + " 0 1,0 " + (middle + 0.5) + "," + bbox.y + "Z";
@@ -1222,11 +1258,6 @@
                       "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,1 " + (middle + 0.5) + "," + (bbox.y + bbox.height) +
                       "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,0 " + (middle - 0.5) + "," + (bbox.y + bbox.height) + "Z";
 
-                    p = paper.path(initialPath).attr({
-                      fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
-                      'stroke-opacity': 0
-                    });
-
                     finalPath = "M" + (middle - 0.5) + "," + (bbox.y + bbox.height) +
                       "A200,200 0 1,1 " + (middle + 0.5) + "," + (bbox.y + bbox.height) +
                       "A" + (bbox.width / 2 - 1) + "," + (bbox.width / 2 - 1) + " 0 1,0 " + (middle - 0.5) + "," + (bbox.y + bbox.height) + "Z";
@@ -1236,7 +1267,10 @@
 
                   }
 
-                  p.animate({path: finalPath, transform: transformString}, 500, 'linear', function () {
+                  p = paper.path(initialPath).attr({
+                    fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
+                    'stroke-opacity': 0
+                  }).animate({path: finalPath, transform: transformString}, 500, 'linear', function () {
                     $('body').trigger('blurbs:animationComplete', [self]);
                   });
 
@@ -1307,9 +1341,7 @@
                     'font-family': 'Arial, sans-serif',
                     'fill-opacity': 0,
                     cursor: 'pointer'
-                  }).animate({'fill-opacity': 1}, objectAnimationDuration).click(function () {
-                      $('#nav-link-list a.about').trigger('click');
-                    });
+                  }).animate({'fill-opacity': 1}, objectAnimationDuration);
 
                   objectSet.push(link);
 
@@ -1327,6 +1359,17 @@
                     });
 
                   objectSet.push(line);
+
+                  var linkHitArea = paper.rect(linkBBox.x, linkBBox.y, linkBBox.width, linkBBox.height).attr({
+                    opacity: 0.00001,
+                    'stroke-opacity': 0,
+                    fill: 'white',
+                    cursor: 'pointer'
+                  }).toFront().click(function () {
+                      $('#nav-link-list a.about').trigger('click');
+                    });
+
+                  objectSet.push(linkHitArea);
 
                   var image = paper.image('img/circle-close-x.png', tempX - 23, tempY + 30, 46, 46).attr({
                     opacity: 0,
@@ -1405,30 +1448,11 @@
 
             //LOAD STUFF
             this.video.load();
-            loadTrack(0);
 
             //SET UP API
-            this.play = function(track){
-              if(track === 0){
-                $aud.off('canplaythrough').one('canplaythrough',function(){
-                  self.video.play();
-                  self.aud.currentTime = self.video.currentTime;
-                  self.aud.play();
-                });
-                loadTrack(0);
-              }else{
-                $vid.off('playing').one('playing',function(){
-                  self.aud.play();
-                });
-                this.video.play();
-              }
-
-              $vid.off('ended').on('ended',function(){
-                self.video.currentTime = 0;
-                self.aud.currentTime = 0;
-                self.play();
-              });
-
+            this.resume = function(){
+              this.load(0);
+              this.video.play();
             };
 
             this.pause = function(){
@@ -1436,23 +1460,22 @@
               this.aud.pause();
             };
 
-            this.seek = function(t){
-              this.video.currentTime = t;
-              this.aud.currentTime = t;
-            };
+            this.load = function(track){
 
-            this.load = function(track, seek){
-              this.pause();
-
-              $aud.off('loadedmetadata').one('loadedmetadata',function(){
-                self.seek(seek);
-              });
-
-              $aud.off('canplaythrough').one('canplaythrough',function(){
-                $body.trigger('audioLoaded',[self, track, self.aud]);
-              });
-
-              loadTrack(track);
+              if(track === 0 || typeof track === 'undefined'){
+                $aud.prop('muted', true);
+                $vid.prop('muted', false);
+              }else{
+                this.aud.pause();
+                $aud.off('canplaythrough').one('canplaythrough',function(){
+                  self.aud.currentTime = self.video.currentTime;
+                  self.aud.play();
+                  $body.trigger('audioLoaded',[self, track, self.aud]);
+                  $vid.prop('muted', true);
+                  $aud.prop('muted', false);
+                });
+                loadTrack(track);
+              }
             };
 
             function loadTrack(track){
@@ -1468,6 +1491,9 @@
                 self.aud.setAttribute('type', 'audio/mpeg');
               }
               self.aud.load();
+//              $aud.off('loadedmetadata').on('loadedmetadata',function(){
+//                self.aud.currentTime = self.video.currentTime;
+//              });
             }
 
           }else{ ////////////////////////////////////////////////////////////////////
@@ -1475,11 +1501,14 @@
             this.video = $f(0).play();
             this.audio = $f(1);
             this.currentChannel = 0;
+            this.audioLag = 0.5;
+
+            //TRIGGERING COMPLETE AT THE RIGHT MOMENT
 
             this.vReady = $.Deferred(function(dfd){
               self.video.getClip(0).onStart(function(){
+                $body.trigger('video:loop');
                 console.log('Video ready!');
-                self.video.pause();
                 dfd.resolve();
               });
             }).promise();
@@ -1488,14 +1517,12 @@
               self.aDfd = dfd;
             }).promise();
 
-            var loadAudio = function(){
+            $body.off('video:loop').on('video:loop',function(){
               self.audio.play();
-            };
+            });
 
             var loadChannels = function(){
-              self.audio.stop();
               console.log('Getting channels!');
-              self.audio.getClip(0).onBegin(function(){self.video.mute()});
               var c;
               for(c=1;c<=40;c+=1){
                 self.audio.addClip({
@@ -1510,10 +1537,7 @@
               self.aDfd.resolve();
             };
 
-            this.video.isLoaded() ? loadAudio() : this.video.onLoad(loadAudio);
             this.audio.isLoaded() ? loadChannels() : this.audio.onLoad(loadChannels);
-
-            //TRIGGERING COMPLETE AT THE RIGHT MOMENT
 
             $.when(this.vReady, this.aReady).done(function(){
               console.log('Media ready!');
@@ -1522,26 +1546,33 @@
 
             //THIS IS THE API::::
 
-            this.start = function(track){
+            var sync = function(){
+              self.audioLag = (new Date().getTime() - self.audioStarted) / 1000;
+              self.audio.seek(self.video.getTime() + self.audioLag);
+              $body.trigger('audioLoaded', [self, self.currentChannel, self.audio]);
+            };
+
+            this.start = function(){
               console.log('Playing!');
-              if(!this.video.isPlaying()) this.video.play();
+              this.audio.getClip(this.currentChannel).onBegin(sync);
+              this.audioStarted = new Date().getTime();
             };
 
             this.load = function(track){
               var t = 0;
               if(typeof track !== 'undefined'){t = track}
-              this.start(t);
               this.currentChannel = t;
-              this.audio.getClip(t).onBegin(function(){
-                self.audio.seek(self.video.getTime());
-                $body.trigger('audioLoaded', [self, t, self.audio]);
-              });
-              this.audio.play(t);
+              this.start();
             };
 
             this.pause = function(){
               this.video.pause();
               this.audio.pause();
+            };
+
+            this.resume = function(){
+              this.audio.resume();
+              this.video.resume();
             };
 
           }
