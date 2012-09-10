@@ -31,6 +31,7 @@
           ' </ul>' +
           '</div>' +
           '<div class="standard fixed-bottom-bar">' +
+          ' <a class="logoLink" href="https://www.mheonline.com/" target="_blank"><img src="img/mhe_logo_94x26.png" /></a>' +
           ' <a href="http://www.mcgraw-hill.com/site/tools/terms-of-use" target="_blank">Terms of Use</a>' +
           ' <span>|</span>' +
           ' <a href="https://www.mheonline.com/pages/display/privacynotice_view" target="_blank">Privacy Notice</a>' +

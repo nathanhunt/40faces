@@ -426,18 +426,26 @@ td { vertical-align: top; }
     position: fixed;
     bottom: 0;
     left: 0;
-    width: 100%;
-    height: 30px;
-    text-align: center;
+    width: 98%;
+    padding: 0 1%;
+    height: 36px;
+    text-align: right;
+    background-color: #1786cc;    box-shadow: 0 -1px 8px 1px #777;
+    text-align: right;
     z-index: 9999999999999999;
 }
 
+.fixed-bottom-bar a.logoLink {
+    float: left;
+    padding: 5px 0 0 5px;
+}
+
 .fixed-bottom-bar a, .fixed-bottom-bar span {
-    display: inline;
-    color: #0076c1;
+    display: inline-block;
+    color: white;
     text-decoration: none;
     font-size: 12px;
-    padding: 20px 5px;
+    padding: 10px 5px 0 5px;
 }
 
 /* ==========================================================================
