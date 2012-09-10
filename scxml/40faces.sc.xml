@@ -4,10 +4,9 @@
         profile="ecmascript">
 
     <datamodel>
-        <data id="bubbles"/>
+        <data id="app"/>
         <data id="media"/>
         <data id="blurb"/>
-        <data id="duration"/>
         <data id="circle"/>
         <data id="track"/>
         <data id="startPoint"/>
@@ -15,9 +14,9 @@
 
     <state id="initial-default">
         <transition event="init" target="loading">
-            <assign location="bubbles" expr="_event.data.bubbles"/>
+            <assign location="app" expr="_event.data.app"/>
             <script>
-                bubbles.deploy();
+                app.initMainState();
             </script>
         </transition>
     </state>
@@ -52,19 +51,17 @@
         </initial>
 
         <transition event="toAbout" target="aboutView">
-            <assign location="bubbles" expr="_event.data.bubbles"/>
-            <assign location="duration" expr="_event.data.duration"/>
+            <assign location="app" expr="_event.data.app"/>
             <script>
-                bubbles.transition('about', 'main', duration, 'easeInOut');
+                app.transition('about');
                 $('#nav-link-list a').not('.about').removeClass('active');
                 $('#nav-link-list a.about').addClass('active');
             </script>
         </transition>
         <transition event="toContact" target="contactView">
-            <assign location="bubbles" expr="_event.data.bubbles"/>
-            <assign location="duration" expr="_event.data.duration"/>
+            <assign location="app" expr="_event.data.app"/>
             <script>
-                bubbles.transition('contact', 'main', duration, 'easeInOut');
+                app.transition('contact');
                 $('#nav-link-list a').not('.contact').removeClass('active');
                 $('#nav-link-list a.contact').addClass('active');
             </script>
@@ -116,19 +113,17 @@
 
     <state id="aboutView">
         <transition event="toMain" target="mainView">
-            <assign location="bubbles" expr="_event.data.bubbles"/>
-            <assign location="duration" expr="_event.data.duration"/>
+            <assign location="app" expr="_event.data.app"/>
             <script>
-                bubbles.transition('main', 'about', duration, 'easeInOut');
+                app.transition('main');
                 $('#nav-link-list a').not('.main').removeClass('active');
                 $('#nav-link-list a.main').addClass('active');
             </script>
         </transition>
         <transition event="toContact" target="contactView">
-            <assign location="bubbles" expr="_event.data.bubbles"/>
-            <assign location="duration" expr="_event.data.duration"/>
+            <assign location="app" expr="_event.data.app"/>
             <script>
-                bubbles.transition('contact', 'about', duration, 'easeInOut');
+                app.transition('contact');
                 $('#nav-link-list a').not('.contact').removeClass('active');
                 $('#nav-link-list a.contact').addClass('active');
             </script>
@@ -137,19 +132,17 @@
 
     <state id="contactView">
         <transition event="toMain" target="mainView">
-            <assign location="bubbles" expr="_event.data.bubbles"/>
-            <assign location="duration" expr="_event.data.duration"/>
+            <assign location="app" expr="_event.data.app"/>
             <script>
-                bubbles.transition('main', 'contact', duration, 'easeInOut');
+                app.transition('main');
                 $('#nav-link-list a').not('.main').removeClass('active');
                 $('#nav-link-list a.main').addClass('active');
             </script>
         </transition>
         <transition event="toAbout" target="aboutView">
-            <assign location="bubbles" expr="_event.data.bubbles"/>
-            <assign location="duration" expr="_event.data.duration"/>
+            <assign location="app" expr="_event.data.app"/>
             <script>
-                bubbles.transition('about', 'contact', duration, 'easeInOut');
+                app.transition('about');
                 $('#nav-link-list a').not('.about').removeClass('active');
                 $('#nav-link-list a.about').addClass('active');
             </script>
