@@ -446,7 +446,7 @@ td { vertical-align: top; }
 
 .mobile-fixed-top-bar {
     display: block;
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -488,9 +488,17 @@ td { vertical-align: top; }
     z-index: 100;
 }
 
+#navigation-bubbles {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 110px;
+    overflow: hidden;
+}
+
 #navigation-bubbles a {
     display: block;
-    position: fixed;
+    position: absolute;
     background: #0063b1; /* Old browsers */
     box-shadow: 0 1px 5px 1px #333;
     width: 200px;
@@ -563,22 +571,33 @@ td { vertical-align: top; }
 }
 
 #mobile-footer {
-    display: block;
-    position: fixed;
-    bottom: 0;
+    display: none;
+    position: absolute;
+    top: 550px;
     left: 0;
-    width: 100%;
-    height: 30px;
-    text-align: center;
+    width: 96%;
+    padding: 0 2%;
+    text-align: right;
+    background-color: #1786cc;
     z-index: 9999999999999999;
 }
 
+#mobile-footer a.logoLink {
+    float: left;
+}
+
 #mobile-footer a, #mobile-footer span {
-    display: inline;
-    color: #0076c1;
+    display: inline-block;
+    color: white;
     text-decoration: none;
-    font-size: 14px;
-    padding: 20px 5px;
+    font-size: 12px;
+    padding: 20px 5px 25px 5px;
+}
+
+#mobile-footer a img {
+    display: inline-block;
+    width: 80px;
+    margin-top: -3px;
 }
 
 

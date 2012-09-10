@@ -506,14 +506,16 @@
                     self['animateInProgress'] = true;
                     var duration = 325;
 
-                    clickedBubble.animate({
+                    // animate clicked small bubble
+                    clickedBubble.attr({cursor: 'default'}).animate({
                       cx: 1310,
                       cy: 1575,
                       r: 275,
                       opacity: hoverOpacity
                     }, duration);
 
-                    clickedBubble.textObjects.link.animate({'fill-opacity': 0}, 100);
+                    // animate clicked small bubble's link text and fade in copy
+                    clickedBubble.textObjects.link.attr({cursor: 'default'}).animate({'fill-opacity': 0}, 100);
                     clickedBubble.textObjects.text.animate({'fill-opacity': 1}, 800, '<>', function() {
                       self['animateInProgress'] = false;
                       for(var j=0; self.aboutBubbles[j]; j++) {
@@ -523,7 +525,7 @@
                       }
                     });
 
-                    var defaultParams = {r: 50, opacity: defaultOpacity};
+                    var defaultParams = {r: 50, opacity: defaultOpacity, cursor: 'pointer'};
                     var viewParams = {
                       'cinch': {cx: 1060, cy: 1765},
                       'course': {cx: 1010, cy: 1670},
@@ -540,7 +542,8 @@
                             'fill-opacity': defaultOpacity
                           }).textObjects.link.attr({
                               x: this.attrs.cx,
-                              y: this.attrs.cy
+                              y: this.attrs.cy,
+                              cursor: 'pointer'
                             }).animate({
                               'fill-opacity': 1
                             }, 100);
@@ -923,7 +926,6 @@
                     }
                   });
                 }).mouseover(function () {
-                    console.log(this);
                     var cx = this.attrs.cx;
                     var cy = this.attrs.cy;
                     var r = this.attrs.r;
@@ -968,10 +970,6 @@
                       transformString = "r" + rotation + "," + cx + "," + cy;
 
                     }
-
-                    console.log(cx, cy, r, this.paper.hint.transform());
-                    console.log(initialPath);
-                    console.log(finalPath);
 
                     this.paper.hint.stop();
 

@@ -17,6 +17,8 @@
         margin: 0
       });
 
+      $('#navigation-bubbles').css({width: $(window).width()});
+
       $('#app').html(
         '<div id="navigation-bubbles">' +
           '<a href="#" class="about"><span>About CINCH</span></a>' +
@@ -26,6 +28,7 @@
         '<div class="mobile-fixed-top-bar"><a id="mobile-cinch-logo"></a></div>' +
         '<div id="mobile-vector-content"></div>' +
         '<div id="mobile-footer">' +
+          '<a class="logoLink" href="https://www.mheonline.com/" target="_blank"><img src="img/mhe_logo_94x26.png" /></a>' +
           '<a href="http://www.mcgraw-hill.com/site/tools/terms-of-use" target="_blank">Terms</a>' +
           '<span>|</span>' +
           '<a href="https://www.mheonline.com/pages/display/privacynotice_view" target="_blank">Privacy</a>' +
@@ -377,6 +380,8 @@
         self.aboutPopup = null;
       }
 
+      $('#mobile-footer').hide();
+
       var bub = typeof(this.bubbleObject) !== 'undefined' ? this.bubbleObject : this;
 
       var paper = self.paper;
@@ -463,6 +468,10 @@
       popup.animate({r: 0}, 500, '<>', function () {
         self.aboutPopup = null;
       });
+
+      setTimeout((function () {
+        $('#mobile-footer').show();
+      }), 500);
     };
 
     this.initContactPage = function () {
@@ -564,6 +573,7 @@
 
     this.adjustViewingArea = function () {
       // This function is a callback for $(window).resize()
+      $('#navigation-bubbles').css({width: $(window).width()});
       if(self.transitioning === true) return;
       var validStates = ['main', 'about', 'contact'];
       var currentState = self.state;
@@ -625,12 +635,15 @@
         switch(toState) {
           case 'main':
             $('#mobile-vector-content').css('height', self.mainPageHeight);
+            $('#mobile-footer').hide();
             break;
           case 'about':
-            $('#mobile-vector-content').css('height', 1024);
+            $('#mobile-vector-content').css('height', 600);
+            $('#mobile-footer').show();
             break;
           case 'contact':
-            $('#mobile-vector-content').css('height', 500);
+            $('#mobile-vector-content').css('height', 600);
+            $('#mobile-footer').show();
             break;
         }
       }), animationDuration+1);
