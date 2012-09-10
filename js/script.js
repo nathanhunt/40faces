@@ -9,6 +9,7 @@
         overflow: 'hidden',
         'padding-top': 40
       }).append(
+        '<script type="text/javascript" src="js/libs/scion.js"><\/script>' +
           '<script type="text/javascript" src="js/libs/raphael.free_transform.js"><\/script>'
       );
 
@@ -39,10 +40,10 @@
           ''+
           '    <div role="video" id="video">'+
           '      <video class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop">'+
-          '        <source src="video/grid-with-audio.mp4" type="video/mp4" />'+
-          '        <source src="video/grid-with-audio.ogv" type="video/ogg" />'+
+          '        <source src="video/grid.mp4" type="video/mp4" />'+
+          '        <source src="video/grid.ogv" type="video/ogg" />'+
           '      </video>'+
-          '      <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/mp4" autobuffer="autobuffer" preload="auto" muted="muted"></audio>'+
+          '      <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/mp4" preload="auto" autobuffer="autobuffer"></audio>'+
           '    </div>'+
           ''+
           '    <div role="occluder" id="occluder"></div>'+
@@ -928,19 +929,90 @@
 
                 }else{
 
-                  var transition = function(circle){
+                  c.click(function () {
                     interpreter.gen({
                       name: 'toSpecific',
                       data: {
-                        circle: circle,
-                        track: circle.data('track')
+                        circle: this,
+                        track: this.data('track'),
+                        startPoint: this.data('seek')
                       }
                     });
-                  };
+                  }).mouseover(function () {
+                      if(typeof($('body').data('readyForHint')) === 'undefined'
+                        || $('body').data('readyForHint') !== true) return;
 
-                  c.click(transition);
+                      var cx = this.attrs.cx;
+                      var cy = this.attrs.cy;
+                      var r = this.attrs.r;
+
+                      var track = this.data('track');
+                      var direction;
+                      if([39, 36, 27, 4, 29].indexOf(track) > -1) {
+                        direction = 'bottomright';
+                      } else if([2, 32, 10, 14, 5].indexOf(track) > -1) {
+                        direction = 'bottomleft';
+                      } else if([37, 16, 28, 35, 9, 15, 26, 7, 19, 6, 38, 17, 24, 30, 23, 20].indexOf(track) > -1) {
+                        direction = 'topright';
+                      } else if([34, 18, 11, 8, 22, 1, 33, 3, 40, 25, 13, 12, 31, 21].indexOf(track) > -1) {
+                        direction = 'topleft';
+                      } else {
+                        direction = 'bottomright'; // this shouldn't happen
+                      }
+
+                      var initialPath, finalPath, rotation, transformString;
+                      if(['topright', 'topleft'].indexOf(direction) > -1) {
+                        initialPath = "M" + (cx + 0.5) + "," + (cy - r) +
+                          "A" + (r - 1) + "," + (r - 1) + " 0 1,1 " + (cx - 0.5) + "," + (cy - r) +
+                          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx + 0.5) + "," + (cy - r) + "Z";
+
+                        finalPath = "M" + (cx + 0.5) + "," + (cy - r) +
+                          "A" + (r * 1.1) + "," + (r * 1.1) + " 0 1,1 " + (cx - 0.5) + "," + (cy - r) +
+                          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx + 0.5) + "," + (cy - r) + "Z";
+
+                        rotation = direction === 'topright' ? -135 : 135;
+                        transformString = "r" + rotation + "," + cx + "," + cy;
+
+                      } else if(['bottomright', 'bottomleft'].indexOf(direction) > -1) {
+                        initialPath = "M" + (cx - 0.5) + "," + (cy + r) +
+                          "A" + (r - 1) + "," + (r - 1) + " 0 1,1 " + (cx + 0.5) + "," + (cy + r) +
+                          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx - 0.5) + "," + (cy + r) + "Z";
+
+                        finalPath = "M" + (cx - 0.5) + "," + (cy + r) +
+                          "A" + (r * 1.1) + "," + (r * 1.1) + " 0 1,1 " + (cx + 0.5) + "," + (cy + r) +
+                          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx - 0.5) + "," + (cy + r) + "Z";
+
+                        rotation = direction === 'bottomleft' ? -180 : 180;
+                        transformString = "r" + rotation + "," + cx + "," + cy;
+
+                      }
+
+                      this.paper.hint.stop();
+
+                      this.paper.hint.attr({
+                        opacity: 0,
+                        path: initialPath,
+                        transform: "r0," + cx + "," + cy,
+                        fill: 'rgb(0,151,219)',
+                        'stroke-opacity': 0
+                      });
+
+                      this.paper.hint.animation = Raphael.animation({
+                        path: finalPath,
+                        transform: transformString,
+                        opacity: .4
+                      }, 325, 'linear');
+
+                      this.paper.hint.animate(this.paper.hint.animation);
+
+                    }).mouseout(function () {
+                      this.paper.hint.stop(this.paper.hint.animation);
+                      this.paper.hint.attr({opacity: 0});
+                    });
 
                 }
+
+                window.hitAreaSet = hitAreaSet;
 
             }
 
@@ -1333,11 +1405,30 @@
 
             //LOAD STUFF
             this.video.load();
+            loadTrack(0);
 
             //SET UP API
-            this.resume = function(){
-              this.load(0);
-              this.video.play();
+            this.play = function(track){
+              if(track === 0){
+                $aud.off('canplaythrough').one('canplaythrough',function(){
+                  self.video.play();
+                  self.aud.currentTime = self.video.currentTime;
+                  self.aud.play();
+                });
+                loadTrack(0);
+              }else{
+                $vid.off('playing').one('playing',function(){
+                  self.aud.play();
+                });
+                this.video.play();
+              }
+
+              $vid.off('ended').on('ended',function(){
+                self.video.currentTime = 0;
+                self.aud.currentTime = 0;
+                self.play();
+              });
+
             };
 
             this.pause = function(){
@@ -1345,22 +1436,23 @@
               this.aud.pause();
             };
 
-            this.load = function(track){
+            this.seek = function(t){
+              this.video.currentTime = t;
+              this.aud.currentTime = t;
+            };
 
-              if(track === 0 || typeof track === 'undefined'){
-                $aud.prop('muted', true);
-                $vid.prop('muted', false);
-              }else{
-                this.aud.pause();
-                $aud.off('canplaythrough').one('canplaythrough',function(){
-                  self.aud.currentTime = self.video.currentTime;
-                  self.aud.play();
-                  $body.trigger('audioLoaded',[self, track, self.aud]);
-                  $vid.prop('muted', true);
-                  $aud.prop('muted', false);
-                });
-                loadTrack(track);
-              }
+            this.load = function(track, seek){
+              this.pause();
+
+              $aud.off('loadedmetadata').one('loadedmetadata',function(){
+                self.seek(seek);
+              });
+
+              $aud.off('canplaythrough').one('canplaythrough',function(){
+                $body.trigger('audioLoaded',[self, track, self.aud]);
+              });
+
+              loadTrack(track);
             };
 
             function loadTrack(track){
@@ -1376,9 +1468,6 @@
                 self.aud.setAttribute('type', 'audio/mpeg');
               }
               self.aud.load();
-//              $aud.off('loadedmetadata').on('loadedmetadata',function(){
-//                self.aud.currentTime = self.video.currentTime;
-//              });
             }
 
           }else{ ////////////////////////////////////////////////////////////////////
@@ -1386,14 +1475,11 @@
             this.video = $f(0).play();
             this.audio = $f(1);
             this.currentChannel = 0;
-            this.audioLag = 0.5;
-
-            //TRIGGERING COMPLETE AT THE RIGHT MOMENT
 
             this.vReady = $.Deferred(function(dfd){
               self.video.getClip(0).onStart(function(){
-                $body.trigger('video:loop');
                 console.log('Video ready!');
+                self.video.pause();
                 dfd.resolve();
               });
             }).promise();
@@ -1402,12 +1488,14 @@
               self.aDfd = dfd;
             }).promise();
 
-            $body.off('video:loop').on('video:loop',function(){
+            var loadAudio = function(){
               self.audio.play();
-            });
+            };
 
             var loadChannels = function(){
+              self.audio.stop();
               console.log('Getting channels!');
+              self.audio.getClip(0).onBegin(function(){self.video.mute()});
               var c;
               for(c=1;c<=40;c+=1){
                 self.audio.addClip({
@@ -1422,7 +1510,10 @@
               self.aDfd.resolve();
             };
 
+            this.video.isLoaded() ? loadAudio() : this.video.onLoad(loadAudio);
             this.audio.isLoaded() ? loadChannels() : this.audio.onLoad(loadChannels);
+
+            //TRIGGERING COMPLETE AT THE RIGHT MOMENT
 
             $.when(this.vReady, this.aReady).done(function(){
               console.log('Media ready!');
@@ -1431,33 +1522,26 @@
 
             //THIS IS THE API::::
 
-            var sync = function(){
-              self.audioLag = (new Date().getTime() - self.audioStarted) / 1000;
-              self.audio.seek(self.video.getTime() + self.audioLag);
-              $body.trigger('audioLoaded', [self, self.currentChannel, self.audio]);
-            };
-
-            this.start = function(){
+            this.start = function(track){
               console.log('Playing!');
-              this.audio.getClip(this.currentChannel).onBegin(sync);
-              this.audioStarted = new Date().getTime();
+              if(!this.video.isPlaying()) this.video.play();
             };
 
             this.load = function(track){
               var t = 0;
               if(typeof track !== 'undefined'){t = track}
+              this.start(t);
               this.currentChannel = t;
-              this.start();
+              this.audio.getClip(t).onBegin(function(){
+                self.audio.seek(self.video.getTime());
+                $body.trigger('audioLoaded', [self, t, self.audio]);
+              });
+              this.audio.play(t);
             };
 
             this.pause = function(){
               this.video.pause();
               this.audio.pause();
-            };
-
-            this.resume = function(){
-              this.audio.resume();
-              this.video.resume();
             };
 
           }
