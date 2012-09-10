@@ -738,16 +738,17 @@
       var windowHeight = $(window).height();
       var state = this.state;
       this.state = 'transition';
+      var bubbleSet = this[state + 'BubbleSet'];
+      this[state + 'BubbleSet'] = null;
 
-      this[state + 'BubbleSet'].forEach(function () {
-        var x = this.data('bubbleData').anchor.x === 'left' ? -1000 : windowWidth + 1000;
-        var y = this.data('bubbleData').anchor.y === 'top' ? -1000 : windowHeight + 1000;
-        this.animate({cx: x, cy: y}, 500, 'easeIn', function () {
+      for (var i=0; bubbleSet[i]; i++) {
+        var x = bubbleSet[i].data('bubbleData').anchor.x === 'left' ? -1000 : windowWidth + 1000;
+        var y = bubbleSet[i].data('bubbleData').anchor.y === 'top' ? -1000 : windowHeight + 1000;
+        bubbleSet[i].animate({cx: x, cy: y}, 500, 'easeIn', function () {
           this.remove();
           $('body').trigger('transitionHide:complete');
         });
-      });
-      this[state + 'BubbleSet'] = null;
+      }
 
       return this;
     };
