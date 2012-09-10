@@ -46,7 +46,7 @@
           '        <source src="video/grid-with-audio.mp4" type="video/mp4" />'+
           '        <source src="video/grid-with-audio.ogv" type="video/ogg" />'+
           '      </video>'+
-          '      <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/mp4" autobuffer="autobuffer" preload="auto" muted="muted"></audio>'+
+          '      <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/mp4" autobuffer="autobuffer" preload="auto" loop="loop" muted="muted"></audio>'+
           '    </div>'+
           ''+
           '    <div role="occluder" id="occluder"></div>'+
@@ -1030,7 +1030,6 @@
                         });
                       };
                       var trans = setTimeout(transition, 1500, circle);
-                      var clearTrans =
                       $c.one('mouseleave',function(e){
                         clearTimeout(trans);
                       });
@@ -1429,6 +1428,7 @@
             var $aud = $('#facesAudio');
             this.aud = $aud.get(0);
             this.aud.$el = $aud;
+            this.currentChannel = 0;
 
             //TRIGGERING COMPLETE AT THE RIGHT MOMENT
             var
@@ -1461,15 +1461,16 @@
             };
 
             this.load = function(track){
-
+              this.aud.pause();
               if(track === 0 || typeof track === 'undefined'){
+                this.currentChannel = 0;
                 $aud.prop('muted', true);
                 $vid.prop('muted', false);
               }else{
-                this.aud.pause();
                 $aud.off('canplaythrough').one('canplaythrough',function(){
                   self.aud.currentTime = self.video.currentTime;
                   self.aud.play();
+                  self.currentChannel = track;
                   $body.trigger('audioLoaded',[self, track, self.aud]);
                   $vid.prop('muted', true);
                   $aud.prop('muted', false);
