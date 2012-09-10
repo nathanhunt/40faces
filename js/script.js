@@ -15,25 +15,27 @@
 
       $('#app').html(
         '<div class="standard fixed-top-bar">' +
-          '<a id="cinch-logo"></a>' +
-          '<a href="#" class="volume-icon-link on">' +
-          '<img class="on" src="img/volume-on.png" />' +
-          '<img class="off" src="img/volume-off.png" />' +
-          '</a>' +
-          '<ul id="nav-link-list" class="float-right">' +
-          '<li><a href="#" class="main active">40 Faces</a></li>' +
-          '<li><span>|</span></li>' +
-          '<li><a href="#" class="about">About CINCH</a></li>' +
-          '<li><span>|</span></li>' +
-          '<li><a href="#" class="contact">Contact</a></li>' +
-          '</ul>' +
+          ' <a id="cinch-logo"></a>' +
+          ' <a href="#" class="volume-icon-link on">' +
+          '   <img class="on" src="img/volume-on.png" />' +
+          '   <img class="off" src="img/volume-off.png" />' +
+          ' </a>' +
+          ' <ul id="nav-link-list" class="float-right">' +
+          '   <li><a href="#" class="main active">40 Faces</a></li>' +
+          '   <li><span>|</span></li>' +
+          '   <li><a href="#" class="about">About CINCH</a></li>' +
+          '   <li><span>|</span></li>' +
+          '   <li><a href="#" class="contact">Contact</a></li>' +
+          '   <li><span>|</span></li>' +
+          '   <li><a href="http://www.cinchlearning.com">Login</a></li>' +
+          ' </ul>' +
           '</div>' +
           '<div class="standard fixed-bottom-bar">' +
-          '<a href="http://www.mcgraw-hill.com/site/tools/terms-of-use" target="_blank">Terms of Use</a>' +
-          '<span>|</span>' +
-          '<a href="https://www.mheonline.com/pages/display/privacynotice_view" target="_blank">Privacy Notice</a>' +
-          '<span>|</span>' +
-          '<a href="https://www.mheonline.com/" target="_blank">McGraw Hill Education</a>' +
+          ' <a href="http://www.mcgraw-hill.com/site/tools/terms-of-use" target="_blank">Terms of Use</a>' +
+          ' <span>|</span>' +
+          ' <a href="https://www.mheonline.com/pages/display/privacynotice_view" target="_blank">Privacy Notice</a>' +
+          ' <span>|</span>' +
+          ' <a href="https://www.mheonline.com/" target="_blank">McGraw Hill Education</a>' +
           '</div>' +
           ''+
           '  <div role="viewport" id="viewport">'+
@@ -55,17 +57,15 @@
           '  <div id="hitAreas"></div>'
       );
 
+      this.putLogo();
+
       this.run();
     };
 
-    this.run = function () {
-      /* LOGO PUTTER
-      * puts the logo. */
-      (function(window, $, Raphael, _){
-
-        var paper = Raphael('cinch-logo', 235, 22);
-        var logo = paper.path(
-          'M10.547,0.49c1.781,0,3.689,0.451,5.726,1.351v4.913c-2.18-1.311-4.089-1.965-5.726-1.965c-1.639,0-2.947,0.562-3.93,1.688' +
+    this.putLogo = function () {
+      var paper = Raphael('cinch-logo', 235, 22);
+      var logo = paper.path(
+        'M10.547,0.49c1.781,0,3.689,0.451,5.726,1.351v4.913c-2.18-1.311-4.089-1.965-5.726-1.965c-1.639,0-2.947,0.562-3.93,1.688' +
           'c-0.982,1.126-1.474,2.641-1.474,4.544c0,1.802,0.517,3.242,1.551,4.322c1.034,1.078,2.416,1.618,4.145,1.618' +
           'c1.514,0,3.325-0.608,5.434-1.826v4.882c-2.364,0.788-4.334,1.182-5.911,1.182c-2.713,0-5.016-0.995-6.908-2.986' +
           'c-1.894-1.99-2.84-4.419-2.84-7.284c0-2.916,0.964-5.385,2.894-7.406C5.437,1.5,7.784,0.49,10.547,0.49z M19.328,20.923h4.345V0.766' +
@@ -94,14 +94,13 @@
           'c0,1.124-0.904,2.015-2.051,2.015s-2.063-0.892-2.063-2.015c0-1.123,0.916-2.002,2.076-2.002C88.917,0.862,89.82,1.741,89.82,2.864z' +
           'M89.307,2.876c0-0.892-0.659-1.612-1.55-1.612c-0.867,0-1.539,0.72-1.539,1.599c0,0.892,0.672,1.6,1.563,1.6' +
           'C88.648,4.476,89.307,3.755,89.307,2.876z'
-        );
-        logo.attr({
-          fill: '#fff',
-          'stroke-opacity': 0
-        });
+      ).attr({
+        fill: '#fff',
+        'stroke-opacity': 0
+      });
+    };
 
-      }(window, $, Raphael, _));
-
+    this.run = function () {
       /* VIEW BINDER
        * binds views. */
       (function(window, $, Raphael, _, require){
@@ -853,6 +852,13 @@
 
               $('#hitAreas').css('left', -200);
               var paper = Raphael('hitAreas', 1200, 800);
+
+              paper.hint = paper.path("M0,0L1,0Z").attr({
+                opacity: 0,
+                fill: 'rgb(0,151,219)',
+                'stroke-opacity': 0
+              });
+
               var circleAttrs = {
                 cx:    [294.005, 394.306, 496.028, 596.329,
                   193.482, 293.783, 395.506, 495.807, 595.84,  696.141,
@@ -888,9 +894,10 @@
                 y: -42.119
               };
 
-              var radius = 48.661, h;
+              var radius = 48.661;
+              var h;
 
-              for(h=0;h<circleAttrs.cx.length;h+=1){
+              for(h=0; h < circleAttrs.cx.length; h += 1) {
 
                 var c = paper.add([{
                   type: 'circle',
@@ -899,13 +906,14 @@
                   r: radius,
                   fill: '#f00',
                   'stroke-opacity': 0,
-                  opacity: 0
+                  opacity: 0,
+                  cursor: 'pointer'
                 }])[0];
 
                 c.data('track', circleAttrs.track[h]);
                 c.data('seek', circleAttrs.seek[h]);
 
-                c.click(function(){
+                c.click(function () {
                   interpreter.gen({
                     name: 'toSpecific',
                     data: {
@@ -914,7 +922,79 @@
                       startPoint: this.data('seek')
                     }
                   });
-                });
+                }).mouseover(function () {
+                    console.log(this);
+                    var cx = this.attrs.cx;
+                    var cy = this.attrs.cy;
+                    var r = this.attrs.r;
+
+                    var track = this.data('track');
+                    var direction;
+                    if([39, 36, 27, 4, 29].indexOf(track) > -1) {
+                      direction = 'bottomright';
+                    } else if([2, 32, 10, 14, 5].indexOf(track) > -1) {
+                      direction = 'bottomleft';
+                    } else if([37, 16, 28, 35, 9, 15, 26, 7, 19, 6, 38, 17, 24, 30, 23, 20].indexOf(track) > -1) {
+                      direction = 'topright';
+                    } else if([34, 18, 11, 8, 22, 1, 33, 3, 40, 25, 13, 12, 31, 21].indexOf(track) > -1) {
+                      direction = 'topleft';
+                    } else {
+                      direction = 'bottomright'; // this shouldn't happen
+                    }
+
+                    var initialPath, finalPath, rotation, transformString;
+                    if(['topright', 'topleft'].indexOf(direction) > -1) {
+                      initialPath = "M" + (cx + 0.5) + "," + (cy - r) +
+                        "A" + (r - 1) + "," + (r - 1) + " 0 1,1 " + (cx - 0.5) + "," + (cy - r) +
+                        "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx + 0.5) + "," + (cy - r) + "Z";
+
+                      finalPath = "M" + (cx + 0.5) + "," + (cy - r) +
+                        "A" + (r * 1.1) + "," + (r * 1.1) + " 0 1,1 " + (cx - 0.5) + "," + (cy - r) +
+                        "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx + 0.5) + "," + (cy - r) + "Z";
+
+                      rotation = direction === 'topright' ? -135 : 135;
+                      transformString = "r" + rotation + "," + cx + "," + cy;
+
+                    } else if(['bottomright', 'bottomleft'].indexOf(direction) > -1) {
+                      initialPath = "M" + (cx - 0.5) + "," + (cy + r) +
+                        "A" + (r - 1) + "," + (r - 1) + " 0 1,1 " + (cx + 0.5) + "," + (cy + r) +
+                        "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx - 0.5) + "," + (cy + r) + "Z";
+
+                      finalPath = "M" + (cx - 0.5) + "," + (cy + r) +
+                        "A" + (r * 1.1) + "," + (r * 1.1) + " 0 1,1 " + (cx + 0.5) + "," + (cy + r) +
+                        "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx - 0.5) + "," + (cy + r) + "Z";
+
+                      rotation = direction === 'bottomleft' ? -180 : 180;
+                      transformString = "r" + rotation + "," + cx + "," + cy;
+
+                    }
+
+                    console.log(cx, cy, r, this.paper.hint.transform());
+                    console.log(initialPath);
+                    console.log(finalPath);
+
+                    this.paper.hint.stop();
+
+                    this.paper.hint.attr({
+                      opacity: 0,
+                      path: initialPath,
+                      transform: "r0," + cx + "," + cy,
+                      fill: 'rgb(0,151,219)',
+                      'stroke-opacity': 0
+                    });
+
+                    this.paper.hint.animation = Raphael.animation({
+                      path: finalPath,
+                      transform: transformString,
+                      opacity: .4
+                    }, 325, 'linear');
+
+                    this.paper.hint.animate(this.paper.hint.animation);
+
+                  }).mouseout(function () {
+                    this.paper.hint.stop(this.paper.hint.animation);
+                    this.paper.hint.attr({opacity: 0});
+                  });
 
             }
 
@@ -1106,11 +1186,6 @@
                       "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,1 " + (middle - 0.5) + "," + bbox.y +
                       "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,0 " + (middle + 0.5) + "," + bbox.y + "Z";
 
-                    p = paper.path(initialPath).attr({
-                      fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
-                      'stroke-opacity': 0
-                    });
-
                     finalPath = "M" + (middle + 0.5) + "," + bbox.y +
                       "A200,200 0 1,1 " + (middle - 0.5) + "," + bbox.y +
                       "A" + (bbox.width / 2 - 1) + "," + (bbox.width / 2 - 1) + " 0 1,0 " + (middle + 0.5) + "," + bbox.y + "Z";
@@ -1124,11 +1199,6 @@
                       "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,1 " + (middle + 0.5) + "," + (bbox.y + bbox.height) +
                       "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,0 " + (middle - 0.5) + "," + (bbox.y + bbox.height) + "Z";
 
-                    p = paper.path(initialPath).attr({
-                      fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
-                      'stroke-opacity': 0
-                    });
-
                     finalPath = "M" + (middle - 0.5) + "," + (bbox.y + bbox.height) +
                       "A200,200 0 1,1 " + (middle + 0.5) + "," + (bbox.y + bbox.height) +
                       "A" + (bbox.width / 2 - 1) + "," + (bbox.width / 2 - 1) + " 0 1,0 " + (middle - 0.5) + "," + (bbox.y + bbox.height) + "Z";
@@ -1138,7 +1208,10 @@
 
                   }
 
-                  p.animate({path: finalPath, transform: transformString}, 500, 'linear', function () {
+                  p = paper.path(initialPath).attr({
+                    fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
+                    'stroke-opacity': 0
+                  }).animate({path: finalPath, transform: transformString}, 500, 'linear', function () {
                     $('body').trigger('blurbs:animationComplete', [self]);
                   });
 
@@ -1449,7 +1522,7 @@
           }
 
           function zeroPad(num, places) {
-            var zero = places - num.toString().length + 1;
+            var zero = places - (num + '').length + 1;
             return Array(+(zero > 0 && zero)).join("0") + num;
           }
 
