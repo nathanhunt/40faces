@@ -405,11 +405,25 @@
 
           function displayIntro(paper){
             var s = paper.set();
-            s.push(paper.circle(450, 350, 200).attr({
+            var x = 410;
+            var y = 270;
+
+            s.push(paper.circle(x, y, 200).attr({
               'fill': '0-rgba(0,151,219,0.7)-rgba(0,100,178,0.7)',
               'stroke-opacity': 0
             }).toFront());
-            s.push(paper.text(450, 350, "See how teachers,\nadministrators and\nparents are using\nCinch technology\ntoday.").attr({
+            s.push(paper.text(x, y, "See how teachers,\nadministrators and\nparents are using\nCinch technology\ntoday.").attr({
+              'text-anchor': 'middle',
+              'stroke-opacity': 0,
+              'fill': '#ffffff',
+              'font-size': 28
+            }).toFront());
+
+            s.push(paper.circle(x+180, y+180, 100).attr({
+              'fill': '0-rgba(0,151,219,0.9)-rgba(0,100,178,0.9)',
+              'stroke-opacity': 0
+            }).toFront());
+            s.push(paper.text(x+180, y+180, "Make it\npersonal").attr({
               'text-anchor': 'middle',
               'stroke-opacity': 0,
               'fill': '#ffffff',
@@ -827,16 +841,21 @@
               }).promise();
 
             $.when(mediaComplete, bubblesComplete).done(function(){
-                window.video = video;
-                introFadeOut.call(this);
-                $('#occluder').fadeOut(2e3);
-                interpreter.gen({
-                  name: 'readyForMain',
-                  data: {
-                    media: media,
-                    blurb: window.blurb
-                  }
-                });
+              window.video = video;
+              introFadeOut.call(this);
+              $('#occluder').fadeOut(2e3, function () {
+                $('body').data('readyForHint', true);
+                if(typeof(window.hitAreaSet) !== 'undefined') {
+                  window.hitAreaSet.attr({cursor: 'pointer'});
+                }
+              });
+              interpreter.gen({
+                name: 'readyForMain',
+                data: {
+                  media: media,
+                  blurb: window.blurb
+                }
+              });
             });
 
             //SWITCHING MEDIA:
@@ -901,6 +920,8 @@
               var radius = 48.661;
               var h;
 
+              var hitAreaSet = paper.set();
+
               for(h=0; h < circleAttrs.cx.length; h += 1) {
 
                 var c = paper.add([{
@@ -910,9 +931,10 @@
                   r: radius,
                   fill: '#f00',
                   'stroke-opacity': 0,
-                  opacity: 0,
-                  cursor: 'pointer'
+                  opacity: 0
                 }])[0];
+
+                hitAreaSet.push(c);
 
                 c.data('track', circleAttrs.track[h]);
                 c.data('seek', circleAttrs.seek[h]);
@@ -927,6 +949,9 @@
                     }
                   });
                 }).mouseover(function () {
+                    if(typeof($('body').data('readyForHint')) === 'undefined'
+                      || $('body').data('readyForHint') !== true) return;
+
                     var cx = this.attrs.cx;
                     var cy = this.attrs.cy;
                     var r = this.attrs.r;
@@ -995,7 +1020,9 @@
                     this.paper.hint.attr({opacity: 0});
                   });
 
-            }
+              }
+
+              window.hitAreaSet = hitAreaSet;
 
             }(window, $, Raphael, interpreter));
 
@@ -1281,9 +1308,7 @@
                     'font-family': 'Arial, sans-serif',
                     'fill-opacity': 0,
                     cursor: 'pointer'
-                  }).animate({'fill-opacity': 1}, objectAnimationDuration).click(function () {
-                      $('#nav-link-list a.about').trigger('click');
-                    });
+                  }).animate({'fill-opacity': 1}, objectAnimationDuration);
 
                   objectSet.push(link);
 
@@ -1301,6 +1326,17 @@
                     });
 
                   objectSet.push(line);
+
+                  var linkHitArea = paper.rect(linkBBox.x, linkBBox.y, linkBBox.width, linkBBox.height).attr({
+                    opacity: 0.00001,
+                    'stroke-opacity': 0,
+                    fill: 'white',
+                    cursor: 'pointer'
+                  }).toFront().click(function () {
+                      $('#nav-link-list a.about').trigger('click');
+                    });
+
+                  objectSet.push(linkHitArea);
 
                   var image = paper.image('img/circle-close-x.png', tempX - 23, tempY + 30, 46, 46).attr({
                     opacity: 0,
