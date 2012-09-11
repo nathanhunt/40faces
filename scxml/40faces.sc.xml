@@ -33,16 +33,12 @@
 
     <state id="mainView">
 
-        <onexit>
-            <script>
-                media.pause();
-                $('#hitAreas').hide();
-            </script>
-        </onexit>
-
         <onentry>
             <script>
-                $('#hitAreas').show();
+                if(typeof(window.mainDisplayedOnce) === 'undefined') {
+                    app.showMainState();
+                    window.mainDisplayedOnce = true;
+                }
             </script>
         </onentry>
 
@@ -54,16 +50,12 @@
             <assign location="app" expr="_event.data.app"/>
             <script>
                 app.transition('about');
-                $('#nav-link-list a').not('.about').removeClass('active');
-                $('#nav-link-list a.about').addClass('active');
             </script>
         </transition>
         <transition event="toContact" target="contactView">
             <assign location="app" expr="_event.data.app"/>
             <script>
                 app.transition('contact');
-                $('#nav-link-list a').not('.contact').removeClass('active');
-                $('#nav-link-list a.contact').addClass('active');
             </script>
         </transition>
 
@@ -116,16 +108,12 @@
             <assign location="app" expr="_event.data.app"/>
             <script>
                 app.transition('main');
-                $('#nav-link-list a').not('.main').removeClass('active');
-                $('#nav-link-list a.main').addClass('active');
             </script>
         </transition>
         <transition event="toContact" target="contactView">
             <assign location="app" expr="_event.data.app"/>
             <script>
                 app.transition('contact');
-                $('#nav-link-list a').not('.contact').removeClass('active');
-                $('#nav-link-list a.contact').addClass('active');
             </script>
         </transition>
     </state>
@@ -135,16 +123,12 @@
             <assign location="app" expr="_event.data.app"/>
             <script>
                 app.transition('main');
-                $('#nav-link-list a').not('.main').removeClass('active');
-                $('#nav-link-list a.main').addClass('active');
             </script>
         </transition>
         <transition event="toAbout" target="aboutView">
             <assign location="app" expr="_event.data.app"/>
             <script>
                 app.transition('about');
-                $('#nav-link-list a').not('.about').removeClass('active');
-                $('#nav-link-list a.about').addClass('active');
             </script>
         </transition>
     </state>

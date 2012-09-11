@@ -92,8 +92,8 @@
 
     function init() {
       if(!isMobile.any() && Math.max(window.screen.width, window.screen.height) > 1024) {
-        var cinch = new window.Cinch();
-        cinch.initApp();
+        window.cinch = new window.Cinch();
+        window.cinch.initApp();
       } else {
         window.MobileSite.initApp();
       }

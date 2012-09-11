@@ -708,29 +708,298 @@
         var b = this.paper.circle(cx, cy, bubbleData[i].r).attr({
           'stroke-opacity': 0,
           fill: fill
-        });
-
-        b.data('bubbleData', bubbleData[i]);
-
-        var a = Raphael.animation({
+        })
+        .animate({
           cx: bubbleData[i].cx + (bubbleData[i].anchor.x === 'right' ? windowWidth : 0),
           cy: bubbleData[i].cy + (bubbleData[i].anchor.y === 'bottom' ? windowHeight : 0),
           r: bubbleData[i].r
-        }, 3000, 'easeOut');
+        }, 500, 'easeOut')
+        .data('bubbleData', bubbleData[i]);
 
         bubbles.push(b);
-
-        b.animate(a.delay(300 * i));
       }
 
       this[toState + 'BubbleSet'] = bubbles;
 
+      var methodName = 'show' + toState.substr(0, 1).toUpperCase() + toState.substr(1) + 'State';
+      if (typeof(this[methodName]) !== 'undefined') {
+        this[methodName]();
+      }
+
       setTimeout((function () {
         $('body').trigger('transitionShow:complete transition:complete');
         self.state = toState;
-      }), 300 * i + 3000);
+      }), 500);
 
       return this;
+    };
+
+    this.showMainState = function () {
+      $('#nav-link-list a').not('.main').removeClass('active');
+      $('#nav-link-list a.main').addClass('active');
+      $('#hitAreas, #viewport').fadeIn();
+    };
+
+    this.aboutSpecialBubbleData = {
+      cinch: {cx: 575, cy: 200, r: 50, code: 'cinch'},
+      course: {cx: 630, cy: 295, r: 50, code: 'course'},
+      students: {cx: 640, cy: 400, r: 50, code: 'students'},
+      classroom: {cx: 620, cy: 505, r: 50, code: 'classroom'}
+  };
+
+    this.aboutExpandedBubbleParams = {cx: 320, cy: 380, r: 280};
+
+    this.showAboutState = function () {
+      $('#nav-link-list a').not('.about').removeClass('active');
+      $('#nav-link-list a.about').addClass('active');
+
+      if(typeof(self.aboutSpecialBubbleSet) === 'undefined') {
+        self.createAndShowAboutSpecialBubbles();
+      } else {
+        self.showAboutSpecialBubbles();
+      }
+    };
+
+    this.createAndShowAboutSpecialBubbles = function () {
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+
+      var paper = self.paper;
+      var specialBubbleData = self.aboutSpecialBubbleData;
+      var specialBubbleSet = paper.set();
+
+      var margin = (windowWidth - 800) / 2;
+
+      for (var x in specialBubbleData) {
+        if(specialBubbleData.hasOwnProperty(x)) {
+          var o = (0.2+(Math.random()*0.3)).toFixed(2);
+          var fill = '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')';
+
+          var cx = specialBubbleData[x].cx + margin;
+          var cy = specialBubbleData[x].cy;
+          var r = specialBubbleData[x].r;
+
+          var b = paper.circle(windowWidth + 1000, windowHeight + 1000, 0).attr({
+            'stroke-opacity': 0,
+            fill: fill
+          }).animate({cx: cx, cy: cy, r: r}, 500, '<>', function () {
+              self.aboutSpecialBubbleDestroyAndShrink(null);
+              self.aboutSpecialBubbleEnlarge('cinch');
+            });
+
+          specialBubbleSet.push(b);
+
+          b.data('code', x);
+          b.mouseover(self.aboutSpecialBubbleMouseOverCallback)
+            .mouseout(self.aboutSpecialBubbleMouseOutCallback)
+            .click(self.aboutSpecialBubbleClickCallback);
+
+          // Create text element in Raphael
+          var link = paper.text(cx, cy, self.aboutCopy[x].link).attr({
+            'text-anchor': 'middle',
+            'stroke-opacity': 0,
+            'font-family': 'Arial, sans',
+            'fill': '#ffffff',
+            'font-size': 16,
+            'fill-opacity': 1,
+            'cursor': 'pointer'
+          });
+
+          // Add reference to bubble object to text objects for events
+          link.data('code', x);
+          link.data('bubbleObject', b);
+          b.data('linkObject', link);
+          link.mouseover(self.aboutSpecialBubbleMouseOverCallback)
+            .mouseout(self.aboutSpecialBubbleMouseOutCallback)
+            .click(self.aboutSpecialBubbleClickCallback);
+        }
+      }
+
+      self.aboutSpecialBubbleSet = specialBubbleSet;
+    };
+
+    this.showAboutSpecialBubbles = function () {
+      var windowWidth = $(window).width();
+      var bubbles = self.aboutSpecialBubbleSet;
+      var margin = (windowWidth - 800) / 2;
+
+      for (var i=0; bubbles[i]; i++) {
+        var b = bubbles[i];
+        var code = b.data('code');
+        var cx = self.aboutSpecialBubbleData[code].cx + margin;
+        var cy = self.aboutSpecialBubbleData[code].cy;
+        var r = self.aboutSpecialBubbleData[code].r;
+
+        b.animate({
+          cx: cx, cy: cy, r: r
+        }, 500, '<>', function () {
+          self.aboutSpecialBubbleDestroyAndShrink(null);
+          self.aboutSpecialBubbleEnlarge('cinch');
+        });
+
+        var textObjects = b.data('textObjects');
+
+        textObjects.link.animate({
+          'fill-opacity': 1,
+          x: cx,
+          y: cy
+        }, 500, '<>');
+      }
+    };
+
+    var defaultOpacity = .8;
+    var hoverOpacity = 1;
+    var disabledOpacity = .1;
+
+    this.aboutSpecialBubbleMouseOverCallback = function() {
+      var tempBubble = typeof(this.data('bubbleObject')) === 'undefined' ? this : this.data('bubbleObject');
+      if(tempBubble.attrs.r !== 50 || (typeof(self['animateInProgress']) !== 'undefined' && self['animateInProgress'] === true)) {
+        return;
+      }
+      tempBubble.attr({'opacity': hoverOpacity, 'cursor': 'pointer'});
+    };
+
+    this.aboutSpecialBubbleMouseOutCallback = function() {
+      var tempBubble = typeof(this.data('bubbleObject')) === 'undefined' ? this : this.data('bubbleObject');
+      if(tempBubble.attrs.r !== 50 || (typeof(self['animateInProgress']) !== 'undefined' && self['animateInProgress'] === true)) {
+        return;
+      }
+      tempBubble.attr('opacity', defaultOpacity);
+    };
+
+    this.aboutSpecialBubbleClickCallback = function () {
+      var clickedBubble = typeof(this.data('bubbleObject')) === 'undefined' ? this : this.data('bubbleObject');
+      if(clickedBubble.attrs.r !== 50 || (typeof(self['animateInProgress']) !== 'undefined' && self['animateInProgress'] === true)) {
+        return;
+      }
+      self.aboutSpecialBubbleDestroyAndShrink(clickedBubble);
+      self.aboutSpecialBubbleEnlarge(clickedBubble.data('code'));
+    };
+
+    this.aboutSpecialBubbleDestroyAndShrink = function (skipBubble) {
+      var duration = 325;
+      var margin = ($(window).width() - 800) / 2;
+      var code = typeof(skipBubble) !== 'undefined' && skipBubble !== null ? skipBubble.data('code') : null;
+
+      // Destroy current text set and shrink bubble
+      for(var i=0; self.aboutSpecialBubbleSet[i]; i++) {
+        var tempBubble = self.aboutSpecialBubbleSet[i];
+
+        if(tempBubble.data('code') !== code) {
+          tempBubble.attr({'fill-opacity': disabledOpacity});
+
+          var params = self.aboutSpecialBubbleData[tempBubble.data('code')];
+
+          tempBubble.animate({
+            cx: params.cx + margin,
+            cy: params.cy,
+            r: params.r,
+            opacity: defaultOpacity,
+            cursor: 'pointer'
+          }, duration, '<>', function() {
+            this.attr({
+              'fill-opacity': defaultOpacity
+            }).data('linkObject').attr({
+                cursor: 'pointer'
+              }).animate({
+                'fill-opacity': 1
+              }, 100);
+          });
+
+          if(typeof(tempBubble.data('textSet')) !== 'undefined' && tempBubble.data('textSet') !== null) {
+            tempBubble.data('textSet').forEach(function (e) {
+              e.animate({'fill-opacity': 0}, 100, '<>', function () {
+                this.remove();
+              });
+            });
+            tempBubble.data('textSet', null);
+          }
+        }
+      }
+
+    };
+
+    this.aboutSpecialBubbleEnlarge = function (code) {
+      self['animateInProgress'] = true;
+      var duration = 325;
+      var margin = ($(window).width() - 800) / 2;
+      var clickedBubble = null;
+
+      for (var i=0; self.aboutSpecialBubbleSet[i]; i++) {
+        if(self.aboutSpecialBubbleSet[i].data('code') === code) {
+          clickedBubble = self.aboutSpecialBubbleSet[i];
+        }
+      }
+
+      if(clickedBubble === null) return;
+
+      var cx = self.aboutExpandedBubbleParams.cx + margin;
+      var cy = self.aboutExpandedBubbleParams.cy;
+      var r = self.aboutExpandedBubbleParams.r;
+
+      clickedBubble.attr({cursor: 'default'}).animate({
+        cx: cx,
+        cy: cy,
+        r: r,
+        opacity: hoverOpacity
+      }, duration, '<>', function () {
+        this.toBack();
+      });
+
+      var paper = self.paper;
+      var textSet = paper.set();
+
+      var title = paper.text(cx - r*11/20, cy - r*7/10, self.aboutCopy[code].title).attr({
+        'text-anchor': 'start',
+        'stroke-opacity': 0,
+        'fill': '#ffffff',
+        'font-family': 'Arial, sans',
+        'font-size': 32,
+        'fill-opacity': 0
+      }).toBack();
+      textSet.push(title);
+
+      var subtitle = paper.text(cx - r*11/20, cy - r*7/10 + 45, self.aboutCopy[code].subtitle).attr({
+        'text-anchor': 'start',
+        'stroke-opacity': 0,
+        'fill': '#ffffff',
+        'font-family': 'Arial, sans',
+        'font-size': 26,
+        'fill-opacity': 0
+      }).toBack();
+      textSet.push(subtitle);
+
+      var textLines = self.aboutCopy[code].text.split('\n');
+      for(var j=0; textLines[j]; j++) {
+        textSet.push(
+          paper.text(cx - r*11/20, cy - r*7/10 + 85 + j*20, textLines[j]).attr({
+            'text-anchor': 'start',
+            'stroke-opacity': 0,
+            'fill': '#ffffff',
+            'font-family': 'Arial, sans',
+            'font-size': 14,
+            'fill-opacity': 0
+          }).toBack()
+        );
+      }
+
+      clickedBubble.data('textSet', textSet);
+      textSet.animate({
+        'fill-opacity': 1
+      }, duration, '<>', function () {
+        self['animateInProgress'] = false;
+        for(var i=0; self.aboutSpecialBubbleSet[i]; i++) {
+          if(self.aboutSpecialBubbleSet[i].attrs['fill-opacity'] < defaultOpacity) {
+            self.aboutSpecialBubbleSet[i].attr({'fill-opacity': defaultOpacity});
+          }
+        }
+      });
+    };
+
+    this.showContactState = function () {
+      $('#nav-link-list a').not('.contact').removeClass('active');
+      $('#nav-link-list a.contact').addClass('active');
+
     };
 
     this.hideState = function () {
@@ -750,15 +1019,42 @@
         });
       }
 
+      var methodName = 'hide' + state.substr(0, 1).toUpperCase() + state.substr(1) + 'State';
+      if (typeof(this[methodName]) !== 'undefined') {
+        this[methodName]();
+      }
+
       return this;
     };
 
-    this.transition = function(toState){
+    this.hideMainState = function () {
+      self.media.pause();
+      $('#hitAreas, #viewport').fadeOut();
+    };
+
+    this.hideAboutState = function () {
+      self.aboutSpecialBubbleDestroyAndShrink(null);
+      var bubbles = self.aboutSpecialBubbleSet;
+      var windowWidth = $(window).width();
+
+      for (var i=0; bubbles[i]; i++) {
+        bubbles[i].animate({
+          cx: windowWidth + 1000
+        }, 500, '<>')
+      }
+    };
+
+    this.hideContactState = function () {
+
+    };
+
+    this.transition = function (toState) {
       var validStates = ['main', 'about', 'contact'];
       if (validStates.indexOf(toState) === -1) toState = 'main';
       if (this.state === toState) return;
 
       $('body').on('transitionHide:complete', function () {
+        $('body').off('transitionHide:complete');
         self.showState(toState);
       });
       this.hideState();
@@ -805,7 +1101,7 @@
           }).promise();
 
           $.when(videoReady, mainAudReady).done(function () {
-            $body.trigger('media:complete',[self]);
+            $body.trigger('media:complete');
           });
 
           //LOAD STUFF
@@ -925,7 +1221,7 @@
 
           $.when(this.vReady, this.aReady).done(function () {
             console.log('Media ready!');
-            $body.trigger('media:complete',[self]);
+            $body.trigger('media:complete');
           });
 
           //THIS IS THE API::::
@@ -990,11 +1286,10 @@
         $('#nav-link-list a').on('click', navCallback);
 
         //LOADING MEDIA:
-        var media, introFadeOut;
+        var media;
 
         var mediaComplete = $.Deferred(function (dfd) {
-          $body.on('media:complete', function (e, m) {
-            media = m;
+          $body.on('media:complete', function (e) {
             dfd.resolve();
           });
         }).promise();
@@ -1006,17 +1301,17 @@
         }).promise();
 
         $.when(mediaComplete, bubblesComplete).done(function () {
-          self.video = video;
           $('#occluder').fadeOut(2e3, function () {
             $body.data('readyForHint', true);
             if(typeof(self.hitAreaSet) !== 'undefined') {
               self.hitAreaSet.attr({cursor: 'pointer'});
             }
           });
+
           interpreter.gen({
             name: 'readyForMain',
             data: {
-              media: media,
+              media: self.media,
               blurb: self.blurb
             }
           });
@@ -1034,7 +1329,7 @@
           });
         });
 
-        $body.one('shimsLoaded', function(){
+        $body.one('shimsLoaded', function () {
           self.media = new self.MediaSubstrate(Modernizr.video);
         });
 
@@ -1052,6 +1347,75 @@
       return this;
     };
 
+    this.aboutCopy = {
+      'cinch': {
+        'link': 'About\nCINCH',
+        'title': 'CINCH Learning',
+        'subtitle': 'Make it Personal',
+        'text': "No one else connects with, engages or excites\n" +
+          "students exactly like you. With CINCH Learning\n" +
+          "you’re in control of how and what you teach like\n" +
+          "never before. CINCH Learning provides convenient\n" +
+          "cloud-based access to quality math and science\n" +
+          "content for grades 5-12 along with robust planning\n" +
+          "and assessment tools. Choose what you want to\n" +
+          "teach, what resources you want to use, and what\n" +
+          "device you want to use to deliver the lesson.\n" +
+          "Put it all together to create a compelling learning\n" +
+          "experience that is uniquely yours and highly\n" +
+          "personalized to your students.\n \n" +
+          "Get up close and personal with CINCH. Explore\n" +
+          "this site and then contact us for a product demo."
+      },
+      'course': {
+        'link': 'Your\nCourse',
+        'title': 'Your Course',
+        'subtitle': 'Personalize content',
+        'text': "You know what you want to teach and how you\n" +
+          "want to teach it. CINCH puts all the resources you\n" +
+          "need in one place to use any way you want.\n \n" +
+          "Choose from thousands of pre-built lessons to\n" +
+          "create your own unique scope and sequence.\n \n" +
+          "Customize lessons to match your personal teaching\n" +
+          "style. Add and use your own favorite content.\n \n" +
+          "Integrate videos, games, interactive labs and\n" +
+          "other multimedia assets."
+      },
+      'students': {
+        'link': 'Your\nStudents',
+        'title': 'Your Students',
+        'subtitle': 'Personalize learning',
+        'text': "You’ve got students who love math and\n" +
+          "science and students who haven’t yet unlocked\n" +
+          "the secrets. With CINCH, you can meet all\n" +
+          "their needs.\n \n" +
+          "Assign content, assessments, homework, and\n" +
+          "even games to each individual student based\n" +
+          "on specific learning needs.\n \n" +
+          "Encourage collaboration and communication\n" +
+          "with built-in social networking tools.\n \n" +
+          "Keep learning active with IWBs, student\n" +
+          "response systems, and hundreds of\n" +
+          "multimedia resources."
+      },
+      'classroom': {
+        'link': 'Your\nClassroom',
+        'title': 'Your Classroom',
+        'subtitle': 'Personalize the experience',
+        'text': "Wherever your classroom is in the digital\n" +
+          "transition, CINCH is right there with you\n" +
+          "helping you make the most of your school’s\n" +
+          "technology resources.\n \n" +
+          "Access and edit content from any device –\n" +
+          "desktops, laptops, IWBs, tablets or smartphones.\n" +
+          "Plan, assess and communicate on-the-go\n" +
+          "with the CINCH app.\n \n" +
+          "Always have the latest resources aligned to the\n" +
+          "most current standards with real-time updates.\n" +
+          "Integrate print and digital with print\n" +
+          "on demand options."
+      }
+    };
   };
 
   window.Cinch = Cinch;
