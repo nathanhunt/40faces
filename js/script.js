@@ -45,10 +45,10 @@
           '  <div role="video" id="video">'+
           '    <div id="occluder"></div>' +
           '    <video class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop">'+
-          '      <source src="video/grid-with-audio.ogv" type="video/ogg" />'+
           '      <source src="video/grid-with-audio.mp4" type="video/mp4" />'+
+          '      <source src="video/grid-with-audio.ogv" type="video/ogg" />'+
           '    </video>'+
-          '    <audio class="faces" id="facesAudio" autobuffer="autobuffer" preload="auto" loop="loop" muted="muted"></audio>'+
+          '    <audio src="audio/00.m4a" type="audio/mp4" class="faces" id="facesAudio" autobuffer="autobuffer" preload="auto" loop="loop" muted="muted"></audio>'+
           '  </div>'+
           '</div>'+
           '<div id="vector-content"></div>' +
@@ -265,12 +265,12 @@
 
         if(Modernizr.video){
 
-          (function (circle) {
+          (function(circle){
             var $c = $(circle['0']);
-            $c.off('mouseenter').on('mouseenter', function (e) {
+            $c.off('mouseenter').on('mouseenter', function(e){
               hintMouseEnter(circle);
               var $c = $(e.target);
-              var transition = function (circle) {
+              var transition = function(circle){
                 self.interpreter.gen({
                   name: 'toSpecific',
                   data: {
@@ -280,10 +280,10 @@
                 });
               };
               var trans = setTimeout(transition, 1500, circle);
-              $c.one('mouseleave', function (e) {
+              $c.one('mouseleave',function(e){
                 clearTimeout(trans);
               });
-            }).on('mouseleave', function () {
+            }).on('mouseleave',function(){
                 hintMouseLeave(circle);
               });
           }(c));
@@ -1388,13 +1388,11 @@
           this.video = $f(0).play();
           this.audio = $f(1);
           this.currentChannel = 0;
-          this.audioLag = 0.5;
 
           //TRIGGERING COMPLETE AT THE RIGHT MOMENT
 
           this.vReady = $.Deferred(function(dfd){
-            self.video.getClip(0).onStart(function(){
-              $body.trigger('video:loop');
+            self.video.getClip(0).onBegin(function(){
               dfd.resolve();
             });
           }).promise();
@@ -1402,10 +1400,6 @@
           this.aReady = $.Deferred(function(dfd){
             self.aDfd = dfd;
           }).promise();
-
-          $body.off('video:loop').on('video:loop',function(){
-            self.audio.play();
-          });
 
           var loadChannels = function(){
             console.log('Getting channels!');
@@ -1417,7 +1411,8 @@
                 autoBuffering: true,
                 scaling: "fit",
                 fadeInSpeed: 0,
-                fadeOutSpeed: 0
+                fadeOutSpeed: 0,
+                onBeforeFinish: function(){return false;}
               });
             }
             self.aDfd.resolve();
@@ -1425,29 +1420,35 @@
 
           this.audio.isLoaded() ? loadChannels() : this.audio.onLoad(loadChannels);
 
+          $.when(this.vReady).done(function(){
+            self.video.pause();
+          });
+
           $.when(this.vReady, this.aReady).done(function(){
             $body.trigger('media:complete');
           });
 
           //THIS IS THE API::::
 
-          var sync = function(){
-            self.audioLag = (new Date().getTime() - self.audioStarted) / 1000;
-            self.audio.seek(self.video.getTime() + self.audioLag);
-            $body.trigger('audioLoaded', [self, self.currentChannel, self.audio]);
-          };
-
-          this.start = function(){
-            console.log('Playing!');
-            this.audio.getClip(this.currentChannel).onBegin(sync);
-            this.audioStarted = new Date().getTime();
-          };
-
           this.load = function(track){
-            var t = 0;
-            if(typeof track !== 'undefined'){t = track}
-            this.currentChannel = t;
-            this.start();
+            console.log('Loading track: '+track);
+            this.audio.pause();
+            if(track === 0 || typeof track === 'undefined'){
+              this.currentChannel = 0;
+              this.audio.mute();
+              this.video.unmute();
+            }else{
+              this.audio.getClip(track).onBufferFull(function(){
+                self.currentChannel = track;
+                $body.trigger('audioLoaded',[self, track, self.audio]);
+              })
+              .onStart(function(){
+                self.video.mute();
+                self.video.play();
+                self.audio.unmute();
+              });
+              this.audio.play(track);
+            }
           };
 
           this.pause = function(){
@@ -1456,8 +1457,8 @@
           };
 
           this.resume = function(){
-            this.audio.resume();
-            this.video.resume();
+            this.load(0);
+            if(!this.video.isPlaying()) this.video.play();
           };
 
         }
