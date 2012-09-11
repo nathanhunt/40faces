@@ -127,8 +127,9 @@
     ];
 
     this.contactBubbleData = [
-      {cx: 500, cy: -227, r: 646, anchor: {x: 'right', y: 'bottom'}},
-      {cx: 216, cy: 400, r: 630, anchor: {x: 'left', y: 'bottom'}}
+      {cx: 500, cy: -127, r: 646, anchor: {x: 'right', y: 'bottom'}},
+      {cx: 216, cy: 400, r: 630, anchor: {x: 'left', y: 'bottom'}},
+      {cx: 316, cy: 400, r: 630, anchor: {x: 'left', y: 'bottom'}}
     ];
 
     this.initMainState = function () {
@@ -727,7 +728,7 @@
       }
 
       setTimeout((function () {
-        $('body').trigger('transitionShow:complete transition:complete');
+        $('body').trigger('transition:complete');
         self.state = toState;
       }), 500);
 
@@ -741,26 +742,26 @@
     };
 
     this.aboutSpecialBubbleData = {
-      cinch: {cx: 575, cy: 200, r: 50, code: 'cinch'},
-      course: {cx: 630, cy: 295, r: 50, code: 'course'},
-      students: {cx: 640, cy: 400, r: 50, code: 'students'},
-      classroom: {cx: 620, cy: 505, r: 50, code: 'classroom'}
+      cinch: {cx: 575, cy: 150, r: 50, code: 'cinch'},
+      course: {cx: 630, cy: 245, r: 50, code: 'course'},
+      students: {cx: 640, cy: 350, r: 50, code: 'students'},
+      classroom: {cx: 620, cy: 455, r: 50, code: 'classroom'}
   };
 
-    this.aboutExpandedBubbleParams = {cx: 320, cy: 380, r: 280};
+    this.aboutExpandedBubbleParams = {cx: 320, cy: 330, r: 280};
 
     this.showAboutState = function () {
       $('#nav-link-list a').not('.about').removeClass('active');
       $('#nav-link-list a.about').addClass('active');
 
       if(typeof(self.aboutSpecialBubbleSet) === 'undefined') {
-        self.createAndShowAboutSpecialBubbles();
-      } else {
-        self.showAboutSpecialBubbles();
+        self.createAboutSpecialBubbles();
       }
+
+      self.showAboutSpecialBubbles();
     };
 
-    this.createAndShowAboutSpecialBubbles = function () {
+    this.createAboutSpecialBubbles = function () {
       var windowWidth = $(window).width();
       var windowHeight = $(window).height();
 
@@ -768,24 +769,15 @@
       var specialBubbleData = self.aboutSpecialBubbleData;
       var specialBubbleSet = paper.set();
 
-      var margin = (windowWidth - 800) / 2;
-
       for (var x in specialBubbleData) {
         if(specialBubbleData.hasOwnProperty(x)) {
           var o = (0.2+(Math.random()*0.3)).toFixed(2);
           var fill = '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')';
 
-          var cx = specialBubbleData[x].cx + margin;
-          var cy = specialBubbleData[x].cy;
-          var r = specialBubbleData[x].r;
-
           var b = paper.circle(windowWidth + 1000, windowHeight + 1000, 0).attr({
             'stroke-opacity': 0,
             fill: fill
-          }).animate({cx: cx, cy: cy, r: r}, 500, '<>', function () {
-              self.aboutSpecialBubbleDestroyAndShrink(null);
-              self.aboutSpecialBubbleEnlarge('cinch');
-            });
+          });
 
           specialBubbleSet.push(b);
 
@@ -795,13 +787,13 @@
             .click(self.aboutSpecialBubbleClickCallback);
 
           // Create text element in Raphael
-          var link = paper.text(cx, cy, self.aboutCopy[x].link).attr({
+          var link = paper.text(windowWidth + 1000, windowHeight + 1000, self.aboutCopy[x].link).attr({
             'text-anchor': 'middle',
             'stroke-opacity': 0,
             'font-family': 'Arial, sans',
             'fill': '#ffffff',
             'font-size': 16,
-            'fill-opacity': 1,
+            'fill-opacity': 0,
             'cursor': 'pointer'
           });
 
@@ -837,9 +829,7 @@
           self.aboutSpecialBubbleEnlarge('cinch');
         });
 
-        var textObjects = b.data('textObjects');
-
-        textObjects.link.animate({
+        b.data('linkObject').animate({
           'fill-opacity': 1,
           x: cx,
           y: cy
@@ -877,7 +867,7 @@
     };
 
     this.aboutSpecialBubbleDestroyAndShrink = function (skipBubble) {
-      var duration = 325;
+      var duration = 100;
       var margin = ($(window).width() - 800) / 2;
       var code = typeof(skipBubble) !== 'undefined' && skipBubble !== null ? skipBubble.data('code') : null;
 
@@ -996,9 +986,88 @@
       });
     };
 
+    this.contactSpecialBubbleData = {
+      cx: 300, cy: 225, r: 155
+    };
+
     this.showContactState = function () {
       $('#nav-link-list a').not('.contact').removeClass('active');
       $('#nav-link-list a.contact').addClass('active');
+
+      if(typeof(self.contactSpecialBubble) === 'undefined') {
+        self.createContactSpecialBubble();
+      }
+
+      self.showContactSpecialBubble();
+    };
+
+    this.createContactSpecialBubble = function () {
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+
+      var paper = self.paper;
+
+      var fill = '0-rgba(0,151,219,.8)-rgba(0,100,178,.9)';
+
+      this.contactSpecialBubble = paper.circle(windowWidth + 1000, windowHeight + 1000, 0).attr({
+        'stroke-opacity': 0,
+        fill: fill
+      });
+    };
+
+    this.showContactSpecialBubble = function () {
+      var windowWidth = $(window).width();
+
+      var margin = (windowWidth - 800) / 2;
+      var specialBubbleData = self.contactSpecialBubbleData;
+
+      var cx = specialBubbleData.cx + margin;
+      var cy = specialBubbleData.cy;
+      var r = specialBubbleData.r;
+
+      this.contactSpecialBubble.animate({cx: cx, cy: cy, r: r}, 500, '<>', function () {
+        self.createAndShowContactSpecialBubbleText();
+      });
+    };
+
+    this.createAndShowContactSpecialBubbleText = function () {
+      var paper = this.paper;
+      var textSet = paper.set();
+      var bubble = this.contactSpecialBubble;
+
+      var contactCopy = {
+        'title': 'Contact Us',
+        'text': "For more information, about\nplease CINCH Learning, please\nemail us or use our contact form."
+      };
+
+      var x = bubble.attrs.cx - bubble.attrs.r * 13/20;
+      var y = bubble.attrs.cy - bubble.attrs.r * 10/40;
+
+      var contactTitle = paper.text(x, y, contactCopy.title).attr({
+        'text-anchor': 'start',
+        'stroke-opacity': 0,
+        'fill': '#ffffff',
+        'font-family': 'Arial, sans',
+        'font-size': 32,
+        'fill-opacity': 1
+      });
+      textSet.push(contactTitle);
+
+      var contactTextLines = contactCopy.text.split('\n');
+      for(var i=0; contactTextLines[i]; i++) {
+        textSet.push(
+          paper.text(x, y + 30 + i * 20, contactTextLines[i]).attr({
+            'text-anchor': 'start',
+            'stroke-opacity': 0,
+            'fill': '#ffffff',
+            'font-family': 'Arial, sans',
+            'font-size': 14,
+            'fill-opacity': 1
+          })
+        );
+      }
+
+      bubble.data('textSet', textSet);
 
     };
 
@@ -1045,7 +1114,20 @@
     };
 
     this.hideContactState = function () {
+      self.contactSpecialBubbleTextDestroy();
+      var windowWidth = $(window).width();
 
+      self.contactSpecialBubble.animate({
+        cx: windowWidth + 1000
+      }, 500, '<>');
+    };
+
+    this.contactSpecialBubbleTextDestroy = function () {
+      var textSet = self.contactSpecialBubble.data('textSet');
+      textSet.animate({'fill-opacity': 0}, 100, '<>', function () {
+        this.remove();
+      });
+      self.contactSpecialBubble.data('textSet', null);
     };
 
     this.transition = function (toState) {
@@ -1269,8 +1351,8 @@
         //NAVIGATION:
         var navCallback = function(event) {
           event.preventDefault();
-
-          var target = (event.target.className === 'about' ? 'About' : (event.target.className === 'contact' ? 'Contact' : 'Main'));
+          var className = $.trim(event.target.className);
+          var target = (className === 'about' ? 'About' : (className === 'contact' ? 'Contact' : 'Main'));
 
           self.blurb.removeObjectSet();
           $(this).off('click').on('click', function(e) {e.preventDefault()});
@@ -1279,6 +1361,7 @@
           interpreter.gen({name : 'to'+target, data: {app: self}});
 
           $body.on('transition:complete', function () {
+            $('body').off('transition:complete');
             $(_this).off('click').on('click', navCallback);
           });
         };
