@@ -285,14 +285,14 @@
   html5media.flowplayerControlsSwf = scriptRoot + "flowplayer.controls.swf";
 
   // Known media formats.
-  var THEORA_FORMAT = 'video/ogg; codecs="theora, vorbis"';
-  var H264_FORMAT = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
-  var VORBIS_FORMAT = 'audio/ogg; codecs="vorbis"';
+  var THEORA_FORMAT = 'video/ogg';
+  var H264_FORMAT = 'video/mp4';
+  var VORBIS_FORMAT = 'audio/ogg';
   var WEBM_FORMAT  = 'video/webm;';
   var FLV_FORMAT = 'video/x-flv';
   var M4A_FORMAT = 'audio/mp4;';
   var MP3_FORMAT = 'audio/mpeg;';
-  var WAV_FORMAT = 'audio/wav; codecs="1"';
+  var WAV_FORMAT = 'audio/wav';
 
   /**
    * The video format to assume if it cannot be determined what format a media
