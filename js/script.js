@@ -1391,8 +1391,14 @@
 
           //TRIGGERING COMPLETE AT THE RIGHT MOMENT
 
+          $body.on('video:loop',function(){
+            if(self.loop) self.audio.seek(0);
+            if(self.loop &&   self.currentChannel !== 0) self.audio.unmute();
+          });
+
           this.vReady = $.Deferred(function(dfd){
             self.video.getClip(0).onBegin(function(){
+              $body.trigger('video:loop');
               dfd.resolve();
             });
           }).promise();
@@ -1411,8 +1417,7 @@
                 autoBuffering: true,
                 scaling: "fit",
                 fadeInSpeed: 0,
-                fadeOutSpeed: 0,
-                onBeforeFinish: function(){return false;}
+                fadeOutSpeed: 0
               });
             }
             self.aDfd.resolve();
@@ -1431,7 +1436,7 @@
           //THIS IS THE API::::
 
           this.load = function(track){
-            console.log('Loading track: '+track);
+            self.loop = false;
             this.audio.pause();
             if(track === 0 || typeof track === 'undefined'){
               this.currentChannel = 0;
@@ -1446,6 +1451,7 @@
                 self.video.mute();
                 self.video.play();
                 self.audio.unmute();
+                self.loop = true;
               });
               this.audio.play(track);
             }
