@@ -128,9 +128,13 @@
     };
 
     this.displayMainIntro = function () {
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+      var margin = (windowWidth - 800) / 2;
+
       var paper = this.paper;
       var s = paper.set();
-      var margin = ($(window).width() - 800) / 2;
+
       var x = 350 + margin;
       var y = 270;
 
@@ -138,6 +142,7 @@
         'fill': '0-rgba(0,151,219,0.7)-rgba(0,100,178,0.7)',
         'stroke-opacity': 0
       }).toFront());
+
       s.push(paper.text(x, y, "See how teachers,\nadministrators and\nparents are using\nCinch technology\ntoday.").attr({
         'text-anchor': 'middle',
         'stroke-opacity': 0,
@@ -149,6 +154,7 @@
         'fill': '0-rgba(0,151,219,0.9)-rgba(0,100,178,0.9)',
         'stroke-opacity': 0
       }).toFront());
+
       s.push(paper.text(x+180, y+180, "Make it\nPersonal").attr({
         'text-anchor': 'middle',
         'stroke-opacity': 0,
@@ -159,18 +165,14 @@
       self.mainIntroSet = s;
 
       var mainBubbleData = this.mainBubbleData;
-
-      var windowWidth = $(window).width();
-      var windowHeight = $(window).height();
-
-      var mainBubbles = this.paper.set();
+      var mainBubbles = paper.set();
 
       var i;
       for(i=0; mainBubbleData[i]; i++) {
         var o = (0.2+(Math.random()*0.3)).toFixed(2);
         var fill = '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')';
 
-        var b = this.paper.circle(windowHeight/2, windowHeight/2, 0).attr({
+        var b = paper.circle(windowWidth/2, windowHeight/2, 0).attr({
           'stroke-opacity': 0,
           fill: fill
         });
