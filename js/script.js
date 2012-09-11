@@ -95,9 +95,9 @@
           'M89.307,2.876c0-0.892-0.659-1.612-1.55-1.612c-0.867,0-1.539,0.72-1.539,1.599c0,0.892,0.672,1.6,1.563,1.6' +
           'C88.648,4.476,89.307,3.755,89.307,2.876z'
       ).attr({
-        fill: '#fff',
-        'stroke-opacity': 0
-      });
+          fill: '#fff',
+          'stroke-opacity': 0
+        });
 
       return this;
     };
@@ -738,12 +738,12 @@
           'stroke-opacity': 0,
           fill: fill
         })
-        .animate({
-          cx: bubbleData[i].cx + (bubbleData[i].anchor.x === 'right' ? windowWidth : 0),
-          cy: bubbleData[i].cy + (bubbleData[i].anchor.y === 'bottom' ? windowHeight : 0),
-          r: bubbleData[i].r
-        }, 500, 'easeOut')
-        .data('bubbleData', bubbleData[i]);
+          .animate({
+            cx: bubbleData[i].cx + (bubbleData[i].anchor.x === 'right' ? windowWidth : 0),
+            cy: bubbleData[i].cy + (bubbleData[i].anchor.y === 'bottom' ? windowHeight : 0),
+            r: bubbleData[i].r
+          }, 500, 'easeOut')
+          .data('bubbleData', bubbleData[i]);
 
         bubbles.push(b);
       }
@@ -775,7 +775,7 @@
       course: {cx: 630, cy: 245, r: 50, code: 'course'},
       students: {cx: 640, cy: 350, r: 50, code: 'students'},
       classroom: {cx: 620, cy: 455, r: 50, code: 'classroom'}
-  };
+    };
 
     this.aboutExpandedBubbleParams = {cx: 320, cy: 330, r: 280};
 
