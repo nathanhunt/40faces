@@ -140,7 +140,8 @@
     this.displayMainIntro = function () {
       var paper = this.paper;
       var s = paper.set();
-      var x = 410;
+      var margin = ($(window).width() - 800) / 2;
+      var x = 350 + margin;
       var y = 270;
 
       s.push(paper.circle(x, y, 200).attr({
@@ -183,7 +184,7 @@
         var o = (0.2+(Math.random()*0.3)).toFixed(2);
         var fill = '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')';
 
-        var b = this.paper.circle(400, 300, 0).attr({
+        var b = this.paper.circle(windowHeight/2, windowHeight/2, 0).attr({
           'stroke-opacity': 0,
           fill: fill
         });
@@ -936,6 +937,8 @@
         this.toBack();
       });
 
+      clickedBubble.data('linkObject').animate({'fill-opacity': 0}, duration, '<>');
+
       var paper = self.paper;
       var textSet = paper.set();
 
@@ -1027,6 +1030,7 @@
 
       this.contactSpecialBubble.animate({cx: cx, cy: cy, r: r}, 500, '<>', function () {
         self.createAndShowContactSpecialBubbleText();
+        self.createAndShowContactExtraBubbles();
       });
     };
 
@@ -1071,6 +1075,77 @@
 
     };
 
+    this.contactExtraBubbleData = [
+      {cx: 455, cy: 385, r: 50},
+      {cx: 350, cy: 405, r: 35},
+      {cx: 267, cy: 389, r: 28},
+      {cx: 205, cy: 355, r: 20},
+      {cx: 174, cy: 313, r: 10}
+    ];
+
+    this.createAndShowContactExtraBubbles = function () {
+      var bubbleData = self.contactExtraBubbleData;
+      var paper = self.paper;
+      var bubbleSet = paper.set();
+
+      var windowWidth = $(window).width();
+      var margin = (windowWidth - 800) / 2;
+
+      for(var i=0; i < 5; i++) {
+        var o = (0.2 + (Math.random() * 0.3)).toFixed(2);
+        var cx = bubbleData[i].cx + margin;
+        var cy = bubbleData[i].cy;
+        var r = bubbleData[i].r;
+
+        var b = paper.circle(cx, cy, r).attr({
+          'stroke-opacity': 0,
+          fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
+          'fill-opacity': 0
+        }).toFront().animate({'fill-opacity': .4}, 500);
+        bubbleSet.push(b);
+      }
+
+      var defaultOpacity = .8;
+      var hoverOpacity = 1;
+
+      var mouseOverCallback = function() {
+        var tempBubble = typeof(this.data('bubbleObject')) !== 'undefined' ? this.data('bubbleObject') : this;
+        tempBubble.attr({'opacity': hoverOpacity, 'fill-opacity': hoverOpacity, 'cursor': 'pointer'});
+      };
+
+      var mouseOutCallback = function() {
+        var tempBubble = typeof(this.data('bubbleObject')) !== 'undefined' ? this.data('bubbleObject') : this;
+        tempBubble.attr({'opacity': defaultOpacity, 'fill-opacity': defaultOpacity, 'cursor': 'pointer'});
+      };
+
+      var clickCallback = function() {
+        window.open('http://mheducation.force.com/MHE/SEG_Sampling_Leads?id=701C0000000UKSx', '_blank');
+      };
+
+      var x, y, bbox;
+
+      bbox = bubbleSet[0].getBBox();
+      x = bbox.x + bbox.width / 2;
+      y = bbox.y + bbox.height / 2;
+      var contactLink = paper.text(x, y, 'Contact\nForm').attr({
+        'text-anchor': 'middle',
+        'stroke-opacity': 0,
+        'font-family': 'Arial, sans',
+        'fill': '#ffffff',
+        'font-size': 18,
+        'fill-opacity': 0,
+        'cursor': 'pointer'
+      }).animate({'fill-opacity':1}, 500);
+
+      contactLink.mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
+      bubbleSet[0].mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
+      bubbleSet[0].attr({'cursor': 'pointer'}).animate({'fill-opacity': defaultOpacity}, 500);
+      contactLink.data('bubbleObject', bubbleSet[0]);
+      bubbleSet[0].data('textObject', contactLink);
+
+      self.contactExtraBubbleSet = bubbleSet;
+    };
+
     this.hideState = function () {
       var windowWidth = $(window).width();
       var windowHeight = $(window).height();
@@ -1109,12 +1184,17 @@
       for (var i=0; bubbles[i]; i++) {
         bubbles[i].animate({
           cx: windowWidth + 1000
-        }, 500, '<>')
+        }, 500, '<>');
+
+        bubbles[i].data('linkObject').animate({
+          x: windowWidth + 1000
+        }, 500, '<>');
       }
     };
 
     this.hideContactState = function () {
       self.contactSpecialBubbleTextDestroy();
+      self.contactExtraBubblesDestroy();
       var windowWidth = $(window).width();
 
       self.contactSpecialBubble.animate({
@@ -1128,6 +1208,15 @@
         this.remove();
       });
       self.contactSpecialBubble.data('textSet', null);
+    };
+
+    this.contactExtraBubblesDestroy = function () {
+      self.contactExtraBubbleSet.forEach(function (e) {
+        if(typeof(e.data('textObject')) !== 'undefined') {
+          e.data('textObject').remove();
+        }
+        e.remove();
+      });
     };
 
     this.transition = function (toState) {
