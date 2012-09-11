@@ -104,23 +104,23 @@
     };
 
     this.mainBubbleData = [
-      {cx: -290, cy: -182, r: 530, anchor: {x: 'left', y: 'top'}},
-      {cx: -135, cy: 203, r: 216, anchor: {x: 'left', y: 'top'}},
-      {cx: 335, cy: -400, r: 641, anchor: {x: 'right', y: 'top'}},
-      {cx: 300, cy: -499, r: 626, anchor: {x: 'right', y: 'top'}},
-      {cx: 500, cy: 27, r: 646, anchor: {x: 'right', y: 'bottom'}},
-      {cx: 216, cy: 500, r: 630, anchor: {x: 'left', y: 'bottom'}}
+      {cx: -720, cy: -182, r: 530, anchor: {x: 'left', y: 'top'}},
+      {cx: -600, cy: 203, r: 216, anchor: {x: 'left', y: 'top'}},
+      {cx: 715, cy: -400, r: 641, anchor: {x: 'right', y: 'top'}},
+      {cx: 600, cy: -499, r: 626, anchor: {x: 'right', y: 'top'}},
+      {cx: 1030, cy: 627, r: 646, anchor: {x: 'right', y: 'top'}},
+      {cx: -335, cy: 1245, r: 630, anchor: {x: 'left', y: 'top'}}
     ];
 
     this.aboutBubbleData = [
-      {cx: 500, cy: -227, r: 646, anchor: {x: 'right', y: 'bottom'}},
-      {cx: 216, cy: 400, r: 630, anchor: {x: 'left', y: 'bottom'}}
+      {cx: 900, cy: 627, r: 646, anchor: {x: 'right', y: 'top'}},
+      {cx: -184, cy: 1200, r: 630, anchor: {x: 'left', y: 'top'}}
     ];
 
     this.contactBubbleData = [
-      {cx: 500, cy: -127, r: 646, anchor: {x: 'right', y: 'bottom'}},
-      {cx: 216, cy: 400, r: 630, anchor: {x: 'left', y: 'bottom'}},
-      {cx: 316, cy: 400, r: 630, anchor: {x: 'left', y: 'bottom'}}
+      {cx: 900, cy: 527, r: 646, anchor: {x: 'right', y: 'top'}},
+      {cx: -184, cy: 1050, r: 630, anchor: {x: 'left', y: 'top'}},
+      {cx: -84, cy: 1050, r: 630, anchor: {x: 'left', y: 'top'}}
     ];
 
     this.initMainState = function () {
@@ -181,8 +181,8 @@
         b.data('bubbleData', mainBubbleData[i]);
 
         var a = Raphael.animation({
-          cx: mainBubbleData[i].cx + (mainBubbleData[i].anchor.x === 'right' ? windowWidth : 0),
-          cy: mainBubbleData[i].cy + (mainBubbleData[i].anchor.y === 'bottom' ? windowHeight : 0),
+          cx: mainBubbleData[i].cx + Math.max(windowWidth/2, 400),
+          cy: mainBubbleData[i].cy + (mainBubbleData[i].anchor.y === 'top' ? 0 : windowHeight),
           r: mainBubbleData[i].r
         }, 3000, 'easeInOut');
 
@@ -742,8 +742,8 @@
           fill: fill
         })
           .animate({
-            cx: bubbleData[i].cx + (bubbleData[i].anchor.x === 'right' ? windowWidth : 0),
-            cy: bubbleData[i].cy + (bubbleData[i].anchor.y === 'bottom' ? windowHeight : 0),
+            cx: bubbleData[i].cx + Math.max(windowWidth/2, 400),
+            cy: bubbleData[i].cy + (bubbleData[i].anchor.y === 'top' ? 0 : windowHeight),
             r: bubbleData[i].r
           }, 500, 'easeOut')
           .data('bubbleData', bubbleData[i]);
@@ -1282,14 +1282,19 @@
       var bubbleData = this[state + 'BubbleData'];
       var bubbleSet = this[state + 'BubbleSet'];
 
-      console.log(state);
-      console.log(bubbleSet);
-
       for(var i=0; bubbleSet[i]; i++) {
         bubbleSet[i].attr({
-          cx: bubbleData[i].cx + (bubbleData[i].anchor.x === 'right' ? windowWidth : 0),
-          cy: bubbleData[i].cy + (bubbleData[i].anchor.y === 'bottom' ? windowHeight : 0)
+          cx: bubbleData[i].cx + Math.max(windowWidth/2, 400),
+          cy: bubbleData[i].cy + (bubbleData[i].anchor.y === 'top' ? 0 : windowHeight)
         });
+      }
+
+      switch(state) {
+        case 'about':
+
+          break;
+        case 'contact':
+          break;
       }
 
     };
