@@ -4,68 +4,68 @@
 
   var Cinch = function () {
 
+    var self = this;
+
     this.initApp = function () {
+      return this.updateDOM().initPrimaryPaper().putLogo().initMedia().runScion();
+    };
+
+    this.updateDOM = function () {
       $('body').css({
         overflow: 'hidden',
         'padding-top': 40
-      }).append(
-        '<script type="text/javascript" src="js/libs/raphael.free_transform.js"><\/script>'
-      );
+      });
 
       $('#app').html(
         '<div class="standard fixed-top-bar">' +
-          '<a id="cinch-logo"></a>' +
-          '<a href="#" class="volume-icon-link on">' +
-          '<img class="on" src="img/volume-on.png" />' +
-          '<img class="off" src="img/volume-off.png" />' +
-          '</a>' +
-          '<ul id="nav-link-list" class="float-right">' +
-          '<li><a href="#" class="main active">40 Faces</a></li>' +
-          '<li><span>|</span></li>' +
-          '<li><a href="#" class="about">About CINCH</a></li>' +
-          '<li><span>|</span></li>' +
-          '<li><a href="#" class="contact">Contact</a></li>' +
+          ' <a id="cinch-logo"></a>' +
+          ' <a href="#" class="volume-icon-link on">' +
+          '   <img class="on" src="img/volume-on.png" />' +
+          '   <img class="off" src="img/volume-off.png" />' +
+          ' </a>' +
+          ' <ul id="nav-link-list" class="float-right">' +
+          '   <li><a href="#" class="main active">40 Faces</a></li>' +
+          '   <li><span>|</span></li>' +
+          '   <li><a href="#" class="about">About CINCH</a></li>' +
+          '   <li><span>|</span></li>' +
+          '   <li><a href="#" class="contact">Contact</a></li>' +
           '   <li><span>|</span></li>' +
           '   <li><a href="http://www.cinchlearning.com">Login</a></li>' +
-          '</ul>' +
+          ' </ul>' +
           '</div>' +
           '<div class="standard fixed-bottom-bar">' +
           ' <a class="logoLink" href="https://www.mheonline.com/" target="_blank"><img src="img/mhe_logo_94x26.png" /></a>' +
-          '<a href="http://www.mcgraw-hill.com/site/tools/terms-of-use" target="_blank">Terms of Use</a>' +
-          '<span>|</span>' +
-          '<a href="https://www.mheonline.com/pages/display/privacynotice_view" target="_blank">Privacy Notice</a>' +
-          '<span>|</span>' +
-          '<a href="https://www.mheonline.com/" target="_blank">McGraw Hill Education</a>' +
+          ' <a href="http://www.mcgraw-hill.com/site/tools/terms-of-use" target="_blank">Terms of Use</a>' +
+          ' <span>|</span>' +
+          ' <a href="https://www.mheonline.com/pages/display/privacynotice_view" target="_blank">Privacy Notice</a>' +
+          ' <span>|</span>' +
+          ' <a href="https://www.mheonline.com/" target="_blank">McGraw Hill Education</a>' +
           '</div>' +
-          ''+
-          '  <div role="viewport" id="viewport">'+
-          ''+
-          '    <div role="video" id="video">'+
-          '      <video class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop">'+
-          '        <source src="video/grid-with-audio.mp4" type="video/mp4" />'+
-          '        <source src="video/grid-with-audio.ogv" type="video/ogg" />'+
-          '      </video>'+
-          '      <audio class="faces" id="facesAudio" autobuffer="autobuffer" preload="auto" loop="loop" muted="muted"></audio>'+
-          '    </div>'+
-          ''+
-          '    <div role="occluder" id="occluder"></div>'+
-          ''+
+          '<div role="viewport" id="viewport">'+
+          '  <div role="video" id="video">'+
+          '    <video class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop">'+
+          '      <source src="video/grid-with-audio.ogv" type="video/ogg" />'+
+          '      <source src="video/grid-with-audio.mp4" type="video/mp4" />'+
+          '    </video>'+
+          '    <audio class="faces" id="facesAudio" autobuffer="autobuffer" preload="auto" loop="loop" muted="muted"></audio>'+
           '  </div>'+
-          ''+
-          '  <div id="vector-content"></div>'+
-          ''+
-          '  <div id="hitAreas"></div>'
+          '</div>'+
+          '<div id="vector-content"></div>' +
+          '<div id="hitAreaWrapper"><div id="hitAreas"></div></div>'
       );
 
-      this.putLogo();
+      return this;
+    };
 
-      this.run();
+    this.initPrimaryPaper = function () {
+      this.paper = Raphael('vector-content', 3000, 1500);
+      return this;
     };
 
     this.putLogo = function () {
-        var paper = Raphael('cinch-logo', 235, 22);
-        var logo = paper.path(
-          'M10.547,0.49c1.781,0,3.689,0.451,5.726,1.351v4.913c-2.18-1.311-4.089-1.965-5.726-1.965c-1.639,0-2.947,0.562-3.93,1.688' +
+      var paper = Raphael('cinch-logo', 235, 22);
+      var logo = paper.path(
+        'M10.547,0.49c1.781,0,3.689,0.451,5.726,1.351v4.913c-2.18-1.311-4.089-1.965-5.726-1.965c-1.639,0-2.947,0.562-3.93,1.688' +
           'c-0.982,1.126-1.474,2.641-1.474,4.544c0,1.802,0.517,3.242,1.551,4.322c1.034,1.078,2.416,1.618,4.145,1.618' +
           'c1.514,0,3.325-0.608,5.434-1.826v4.882c-2.364,0.788-4.334,1.182-5.911,1.182c-2.713,0-5.016-0.995-6.908-2.986' +
           'c-1.894-1.99-2.84-4.419-2.84-7.284c0-2.916,0.964-5.385,2.894-7.406C5.437,1.5,7.784,0.49,10.547,0.49z M19.328,20.923h4.345V0.766' +
@@ -98,1565 +98,1509 @@
           fill: '#fff',
           'stroke-opacity': 0
         });
+
+      return this;
     };
 
-    this.run = function () {
-      /* VIEW BINDER
-       * binds views. */
-      (function(window, $, Raphael, _, require){
-
-        /* BUBBLE MAKER
-         * yes, it's inside the view binder. */
-        var Bubbles = function () {
-          var self = this;
-
-          this.paper = Raphael('vector-content', 2985, 3174);
-
-          this.deploy = function(){
-
-            this.bubbles = deployBubbles(this.paper, 3e3, 'easeInOut', 300, 600);
-
-            this.ft = this.paper.freeTransform(this.bubbles);
-            this.ft.hideHandles();
-      //      this.initWindowResizing();
-            return this.bubbles;
-          };
-
-          this.initWindowResizing = function() {
-            $(window).off('resize').on('resize',function() {
-              var anim = self.ft.opts.animate;
-              self.ft.opts.animate = false;
-              self.ft.attrs.translate.x = ($(window).width() - $('#viewport').width()) / 2;
-              self.ft.apply();
-              self.ft.opts.animate = anim;
-            }).trigger('resize');
-          };
-
-          this.destroyWindowResizing = function() {
-            $(window).off('resize');
-          };
-
-          this.transition = function(toState, fromState, duration, easing){
-            var bubbleAttrs = {
-              main: {
-                rotate: 0,
-                translate: {x: 0, y: 0},
-                center: {x: 2985/2, y: 3174/2}
-              },
-              contact: {
-                rotate: -90,
-                translate: {x: 750, y: -860},
-                center: {x: 2985/2, y: 3174/2}
-              },
-              about: {
-                rotate: -180,
-                translate: {x: -1350, y: -1250},
-                center: {x: 2985/2, y: 3174/2}
-              }
-            };
-
-            // This prevents weird transformations through the origin
-            this.ft.opts.animate = false;
-            _.extend(this.ft.attrs, bubbleAttrs[fromState]);
-            this.ft.apply();
-            ///////////////
-
-            this.ft.opts.animate = {'delay': duration, 'easing': easing};
-            _.extend(this.ft.attrs, bubbleAttrs[toState]);
-            var i;
-            var movingBubbles = self[toState+'Bubbles'];
-            for(i = 0; i < movingBubbles.length; i++){
-              var b = movingBubbles[i];
-              var a = Raphael.animation(b[toState+'Pos'], duration, easing);
-              b.animate(a);
-            }
-            this.ft.apply();
-
-            if(fromState === 'main') {
-              // Video should go out of the bottom left
-              $('#viewport').animate({top: $(window).height()+1000, left: -$(window).width()-1000}, duration);
-
-              // TODO: Volume should fade out, with callback of video stopping and seeking to beginning
-
-
-            } else if(fromState === 'about') {
-              // Fade out text from about bubbles
-            } else if(fromState === 'contact') {
-              // TODO: Check for mini bubbles, and destroy them and text inside of them
-              if(typeof(self.contactBubbles.contactPaper) !== 'undefined' && self.contactBubbles.contactPaper !== null) {
-                self.contactBubbles.contactPaper.clear();
-                self.contactBubbles.contactPaper.remove();
-                self.contactBubbles.contactPaper = null;
-                self.contactBubbles.bubbleSet = [];
-                self.contactBubbles.textSet = [];
-              }
-            }
-
-            if(toState === 'main') {
-              // Video should come from the bottom left
-              $('#viewport').animate({top: 0, left: 0}, duration, function() {
-                // TODO: Video should do something when it enters the viewing area
-              });
-
-            } else if(toState === 'contact') {
-              setTimeout((function() {
-                var x, y, h, w, x0, x1, x2, x3, y0, y1, y2, y3;
-                var miniBubbles = [];
-                var contactPaper = Raphael('contactPaper', 2000, 2000);
-
-                if($.browser.msie) {
-                  x = 333;
-                  y = 118;
-                  h = (275-118)*2;
-                  w = (493-333)*2;
-
-                  x0 = x+w/12;
-                  x1 = x+w/12;
-                  x2 = x+w*3/5;
-                  x3 = x+w;
-
-                  y0 = y+h*3/4;
-                  y1 = y+h*19/20;
-                  y2 = y+h*6/5;
-                  y3 = y+h;
-
-                  var xt = makeCBXFunction(x0, x1, x2, x3);
-                  var yt = makeCBYFunction(y0, y1, y2, y3);
-
-                  var radii = [45, 35, 28, 20, 10];
-                  var tValues = [1, .75, .55, .33, .1];
-
-                  for(i=0; i < 5; i++) {
-                    var o = (0.2 + (Math.random() * 0.3)).toFixed(2);
-                    b = contactPaper.circle(xt(tValues[i]), yt(tValues[i]), radii[i]).attr({
-                      'stroke-opacity': 0,
-                      fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
-                      'fill-opacity': 0
-                    }).toBack().animate({'fill-opacity': .4}, 500);
-                    miniBubbles.push(b);
-                  }
-
-                  self.contactBubbles.bubbleSet = miniBubbles;
-                  self.contactBubbles.contactPaper = contactPaper;
-
-                  bindCallbacksToContactBubbles();
-                } else {
-                  var bbox = self.contactBubbles[0].getBBox();
-                  x = bbox.x;
-                  y = bbox.y + 40;
-                  h = bbox.height;
-                  w = bbox.width;
-
-                  x0 = x+w/12;
-                  x1 = x+w/12;
-                  x2 = x+w*3/5;
-                  x3 = x+w;
-
-                  y0 = y+h*3/4;
-                  y1 = y+h*19/20;
-                  y2 = y+h*6/5;
-                  y3 = y+h;
-
-                  // Create mini bubbles from the left side of the larger bubble, around the bottom, counter-clockwise.
-                  for(var i=0; i < 5; i++) {
-                    var o = (0.2+(Math.random()*0.3)).toFixed(2);
-                    b = contactPaper.circle(x0, y0, 0).attr({
-                      'stroke-opacity': 0,
-                      fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
-                      'fill-opacity': .4
-                    }).toBack();
-                    miniBubbles.push(b);
-                  }
-
-                  var maxTime = 1000;
-                  var maxRadius = 45;
-                  for(var i=0; miniBubbles[i]; i++) {
-                    var delay = maxTime/5*i+Math.sqrt(i*5000);
-                    var duration = maxTime-delay;
-                    var finalRadius = maxRadius+Math.pow(i,1.5)*5;
-                    if(typeof(miniBubbles[i+1]) === 'undefined') finalRadius = 200;
-                    animateBubble(miniBubbles[i], delay, duration, maxTime, makeCBXFunction(x0, x1, x2, x3), makeCBYFunction(y0, y1, y2, y3), finalRadius);
-                  }
-
-                  self.contactBubbles.bubbleSet = miniBubbles;
-                  self.contactBubbles.contactPaper = contactPaper;
-
-                  // TODO: Put text into largest two bubbles, and set mouseover, mouseout, and click events.
-                  setTimeout(bindCallbacksToContactBubbles, maxTime+200);
-                }
-              }), duration+10);
-            } else if(toState === 'about') {
-              setTimeout((function() {
-                var clickInterval = setInterval((function() {
-                  if(bubbles.aboutBubbles[0].attrs.r === 50) {
-                    bubbles.aboutBubbles[0].events[2].f.call(bubbles.aboutBubbles[0]);
-                    clearInterval(clickInterval);
-                  }
-                }), 10);
-              }), duration);
-            }
-          };
-
-          function bindCallbacksToContactBubbles() {
-            if(self.contactBubbles.bubbleSet[0] && self.contactBubbles.bubbleSet[1]) {
-              self.contactBubbles.textSet = [];
-              var defaultOpacity = .8;
-              var hoverOpacity = 1;
-
-              var mouseOverCallback = function() {
-                var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
-                tempBubble.attr({'opacity': hoverOpacity, 'fill-opacity': hoverOpacity, 'cursor': 'pointer'});
-              };
-
-              var mouseOutCallback = function() {
-                var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
-                tempBubble.attr({'opacity': defaultOpacity, 'fill-opacity': defaultOpacity, 'cursor': 'pointer'});
-              };
-
-              var clickCallback = function() {
-                var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
-                if(tempBubble.textObject.code === 'emailUs') {
-                  window.open('mailto:', '_blank');
-                } else {
-                  window.open('http://mheducation.force.com/MHE/SEG_Sampling_Leads?id=701C0000000UKSx', '_blank');
-                }
-              };
-
-              var x, y, bbox;
-
-              bbox = self.contactBubbles.bubbleSet[1].getBBox();
-              x = bbox.x + bbox.width / 2;
-              y = bbox.y + bbox.height / 2;
-              var emailLink = self.contactBubbles.contactPaper.text(x, y, 'Email us').attr({
-                'text-anchor': 'middle',
-                'stroke-opacity': 0,
-                'font-family': 'Arial, sans',
-                'fill': '#ffffff',
-                'font-size': 15,
-                'fill-opacity': 0,
-                'cursor': 'pointer'
-              }).animate({'fill-opacity':1}, 500);
-
-              emailLink.mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
-              self.contactBubbles.bubbleSet[1].mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
-              self.contactBubbles.bubbleSet[1].attr({'cursor': 'pointer'}).animate({'fill-opacity': defaultOpacity}, 500);
-              emailLink['bubbleObject'] = self.contactBubbles.bubbleSet[1];
-              emailLink['code'] = 'emailUs';
-              self.contactBubbles.bubbleSet[1]['textObject'] = emailLink;
-              self.contactBubbles.textSet.push(emailLink);
-
-              bbox = self.contactBubbles.bubbleSet[0].getBBox();
-              x = bbox.x + bbox.width / 2;
-              y = bbox.y + bbox.height / 2;
-              var contactLink = self.contactBubbles.contactPaper.text(x, y, 'Contact\nForm').attr({
-                'text-anchor': 'middle',
-                'stroke-opacity': 0,
-                'font-family': 'Arial, sans',
-                'fill': '#ffffff',
-                'font-size': 17,
-                'fill-opacity': 0,
-                'cursor': 'pointer'
-              }).animate({'fill-opacity':1}, 500);
-
-              contactLink.mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
-              self.contactBubbles.bubbleSet[0].mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
-              self.contactBubbles.bubbleSet[0].attr({'cursor': 'pointer'}).animate({'fill-opacity': defaultOpacity}, 500);
-              contactLink['bubbleObject'] = self.contactBubbles.bubbleSet[0];
-              contactLink['code'] = 'contactForm';
-              self.contactBubbles.bubbleSet[0]['textObject'] = contactLink;
-              self.contactBubbles.textSet.push(contactLink);
-            }
-          }
-
-          function animateBubble(bubble, delay, duration, maxTime, eqX, eqY, finalRadius) {
-            setTimeout((function() {
-              var timer = 0;
-              if(typeof(bubble.attrs) !== 'undefined') {
-                var initialRadius = bubble.attrs.r;
-                setInterval((function() {
-                  if(timer >= duration || typeof(bubble.attrs) === 'undefined') {
-                    clearInterval(this);
-                  } else {
-                    var time = timer/maxTime;
-                    var newXT = eqX(time);
-                    var newYT = eqY(time);
-                    if(!isNaN(newXT) && !isNaN(newYT)) {
-                      bubble.attr({cx: newXT, cy: newYT, r: time*(finalRadius-initialRadius)});
-                    }
-                    timer += 10;
-                  }
-                }), 10);
-              }
-            }), delay);
-          }
-
-          function makeCBXFunction(x0, x1, x2, x3) {
-            return function(t) {
-              return (1-t)*(1-t)*(1-t)*x0 + 3*t*(1-t)*(1-t)*x1 + 3*t*t*(1-t)*x2 + t*t*t*x3;
-            };
-          }
-
-          function makeCBYFunction(y0, y1, y2, y3) {
-            return function(t) {
-              return (1-t)*(1-t)*(1-t)*y0 + 3*t*(1-t)*(1-t)*y1 + 3*t*t*(1-t)*y2 + t*t*t*y3;
-            };
-          }
-
-          function displayIntro(paper){
-            var s = paper.set();
-            var x = 410;
-            var y = 270;
-
-            s.push(paper.circle(x, y, 200).attr({
-              'fill': '0-rgba(0,151,219,0.7)-rgba(0,100,178,0.7)',
-              'stroke-opacity': 0
-            }).toFront());
-            s.push(paper.text(x, y, "See how teachers,\nadministrators and\nparents are using\nCinch technology\ntoday.").attr({
-              'text-anchor': 'middle',
-              'stroke-opacity': 0,
-              'fill': '#ffffff',
-              'font-size': 28
-            }).toFront());
-
-            s.push(paper.circle(x+180, y+180, 100).attr({
-              'fill': '0-rgba(0,151,219,0.9)-rgba(0,100,178,0.9)',
-              'stroke-opacity': 0
-            }).toFront());
-            s.push(paper.text(x+180, y+180, "Make it\npersonal").attr({
-              'text-anchor': 'middle',
-              'stroke-opacity': 0,
-              'fill': '#ffffff',
-              'font-size': 28
-            }).toFront());
-            return s;
-          }
-
-          function deployBubbles(paper, duration, easing, delta, introFadeOut) {
-
-            self.mainBubbles = [];
-            self.aboutBubbles = [];
-            self.contactBubbles = [];
-
-            var mainAttributes = {
-      //        cx: [-237, -135, 1059, 1144, 796, 1012, 1466, 1077, 661,  216,  580, 1509],
-      //        cy: [-182,  203, -400, -499,  15,  202,  717, 1000, 881, 1294, 1169, 1832],
-      //        r:  [ 530,  216,  641,  626, 156,  216,  646,  216, 216,  630,  216,  216]
-      //                    #                        #     #      ##                 #
-              cx: [-290, -1000, -135, 1135, 1144,   796,  1012,  1012, 1466, 1077,    0,  216,  580],
-              cy: [-182,  -182,  203, -400, -499, -1000, -1202, -1202,  717, 1000, 1381, 1294, 1169],
-              r:  [ 530,   530,  216,  641,  626,   156,   216,   216,  646,  216,  216,  630,  216]
-            };
-
-            var aboutAttributes = {
-              cx: [null, 1060, null, null, null,  995, 1010, null, null, 1015, null, null, null],
-              cy: [null, 1765, null, null, null, 1565, 1670, null, null, 1460, null, null, null],
-              r:  [null,   50, null, null, null,   50,   50, null, null,   50, null, null, null],
-              e:  [null, 'cinch', null, null, null, 'students', 'course', null, null, 'classroom', null, null, null]
-            };
-
-            var contactAttributes = {
-              cx: [null, null, null, null, null, null, null, 1986, null, null, null, null, null],
-              cy: [null, null, null, null, null, null, null, -168, null, null, null, null, null],
-              r:  [null, null, null, null, null, null, null,  156, null, null, null, null, null]
-            };
-
-            var startingAttributes = {
-              cx: 400,
-              cy: 300,
-              r: 0
-            };
-
-            var defaultAttributes = {
-              type: 'circle',
-              'stroke-opacity': 0
-            };
-
-            var i;
-
-            paper.setStart();
-
-            var intro = displayIntro(paper);
-            var defaultOpacity = .8;
-            var hoverOpacity = 1;
-            var disabledOpacity = .1;
-
-            for(i=0; i<mainAttributes.cx.length; i+=1){
-              var o = (0.2+(Math.random()*0.3)).toFixed(2);
-              var fill = '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')';
-              var finalAttrs = {
-                cx: mainAttributes.cx[i],
-                cy: mainAttributes.cy[i],
-                r:  mainAttributes.r[i]
-              };
-              var a = Raphael.animation(finalAttrs, duration, easing);
-              var b = paper.add([_.extend({ fill: fill }, startingAttributes, defaultAttributes)])[0];
-              b.toBack();
-
-              b.mainPos = {
-                cx: mainAttributes.cx[i],
-                cy: mainAttributes.cy[i],
-                r:  mainAttributes.r[i]
-              };
-              self.mainBubbles.push(b);
-
-              if(aboutAttributes.cx[i] !== null) {
-                var mouseOverCallback = function() {
-                  var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
-                  if(tempBubble.attrs.r === 50 && (typeof(self['animateInProgress']) === 'undefined' || self['animateInProgress'] === false)) {
-                    tempBubble.attr({'opacity': hoverOpacity, 'cursor': 'pointer'});
-                  }
-                };
-
-                var mouseOutCallback = function() {
-                  var tempBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
-                  if(tempBubble.attrs.r === 50 && (typeof(self['animateInProgress']) === 'undefined' || self['animateInProgress'] === false)) {
-                    tempBubble.attr('opacity', defaultOpacity);
-                  }
-                };
-
-                var clickCallback = function() {
-                  var clickedBubble = typeof(this['bubbleObject']) !== 'undefined' ? this['bubbleObject'] : this;
-                  if(clickedBubble.attrs.r === 50 && (typeof(self['animateInProgress']) === 'undefined' || self['animateInProgress'] === false)) {
-                    self['animateInProgress'] = true;
-                    var duration = 325;
-
-                    // animate clicked small bubble
-                    clickedBubble.attr({cursor: 'default'}).animate({
-                      cx: 1310,
-                      cy: 1575,
-                      r: 275,
-                      opacity: hoverOpacity
-                    }, duration);
-
-                    // animate clicked small bubble's link text and fade in copy
-                    clickedBubble.textObjects.link.attr({cursor: 'default'}).animate({'fill-opacity': 0}, 100);
-                    clickedBubble.textObjects.text.animate({'fill-opacity': 1}, 800, '<>', function() {
-                      self['animateInProgress'] = false;
-                      for(var j=0; self.aboutBubbles[j]; j++) {
-                        if(self.aboutBubbles[j].attrs['fill-opacity'] < defaultOpacity) {
-                          self.aboutBubbles[j].attr({'fill-opacity': defaultOpacity});
-                        }
-                      }
-                    });
-
-                    var defaultParams = {r: 50, opacity: defaultOpacity, cursor: 'pointer'};
-                    var viewParams = {
-                      'cinch': {cx: 1060, cy: 1765},
-                      'course': {cx: 1010, cy: 1670},
-                      'students': {cx: 995, cy: 1565},
-                      'classroom': {cx: 1015, cy: 1460}
-                    };
-
-                    for(var j=0; self.aboutBubbles[j]; j++) {
-                      if(self.aboutBubbles[j].code !== clickedBubble.code) {
-                        self.aboutBubbles[j].attr({'fill-opacity': disabledOpacity});
-                        var params = _.extend(defaultParams, viewParams[self.aboutBubbles[j].code]);
-                        self.aboutBubbles[j].animate(params, duration, '<>', function() {
-                          this.attr({
-                            'fill-opacity': defaultOpacity
-                          }).textObjects.link.attr({
-                              x: this.attrs.cx,
-                              y: this.attrs.cy,
-                              cursor: 'pointer'
-                            }).animate({
-                              'fill-opacity': 1
-                            }, 100);
-                        });
-                        self.aboutBubbles[j].textObjects.text.animate({'fill-opacity': 0}, 100);
-                      }
-                    }
-                  }
-                };
-
-                b.mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
-
-                b.aboutPos = {
-                  cx: aboutAttributes.cx[i],
-                  cy: aboutAttributes.cy[i],
-                  r:  aboutAttributes.r[i]
-                };
-
-                b['code'] = aboutAttributes.e[i];
-
-                var aboutCopy = {
-                  'cinch': {
-                    'link': 'About\nCINCH',
-                    'title': 'CINCH Learning',
-                    'subtitle': 'Make it Personal',
-                    'text': "No one else connects with, engages or excites\n" +
-                      "students exactly like you. With CINCH Learning\n" +
-                      "you’re in control of how and what you teach like\n" +
-                      "never before. CINCH Learning provides convenient\n" +
-                      "cloud-based access to quality math and science\n" +
-                      "content for grades 5-12 along with robust planning\n" +
-                      "and assessment tools. Choose what you want to\n" +
-                      "teach, what resources you want to use, and what\n" +
-                      "device you want to use to deliver the lesson.\n" +
-                      "Put it all together to create a compelling learning\n" +
-                      "experience that is uniquely yours and highly\n" +
-                      "personalized to your students.\n \n" +
-                      "Get up close and personal with CINCH. Explore\n" +
-                      "this site and then contact us for a product demo."
-                  },
-                  'course': {
-                    'link': 'Your\nCourse',
-                    'title': 'Your Course',
-                    'subtitle': 'Personalize content',
-                    'text': "You know what you want to teach and how you\n" +
-                      "want to teach it. CINCH puts all the resources you\n" +
-                      "need in one place to use any way you want.\n \n" +
-                      "Choose from thousands of pre-built lessons to\n" +
-                      "create your own unique scope and sequence.\n \n" +
-                      "Customize lessons to match your personal teaching\n" +
-                      "style. Add and use your own favorite content.\n \n" +
-                      "Integrate videos, games, interactive labs and\n" +
-                      "other multimedia assets."
-                  },
-                  'students': {
-                    'link': 'Your\nStudents',
-                    'title': 'Your Students',
-                    'subtitle': 'Personalize learning',
-                    'text': "You’ve got students who love math and\n" +
-                      "science and students who haven’t yet unlocked\n" +
-                      "the secrets. With CINCH, you can meet all\n" +
-                      "their needs.\n \n" +
-                      "Assign content, assessments, homework, and\n" +
-                      "even games to each individual student based\n" +
-                      "on specific learning needs.\n \n" +
-                      "Encourage collaboration and communication\n" +
-                      "with built-in social networking tools.\n \n" +
-                      "Keep learning active with IWBs, student\n" +
-                      "response systems, and hundreds of\n" +
-                      "multimedia resources."
-                  },
-                  'classroom': {
-                    'link': 'Your\nClassroom',
-                    'title': 'Your Classroom',
-                    'subtitle': 'Personalize the experience',
-                    'text': "Wherever your classroom is in the digital\n" +
-                      "transition, CINCH is right there with you\n" +
-                      "helping you make the most of your school’s\n" +
-                      "technology resources.\n \n" +
-                      "Access and edit content from any device –\n" +
-                      "desktops, laptops, IWBs, tablets or smartphones.\n" +
-                      "Plan, assess and communicate on-the-go\n" +
-                      "with the CINCH app.\n \n" +
-                      "Always have the latest resources aligned to the\n" +
-                      "most current standards with real-time updates.\n" +
-                      "Integrate print and digital with print\n" +
-                      "on demand options."
-                  }
-                };
-
-                // Create text element in Raphael
-                var link = paper.text(aboutAttributes.cx[i], aboutAttributes.cy[i], aboutCopy[b.code].link).attr({
-                  'text-anchor': 'middle',
-                  'stroke-opacity': 0,
-                  'font-family': 'Arial, sans',
-                  'fill': '#ffffff',
-                  'font-size': 16,
-                  'fill-opacity': 1,
-                  'cursor': 'pointer'
-                }).rotate(-180);
-
-                // Add reference to bubble object to text objects for events
-                link['bubbleObject'] = b;
-                link.mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
-
-                var textSet = paper.set();
-                var title = paper.text(1460, 1755, aboutCopy[b.code].title).attr({
-                  'text-anchor': 'end',
-                  'stroke-opacity': 0,
-                  'fill': '#ffffff',
-                  'font-family': 'Arial, sans',
-                  'font-size': 32,
-                  'fill-opacity': 0
-                });
-                textSet.push(title);
-
-                var subtitle = paper.text(1460, 1715, aboutCopy[b.code].subtitle).attr({
-                  'text-anchor': 'end',
-                  'stroke-opacity': 0,
-                  'fill': '#ffffff',
-                  'font-family': 'Arial, sans',
-                  'font-size': 26,
-                  'fill-opacity': 0
-                });
-                textSet.push(subtitle);
-
-                var textLines = aboutCopy[b.code].text.split('\n');
-                for(var j=0; textLines[j]; j++) {
-                  textSet.push(
-                    paper.text(1460, 1680-j*20, textLines[j]).attr({
-                      'text-anchor': 'end',
-                      'stroke-opacity': 0,
-                      'fill': '#ffffff',
-                      'font-family': 'Arial, sans',
-                      'font-size': 14,
-                      'fill-opacity': 0
-                    })
-                  );
-                }
-
-                textSet.rotate(-180);
-                textSet['bubbleObject'] = b;
-                b['textObjects'] = {
-                  link: link,
-                  text: textSet
-                };
-                self.aboutBubbles.push(b);
-              }
-
-              if(contactAttributes.cx[i] !== null){
-                b.contactPos = {
-                  cx: contactAttributes.cx[i],
-                  cy: contactAttributes.cy[i],
-                  r:  contactAttributes.r[i]
-                };
-                b.attr({'fill-opacity': 1});
-
-                var contactCopy = {
-                  'title': 'Contact Us',
-                  'text': "For more information, about\n" +
-                    "please CINCH Learning, please\n" +
-                    "email us or use our contact form."
-                };
-
-                var contactTextSet = paper.set();
-                var contactTitle = paper.text(2030, -280, contactCopy.title).attr({
-                  'text-anchor': 'middle',
-                  'stroke-opacity': 0,
-                  'fill': '#ffffff',
-                  'font-family': 'Arial, sans',
-                  'font-size': 32,
-                  'fill-opacity': 1
-                });
-                contactTextSet.push(contactTitle);
-
-                var contactTextLines = contactCopy.text.split('\n');
-                for(var k=0; contactTextLines[k]; k++) {
-                  contactTextSet.push(
-                    paper.text(1995-k*20, -280, contactTextLines[k]).attr({
-                      'text-anchor': 'middle',
-                      'stroke-opacity': 0,
-                      'fill': '#ffffff',
-                      'font-family': 'Arial, sans',
-                      'font-size': 14,
-                      'fill-opacity': 1
-                    })
-                  );
-                }
-
-                contactTextSet.rotate(90).attr({'text-anchor': 'start'});
-                contactTextSet['bubbleObject'] = b;
-                b['textObjects'] = {
-                  text: contactTextSet
-                };
-                self.contactBubbles.push(b);
-              }
-
-              b.mainPos = finalAttrs;
-              b.animate(a.delay(delta * i));
-            }
-
-            var bubbleSet = paper.setFinish();
-
-            function triggerBubblesComplete(){
-              var fadeOut = function(){intro.animate({'opacity': 0}, introFadeOut, easing, function(){intro.forEach(function(e){e.remove()})});};
-              $('body').trigger('bubbles:complete',[fadeOut]);
-            }
-
-            setTimeout(triggerBubblesComplete, ((i * delta) + duration));
-
-            return bubbleSet;
-          }
-
-          return this;
-        };
-
-        var scion = require('scion');
-        var bubbles = new Bubbles();
-
-        var initData = {
-          bubbles: bubbles
-        };
-
-        window.bubbles = bubbles;
-
-        $(document).ready(function(){
-
-          scion.urlToModel("scxml/40faces.sc.xml",function(err,model){
-
-            if(err) throw err;
-
-            var interpreter = new scion.SCXML(model);
-
-            interpreter.start();
-
-            window.interpreter = interpreter;
-
-            interpreter.gen({name:"init",data:initData});
-
-            function handleEvent(e){
-              try{e.preventDefault();}catch(e){}
-              interpreter.gen({name : e.type,data: e});
-            }
-
-            //connect all relevant event listeners:
-
-            //NAVIGATION:
-            var duration = 1000;
-            var navCallback = function(event) {
-              event.preventDefault();
-              var target = (event.target.className === 'about' ? 'About' : (event.target.className === 'contact' ? 'Contact' : 'Main'));
-              window.blurb.removeObjectSet();
-              $(this).off('click').on('click', function(e) {e.preventDefault()});
-              var _this = this;
-              interpreter.gen({name : 'to'+target, data: {bubbles: bubbles, duration: duration}});
-              setTimeout((function() {
-                $(_this).off('click').on('click', navCallback);
-              }), duration+1);
-            };
-
-            $('#nav-link-list a').on('click', navCallback);
-
-            //LOADING MEDIA:
-            var media, introFadeOut;
-
-            var mediaComplete = $.Deferred(function (dfd) {
-              $('body').on('media:complete', function (e, m) {
-                media = m;
-                dfd.resolve();
-              });
-              $('body').trigger('media:set');
-            }).promise();
-
-            var bubblesComplete = $.Deferred(function (dfd) {
-              $('body').on('bubbles:complete', function (e, i) {
-                introFadeOut = i;
-                dfd.resolve();
-              });
-            }).promise();
-
-            $.when(mediaComplete, bubblesComplete).done(function(){
-                window.video = video;
-                introFadeOut.call(this);
-              $('#occluder').fadeOut(2e3, function () {
-                $('body').data('readyForHint', true);
-                if(typeof(window.hitAreaSet) !== 'undefined') {
-                  window.hitAreaSet.attr({cursor: 'pointer'});
-                }
-              });
-                interpreter.gen({
-                  name: 'readyForMain',
-                  data: {
-                    media: media,
-                    blurb: window.blurb
-                  }
-                });
-            });
-
-            //SWITCHING MEDIA:
-            $('body').off('audioLoaded').on('audioLoaded',function(e, m, track, a){
-              interpreter.gen({
-                name: 'trackLoaded'
-              });
-            });
-            $('body').off('blurbs:animationComplete').on('blurbs:animationComplete',function(e, b){
-              interpreter.gen({
-                name: 'animationComplete'
-              });
-            });
-
-            //SWITCHING TRACKS:
-            (function(window, $, Raphael, interpreter){
-
-              $('#hitAreas').css('left', -200);
-              var paper = Raphael('hitAreas', 1200, 800);
-
-              paper.hint = paper.path("M0,0L1,0Z").attr({
-                opacity: 0,
-                fill: 'rgb(0,151,219)',
-                'stroke-opacity': 0
-              });
-
-              var circleAttrs = {
-                cx:    [294.005, 394.306, 496.028, 596.329,
-                  193.482, 293.783, 395.506, 495.807, 595.84,  696.141,
-                  143.977, 244.277,     346, 444.301, 544.334, 645.635, 746.802,
-                  93.115, 193.416, 295.139, 395.439, 494.473, 594.773, 696.496, 796.797,
-                  92.971, 193.271, 294.994, 395.295, 494.328, 594.629, 696.352, 796.652,
-                  143.255, 244.556, 346.278, 444.579, 544.612, 645.913, 747.08],
-
-                cy:    [ 90.221,  90.221,  90.221,  90.221,
-                  189.901, 189.901, 189.901, 189.901, 189.901, 189.901,
-                  291.184, 291.184, 291.184, 291.184, 291.184, 291.184, 291.184,
-                  391.505, 391.505, 391.505, 391.505, 391.505, 391.505, 391.505, 391.505,
-                  490.827, 490.827, 490.827, 490.827, 490.827, 490.827, 490.827, 490.827,
-                  589.289, 589.289, 589.289, 589.289, 589.289, 589.289, 589.289],
-
-                track: [39, 36, 2, 32,
-                  27, 4, 29, 10, 14, 5,
-                  37, 16, 28, 35, 34, 18, 11,
-                  9, 15, 26, 7, 8, 22, 1, 33,
-                  19, 6, 38, 17, 3, 40, 25, 13,
-                  24, 30, 23, 20, 12, 31, 21],
-
-                seek: [9, 3, 6, 1.8,
-                  3, 4, 0, 1, 6.5, 3,
-                  3, 5, 1.8, 4, 6.5, 0, 10.3,
-                  1.8, 0.5, 0.8, 0, 9, 7, 9, 0,
-                  1, 1.8, 9, 0.5, 5, 0, 0.5, 0,
-                  4, 3, 0.5, 6, 1.8, 0.5, 7]
-              };
-
-              var offset = {
-                x: 200-45.541,
-                y: -42.119
-              };
-
-              var radius = 48.661;
-              var h;
-
-              var hitAreaSet = paper.set();
-
-              for(h=0;h<circleAttrs.cx.length;h+=1){
-
-                var c = paper.add([{
-                  type: 'circle',
-                  cx: circleAttrs.cx[h] + offset.x,
-                  cy: circleAttrs.cy[h] + offset.y,
-                  r: radius,
-                  fill: '#f00',
-                  'stroke-opacity': 0,
-                  opacity: 0
-                }])[0];
-
-                hitAreaSet.push(c);
-
-                c.data('track', circleAttrs.track[h]);
-                c.data('seek', circleAttrs.seek[h]);
-                
-                var hintMouseEnter = function (circle) {
-                  if(typeof($('body').data('readyForHint')) === 'undefined'
-                    || $('body').data('readyForHint') !== true) return;
-
-                  var cx = circle.attrs.cx;
-                  var cy = circle.attrs.cy;
-                  var r = circle.attrs.r;
-
-                  var track = circle.data('track');
-                  var direction;
-                  if([39, 36, 27, 4, 29].indexOf(track) > -1) {
-                    direction = 'bottomright';
-                  } else if([2, 32, 10, 14, 5].indexOf(track) > -1) {
-                    direction = 'bottomleft';
-                  } else if([37, 16, 28, 35, 9, 15, 26, 7, 19, 6, 38, 17, 24, 30, 23, 20].indexOf(track) > -1) {
-                    direction = 'topright';
-                  } else if([34, 18, 11, 8, 22, 1, 33, 3, 40, 25, 13, 12, 31, 21].indexOf(track) > -1) {
-                    direction = 'topleft';
-                  } else {
-                    direction = 'bottomright'; // this shouldn't happen
-                  }
-
-                  var initialPath, finalPath, rotation, transformString;
-                  if(['topright', 'topleft'].indexOf(direction) > -1) {
-                    initialPath = "M" + (cx + 0.5) + "," + (cy - r) +
-                      "A" + (r - 1) + "," + (r - 1) + " 0 1,1 " + (cx - 0.5) + "," + (cy - r) +
-                      "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx + 0.5) + "," + (cy - r) + "Z";
-
-                    finalPath = "M" + (cx + 0.5) + "," + (cy - r) +
-                      "A" + (r * 1.1) + "," + (r * 1.1) + " 0 1,1 " + (cx - 0.5) + "," + (cy - r) +
-                      "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx + 0.5) + "," + (cy - r) + "Z";
-
-                    rotation = direction === 'topright' ? -135 : 135;
-                    transformString = "r" + rotation + "," + cx + "," + cy;
-
-                  } else if(['bottomright', 'bottomleft'].indexOf(direction) > -1) {
-                    initialPath = "M" + (cx - 0.5) + "," + (cy + r) +
-                      "A" + (r - 1) + "," + (r - 1) + " 0 1,1 " + (cx + 0.5) + "," + (cy + r) +
-                      "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx - 0.5) + "," + (cy + r) + "Z";
-
-                    finalPath = "M" + (cx - 0.5) + "," + (cy + r) +
-                      "A" + (r * 1.1) + "," + (r * 1.1) + " 0 1,1 " + (cx + 0.5) + "," + (cy + r) +
-                      "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx - 0.5) + "," + (cy + r) + "Z";
-
-                    rotation = direction === 'bottomleft' ? -180 : 180;
-                    transformString = "r" + rotation + "," + cx + "," + cy;
-
-                  }
-
-                  circle.paper.hint.stop();
-
-                  circle.paper.hint.attr({
-                    opacity: 0,
-                    path: initialPath,
-                    transform: "r0," + cx + "," + cy,
-                    fill: 'rgb(0,151,219)',
-                    'stroke-opacity': 0
-                  });
-
-                  circle.paper.hint.animation = Raphael.animation({
-                    path: finalPath,
-                    transform: transformString,
-                    opacity: .4
-                  }, 325, 'linear');
-
-                  circle.paper.hint.animate(circle.paper.hint.animation);
-
-                };
-
-                var hintMouseLeave = function (circle) {
-                  circle.paper.hint.stop(circle.paper.hint.animation);
-                  circle.paper.hint.attr({opacity: 0});
-                };
-
-                if(Modernizr.video){
-
-                  (function(circle){
-                    var $c = $(circle['0']);
-                    $c.off('mouseenter').on('mouseenter', function(e){
-                      hintMouseEnter(circle);
-                      var $c = $(e.target);
-                      var transition = function(circle){
-                        interpreter.gen({
-                          name: 'toSpecific',
-                          data: {
-                            circle: circle,
-                            track: circle.data('track')
-                          }
-                        });
-                      };
-                      var trans = setTimeout(transition, 1500, circle);
-                      $c.one('mouseleave',function(e){
-                        clearTimeout(trans);
-                      });
-                    }).on('mouseleave',function(){
-                      hintMouseLeave(circle);
-                    });
-                  }(c));
-
-                }else{
-
-                  c.click(function () {
-                    interpreter.gen({
-                      name: 'toSpecific',
-                      data: {
-                        circle: this,
-                        track: this.data('track')
-                      }
-                    });
-                  }).mouseover(function(){hintMouseEnter(this)}).mouseout(function(){hintMouseLeave(this)});
-
-                }
-
-                window.hitAreaSet = hitAreaSet;
-
-            }
-
-            }(window, $, Raphael, interpreter));
-
-            /* BLURBS */
-            (function(window, $, interpreter){
-
-              var Blurb = function(){
-                var self = this;
-
-                this.objectSet = null;
-                this.callouts = [["Quality digital content for safe student use",
-                  "Hands-on activities and digital assets complement classroom learning",
-                  "Designed for group and independent assignments. No pop-ups or ads."],
-                  ["Complete integration makes the best use of my time",
-                    "Dynamic and editable yearly planning tool",
-                    "Instantly pull reports of student comprehension of standards"],
-                  ["Dynamic lessons with a few classroom devices",
-                    "Manage the classroom from a single point: present activities using your laptop and IWB",
-                    "Online labs for seamless collaboration and on-demand printing"],
-                  ["21st century skill-building",
-                    "Multi-strategy learning options and assessments available online",
-                    "Web 2.0 tools prepare students for college and online standardized tests"],
-                  ["Interactives features get students engaged",
-                    "Interactive iPad tools for dynamic explanations and learning",
-                    "Videos, tutorials, virtual labs, and games bring content to life"],
-                  ["Online personal tutors build confidence",
-                    "Each lesson has videos and guidance for continuous access to concepts",
-                    "Games and animation for hands-on learning beyond the classroom"],
-                  ["Integrate coursework with social media",
-                    "Students use social networking features to discuss lessons and homework",
-                    "Monitor the conversation to keep tabs on where students struggle"],
-                  ["Real-world interactive experiences",
-                    "Online assessments with simple auto-grade online assessments",
-                    "Diverse, multimedia homework options for matching learning style to student need"],
-                  ["Out-of-class support for a flipped classroom",
-                    "Reading and multimedia assets for at home learning",
-                    "Collaborative lessons for classroom support flipped learning model"],
-                  ["Seamlessly blend digital and print",
-                    "Customize note-taking guides for your program",
-                    "Print drills and homeworks on demand"],
-                  ["Real-time progress reports",
-                    "Teachers and administrators can assess student progress",
-                    "Seamless integration for administrators"],
-                  ["Instant Assessment, Remediation, and Enrichment",
-                    "Instantly assess student learning levels",
-                    "Access to materials from all grades",
-                    "Reach content from other grades for reteach and challenge exercises"],
-                  ["Optimized lessons for ELL students",
-                    "Emphasis on vocabulary development builds language and skill comprehension",
-                    "Hands-on, animated supplements provide extra support for language challenge"],
-                  ["Virtual labs for flawless experiments",
-                    "Visual and experiential learning despite budgets",
-                    "Online access to labs for absent students"],
-                  ["Interactive tools backed by real lessons",
-                    "Virtual labs, animations, and tutorials keep students engaged",
-                    "Save all videos and materials you’ve collected in the planner"],
-                  ["Curated lessons with creative teaching styles",
-                    "Develop unique programs",
-                    "Import and house additional material onto CINCH platform"],
-                  ["Streamline accountability",
-                    "Pull instant assessments of student progress",
-                    "Both teachers and administrators can track classroom progress"],
-                  ["Online, Customized Assessments",
-                    "Customize assessment for individual students",
-                    "No more copying: assessments assigned and completed online",
-                    "Prepares students for new online state assessments"],
-                  ["Activities that capture student attention",
-                    "Tools for making lessons more dynamic",
-                    "Students have fun with wideos, virtual labs, social networking tools"],
-                  ["Collaboratively plan the week from the CINCH app",
-                    "Planner tool makes it easy to follow scope and sequence",
-                    "Plan as a group and tweak day-by-day using the CINCH app"],
-                  ["Universal access",
-                    "On-demand printing and smartphone access ensures all students can access homework",
-                    "Tailor homework help to specific student needs"],
-                  ["Transforming iPads into classroom tools",
-                    "Cloud-based system allows you to access, save, and resume work from multiple devices",
-                    "Tools and resources optimized for iPad integration"],
-                  ["Teach, assign, assess: all in one place",
-                    "Cloud-based system allows access from any device",
-                    "Tailor lessons to your teaching style"],
-                  ["Customizable IWB activities",
-                    "Create original, dynamic IWB presentations, preloaded with slides that you can customize",
-                    "Keep IWB presentations and any digital content in one place"],
-                  ["Easy to adopt CCSS",
-                    "Browse, search, and assess student comprehension by standard",
-                    "Align standard reports with lessons for easy CCSS integration"],
-                  ["Build a custom scope and sequence",
-                    "Digitally distribute your curriculum and order custom printing of textbooks and materials",
-                    "Create unique curriculum to match my curriculum map"],
-                  ["Easy to use and customize",
-                    "Easy to navigate and simple customization tool makes it easy to add additional content",
-                    "Preloaded with resources for standard scope and sequences"],
-                  ["Cloud-based software works on any device",
-                    "Works on any device, providing flexibility to update technology as needed",
-                    "Perfect for adapting to changing classroom technology"],
-                  ["Makes it easy to align curriculum with CCSS",
-                    "Align curriculum map with standards and assess students understanding of concepts",
-                    "Multiple learning models makes it accessible for any student"],
-                  ["Optimal guide for new teachers",
-                    "Comes with assets and resources, organized by lesson and standard",
-                    "One-stop-shop for plans, presentations, and supplemental resources"],
-                  ["Teach in the order you choose",
-                    "Collect all your teaching materials in one place: Rearrange content for your teaching style",
-                    "Make material instantly available to students with a few clicks"],
-                  ["Easy for parents to stay connected to classroom",
-                    "Parents can access student progress reports online",
-                    "Provides refresher material and tutorials online for interested parents"],
-                  ["The most up-to-date curriculum for your budget",
-                    "Modern digital platforms and Access to 6-12 curriculum for efficient use of budgets",
-                    "Universal device optimization for efficient technology spending"],
-                  ["Works seamlessly on all devices",
-                    "Cloud-based software works on any device",
-                    "Safe website for students to surf at school or at home"],
-                  ["The most current content",
-                    "Online platform with current content that’s researched, proven, teacher-approved",
-                    "Universal device optimization for efficient technology spending"],
-                  ["Customize to your teaching style",
-                    "Create new or edit existing interactive lesson presentations",
-                    "Plan, leave notes and assign homework all from one place"],
-                  ["Cost Effective",
-                    "Includes supplementary materials for above and below learners",
-                    "Monitor student progress and administer extra support all from one place"],
-                  ["Customized Printing",
-                    "Print workbooks for students with limited technology access",
-                    "Design unique note-taking pages to help guide students through lessons"],
-                  ["All your files organized in one place",
-                    "Easy prep: plan, teach, assess, remediate all from the online platform",
-                    "Browse multimedia assets, worksheets, and activities by standard or lesson"],
-                  ["Easy to integrate technology into the classroom",
-                    "Huge library of engagement resources",
-                    "Bring labs and lessons online with follow up exercises "]];
-
-                this.textToLines = function (text, CHARLIMIT) {
-                  if(typeof(CHARLIMIT) === 'undefined') CHARLIMIT = 32;
-                  var textLines = [];
-                  var tempLine, tempArray;
-                  var tempText = text;
-                  while(tempText.length > 0) {
-                    tempLine = $.trim(tempText.substr(0, CHARLIMIT));
-                    // Test if we're in the middle of a word
-                    if(tempText.charAt(CHARLIMIT) !== ' ' && tempText.charAt(CHARLIMIT) !== '') {
-                      // Remove anything after the last space
-                      tempArray = tempLine.split(' ');
-                      tempArray.pop();
-                      tempLine = tempArray.join(' ');
-                    }
-                    textLines.push(tempLine);
-                    tempText = tempText.substr(tempLine.length+1);
-                  }
-                  return textLines;
-                };
-
-                this.display = function (circle) {
-                  this.removeObjectSet();
-
-                  var track = circle.data('track');
-                  if([39, 36, 27, 4, 29].indexOf(track) > -1) {
-                    this.direction = 'bottomright';
-
-                  } else if([2, 32, 10, 14, 5].indexOf(track) > -1) {
-                    this.direction = 'bottomleft';
-
-                  } else if([37, 16, 28, 35, 9, 15, 26, 7, 19, 6, 38, 17, 24, 30, 23, 20].indexOf(track) > -1) {
-                    this.direction = 'topright';
-
-                  } else if([34, 18, 11, 8, 22, 1, 33, 3, 40, 25, 13, 12, 31, 21].indexOf(track) > -1) {
-                    this.direction = 'topleft';
-
-                  } else {
-                    // this shouldn't happen
-                    this.direction = 'bottomright';
-                  }
-
-                  var paper = circle.paper;
-                  var objectSet = paper.set();
-                  var bbox = circle.getBBox();
-                  var middle = bbox.x + bbox.width/2;
-
-                  var initialPath, p, finalPath, rotation, transformString;
-
-                  var o = 0.95;
-
-                  if(['topright', 'topleft'].indexOf(this.direction) > -1) {
-
-                    initialPath = "M" + (middle + 0.5) + "," + bbox.y +
-                      "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,1 " + (middle - 0.5) + "," + bbox.y +
-                      "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,0 " + (middle + 0.5) + "," + bbox.y + "Z";
-
-                    finalPath = "M" + (middle + 0.5) + "," + bbox.y +
-                      "A200,200 0 1,1 " + (middle - 0.5) + "," + bbox.y +
-                      "A" + (bbox.width / 2 - 1) + "," + (bbox.width / 2 - 1) + " 0 1,0 " + (middle + 0.5) + "," + bbox.y + "Z";
-
-                    rotation = this.direction === 'topright' ? -135 : 135;
-                    transformString = "R" + rotation + "," + middle + "," + (bbox.y + bbox.height / 2);
-
-                  } else if(['bottomright', 'bottomleft'].indexOf(this.direction) > -1) {
-
-                    initialPath = "M" + (middle - 0.5) + "," + (bbox.y + bbox.height) +
-                      "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,1 " + (middle + 0.5) + "," + (bbox.y + bbox.height) +
-                      "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,0 " + (middle - 0.5) + "," + (bbox.y + bbox.height) + "Z";
-
-                    finalPath = "M" + (middle - 0.5) + "," + (bbox.y + bbox.height) +
-                      "A200,200 0 1,1 " + (middle + 0.5) + "," + (bbox.y + bbox.height) +
-                      "A" + (bbox.width / 2 - 1) + "," + (bbox.width / 2 - 1) + " 0 1,0 " + (middle - 0.5) + "," + (bbox.y + bbox.height) + "Z";
-
-                    rotation = this.direction === 'bottomleft' ? -180 : 180;
-                    transformString = "R" + rotation + "," + middle + "," + (bbox.y + bbox.height / 2);
-
-                  }
-
-                  p = paper.path(initialPath).attr({
-                    fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
-                    'stroke-opacity': 0
-                  }).animate({path: finalPath, transform: transformString}, 500, 'linear', function () {
-                    $('body').trigger('blurbs:animationComplete', [self]);
-                  });
-
-                  objectSet.push(p);
-
-                  var objectAnimationDuration = 1250;
-
-                  var x, y;
-                  if(this.direction.search('top') > -1) {
-                    y = bbox.y - 155;
-
-                    if(this.direction.search('right') > -1) {
-                      x = bbox.x;
-                    } else {
-                      x = bbox.x - 210;
-                    }
-                  } else {
-                    y = bbox.y + 120;
-                    x = bbox.x - 115;
-                  }
-
-                  var calloutArray = this.callouts[track-1];
-
-                  var i, j, k, tempY;
-                  var textLines = [];
-                  for(i=0; calloutArray[i]; i++) {
-
-                    textLines.push(this.textToLines(calloutArray[i], i === 0 ? 34 : 48));
-                    for(j=0; textLines[i][j]; j++) {
-                      tempY = y +
-                        (i > 0 ? 30 * textLines[0].length : 0) +
-                        (i > 1 ? 25 * textLines[1].length : 0) +
-                        (i > 2 ? 25 * textLines[2].length : 0);
-
-                      var t = paper.text(x, tempY + j * (i === 0 ? 28 : 20), textLines[i][j]).attr({
-                        'stroke-opacity': 0,
-                        fill: 'white',
-                        'text-anchor': 'start',
-                        'font-size': i === 0 ? 20 : 14,
-                        'font-family': 'Arial, sans-serif',
-                        'fill-opacity': 0
-                      }).animate({'fill-opacity': 1}, objectAnimationDuration);
-
-                      objectSet.push(t);
-                    }
-                  }
-
-                  tempY = y +
-                    (i > 0 ? 30 * textLines[0].length : 0) +
-                    (i > 1 ? 25 * textLines[1].length : 0) +
-                    (i > 2 ? 25 * textLines[2].length : 0) +
-                    (i > 3 ? 25 * textLines[3].length : 0) + 10;
-
-                  var tempX;
-
-                  if(this.direction.search('bottom') > -1) {
-                    tempX = bbox.x + bbox.width / 2;
-                  } else {
-                    tempX = this.direction.search('left') > -1 ? bbox.x - 75 : bbox.x + 150;
-                  }
-
-                  var link = paper.text(tempX, tempY, 'Learn more').attr({
-                    'stroke-opacity': 0,
-                    fill: 'white',
-                    'text-anchor': 'middle',
-                    'font-size': 14,
-                    'font-weight': 'bold',
-                    'font-family': 'Arial, sans-serif',
-                    'fill-opacity': 0,
-                    cursor: 'pointer'
-                  }).animate({'fill-opacity': 1}, objectAnimationDuration);
-
-                  objectSet.push(link);
-
-                  var linkBBox = link.getBBox();
-                  var linePath = 'M' + linkBBox.x + ',' + (linkBBox.y + linkBBox.height) +
-                    'L' + (linkBBox.x + linkBBox.width) + ',' + (linkBBox.y + linkBBox.height) + 'Z';
-                  var line = paper.path(linePath).attr({
-                    stroke: 'white',
-                    'stroke-width': 1,
-                    fill: 'white',
-                    opacity: 0,
-                    cursor: 'pointer'
-                  }).animate({opacity: 1}, objectAnimationDuration).click(function () {
-                      $('#nav-link-list a.about').trigger('click');
-                    });
-
-                  objectSet.push(line);
-
-                  var linkHitArea = paper.rect(linkBBox.x, linkBBox.y, linkBBox.width, linkBBox.height).attr({
-                    opacity: 0.00001,
-                    'stroke-opacity': 0,
-                    fill: 'white',
-                    cursor: 'pointer'
-                  }).toFront().click(function () {
-                      $('#nav-link-list a.about').trigger('click');
-                    });
-
-                  objectSet.push(linkHitArea);
-
-                  var image = paper.image('img/circle-close-x.png', tempX - 23, tempY + 30, 46, 46).attr({
-                    opacity: 0,
-                    cursor: 'pointer'
-                  }).animate({opacity: 1}, objectAnimationDuration).click(function () {
-                      interpreter.gen({
-                        name: 'leaveSpecific'
-                      });
-                      self.removeObjectSet();
-                    });
-
-                  objectSet.push(image);
-
-                  this.objectSet = objectSet;
-                };
-
-                this.removeObjectSet = function () {
-                  if(this.objectSet !== null) {
-                    var tempObjectSet = this.objectSet;
-                    this.objectSet = null;
-                    tempObjectSet.animate({opacity: 0}, 150, '<>', function () {
-                      this.remove();
-                    })
-                  }
-                };
-
-              };
-
-              window.blurb = new Blurb();
-
-            }(window, $, interpreter));
-
-          });
+    this.mainBubbleData = [
+      {cx: -290, cy: -182, r: 530, anchor: {x: 'left', y: 'top'}},
+      {cx: -135, cy: 203, r: 216, anchor: {x: 'left', y: 'top'}},
+      {cx: 335, cy: -400, r: 641, anchor: {x: 'right', y: 'top'}},
+      {cx: 300, cy: -499, r: 626, anchor: {x: 'right', y: 'top'}},
+      {cx: 500, cy: 27, r: 646, anchor: {x: 'right', y: 'bottom'}},
+      {cx: 216, cy: 500, r: 630, anchor: {x: 'left', y: 'bottom'}}
+    ];
+
+    this.aboutBubbleData = [
+      {cx: 500, cy: -227, r: 646, anchor: {x: 'right', y: 'bottom'}},
+      {cx: 216, cy: 400, r: 630, anchor: {x: 'left', y: 'bottom'}}
+    ];
+
+    this.contactBubbleData = [
+      {cx: 500, cy: -127, r: 646, anchor: {x: 'right', y: 'bottom'}},
+      {cx: 216, cy: 400, r: 630, anchor: {x: 'left', y: 'bottom'}},
+      {cx: 316, cy: 400, r: 630, anchor: {x: 'left', y: 'bottom'}}
+    ];
+
+    this.initMainState = function () {
+      this.state = 'main';
+      return this.displayMainIntro().initMainHitAreas().initMainBlurbs();
+    };
+
+    this.displayMainIntro = function () {
+      var paper = this.paper;
+      var s = paper.set();
+      var margin = ($(window).width() - 800) / 2;
+      var x = 350 + margin;
+      var y = 270;
+
+      s.push(paper.circle(x, y, 200).attr({
+        'fill': '0-rgba(0,151,219,0.7)-rgba(0,100,178,0.7)',
+        'stroke-opacity': 0
+      }).toFront());
+      s.push(paper.text(x, y, "See how teachers,\nadministrators and\nparents are using\nCinch technology\ntoday.").attr({
+        'text-anchor': 'middle',
+        'stroke-opacity': 0,
+        'fill': '#ffffff',
+        'font-size': 28
+      }).toFront());
+
+      s.push(paper.circle(x+180, y+180, 100).attr({
+        'fill': '0-rgba(0,151,219,0.9)-rgba(0,100,178,0.9)',
+        'stroke-opacity': 0
+      }).toFront());
+      s.push(paper.text(x+180, y+180, "Make it\nPersonal").attr({
+        'text-anchor': 'middle',
+        'stroke-opacity': 0,
+        'fill': '#ffffff',
+        'font-size': 28
+      }).toFront());
+
+      self.mainIntroSet = s;
+
+      var mainBubbleData = this.mainBubbleData;
+
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+
+      var mainBubbles = this.paper.set();
+
+      var i;
+      for(i=0; mainBubbleData[i]; i++) {
+        var o = (0.2+(Math.random()*0.3)).toFixed(2);
+        var fill = '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')';
+
+        var b = this.paper.circle(windowHeight/2, windowHeight/2, 0).attr({
+          'stroke-opacity': 0,
+          fill: fill
         });
 
-      }(window, $, Raphael, _, require));
+        b.data('bubbleData', mainBubbleData[i]);
 
-      /* MEDIA SUBSTRATE */
-      (function(window, $, Modernizr){
+        var a = Raphael.animation({
+          cx: mainBubbleData[i].cx + (mainBubbleData[i].anchor.x === 'right' ? windowWidth : 0),
+          cy: mainBubbleData[i].cy + (mainBubbleData[i].anchor.y === 'bottom' ? windowHeight : 0),
+          r: mainBubbleData[i].r
+        }, 3000, 'easeInOut');
 
-        var Media = function(canDoVideo){
+        mainBubbles.push(b);
 
-          var $container = $('.faces').parent();
+        b.animate(a.delay(300 * i));
+      }
 
-          this.video = {};
-          var self = this;
+      this.mainBubbleSet = mainBubbles;
 
-          if(canDoVideo){
+      setTimeout((function () {
+        $('body').trigger('mainBubbles:complete');
+      }), 300 * i + 3000);
 
-            //VIDEO BUSINESS
-            var $vid = $('video.faces');
-            this.video = $vid.get(0);
-            this.video.$el = $vid;
+      return this;
+    };
 
-            //AUDIO BUSINESS
-            var $aud = $('#facesAudio');
-            this.aud = $aud.get(0);
-            this.aud.$el = $aud;
-            this.currentChannel = 0;
+    this.initMainHitAreas = function () {
+      var paper = Raphael('hitAreas', 1200, 1000);
+      $('#hitAreas > *').css('left', -200);
 
-            //TRIGGERING COMPLETE AT THE RIGHT MOMENT
-            var
-              videoReady = $.Deferred(function(dfd){
-                $vid.on('canplaythrough', function(){
-                  dfd.resolve();
+      paper.hint = paper.path("M0,0L1,0Z").attr({
+        opacity: 0,
+        fill: 'rgb(0,151,219)',
+        'stroke-opacity': 0
+      });
+
+      var circleAttrs = {
+        cx:    [294.005, 394.306, 496.028, 596.329,
+          193.482, 293.783, 395.506, 495.807, 595.84,  696.141,
+          143.977, 244.277,     346, 444.301, 544.334, 645.635, 746.802,
+          93.115, 193.416, 295.139, 395.439, 494.473, 594.773, 696.496, 796.797,
+          92.971, 193.271, 294.994, 395.295, 494.328, 594.629, 696.352, 796.652,
+          143.255, 244.556, 346.278, 444.579, 544.612, 645.913, 747.08],
+
+        cy:    [ 90.221,  90.221,  90.221,  90.221,
+          189.901, 189.901, 189.901, 189.901, 189.901, 189.901,
+          291.184, 291.184, 291.184, 291.184, 291.184, 291.184, 291.184,
+          391.505, 391.505, 391.505, 391.505, 391.505, 391.505, 391.505, 391.505,
+          490.827, 490.827, 490.827, 490.827, 490.827, 490.827, 490.827, 490.827,
+          589.289, 589.289, 589.289, 589.289, 589.289, 589.289, 589.289],
+
+        track: [39, 36, 2, 32,
+          27, 4, 29, 10, 14, 5,
+          37, 16, 28, 35, 34, 18, 11,
+          9, 15, 26, 7, 8, 22, 1, 33,
+          19, 6, 38, 17, 3, 40, 25, 13,
+          24, 30, 23, 20, 12, 31, 21],
+
+        seek: [9, 3, 6, 1.8,
+          3, 4, 0, 1, 6.5, 3,
+          3, 5, 1.8, 4, 6.5, 0, 10.3,
+          1.8, 0.5, 0.8, 0, 9, 7, 9, 0,
+          1, 1.8, 9, 0.5, 5, 0, 0.5, 0,
+          4, 3, 0.5, 6, 1.8, 0.5, 7]
+      };
+
+      var offset = {
+        x: 200-45.541,
+        y: -42.119
+      };
+
+      var radius = 48.661;
+      var h;
+
+      var hitAreaSet = paper.set();
+
+      for(h=0; h < circleAttrs.cx.length; h += 1) {
+
+        var c = paper.circle(circleAttrs.cx[h] + offset.x, circleAttrs.cy[h] + offset.y, radius).attr({
+          fill: '#f00',
+          'stroke-opacity': 0,
+          opacity: 0
+        });
+
+        hitAreaSet.push(c);
+
+        c.data('track', circleAttrs.track[h]);
+        c.data('seek', circleAttrs.seek[h]);
+
+        if(Modernizr.video){
+
+          (function(circle){
+            var $c = $(circle['0']);
+            $c.off('mouseenter').on('mouseenter', function(e){
+              hintMouseEnter(circle);
+              var $c = $(e.target);
+              var transition = function(circle){
+                self.interpreter.gen({
+                  name: 'toSpecific',
+                  data: {
+                    circle: circle,
+                    track: circle.data('track')
+                  }
                 });
-              }).promise(),
-              mainAudReady = $.Deferred(function(dfd){
-                $aud.on('canplaythrough', function(){
-                  dfd.resolve();
-                });
-              }).promise();
-            $.when(videoReady).done(function(){
-              $('body').on('media:set',function(){
-                $('body').trigger('media:complete',[self]);
-              }).trigger('media:set');
+              };
+              var trans = setTimeout(transition, 1500, circle);
+              $c.one('mouseleave',function(e){
+                clearTimeout(trans);
+              });
+            }).on('mouseleave',function(){
+                hintMouseLeave(circle);
+              });
+          }(c));
+
+        } else {
+
+          c.click(function () {
+            self.interpreter.gen({
+              name: 'toSpecific',
+              data: {
+                circle: this,
+                track: this.data('track')
+              }
+            });
+          }).mouseover(function(){hintMouseEnter(this)}).mouseout(function(){hintMouseLeave(this)});
+        }
+      }
+
+      this.hitAreaSet = hitAreaSet;
+      return this;
+    };
+
+    var hintMouseEnter = function (circle) {
+      if(typeof($('body').data('readyForHint')) === 'undefined' || $('body').data('readyForHint') !== true) return;
+
+      var cx = circle.attrs.cx;
+      var cy = circle.attrs.cy;
+      var r = circle.attrs.r;
+
+      var track = circle.data('track');
+      var direction;
+      if([39, 36, 27, 4, 29].indexOf(track) > -1) {
+        direction = 'bottomright';
+      } else if([2, 32, 10, 14, 5].indexOf(track) > -1) {
+        direction = 'bottomleft';
+      } else if([37, 16, 28, 35, 9, 15, 26, 7, 19, 6, 38, 17, 24, 30, 23, 20].indexOf(track) > -1) {
+        direction = 'topright';
+      } else if([34, 18, 11, 8, 22, 1, 33, 3, 40, 25, 13, 12, 31, 21].indexOf(track) > -1) {
+        direction = 'topleft';
+      } else {
+        direction = 'bottomright'; // this shouldn't happen
+      }
+
+      var initialPath, finalPath, rotation, transformString;
+      if(['topright', 'topleft'].indexOf(direction) > -1) {
+        initialPath = "M" + (cx + 0.5) + "," + (cy - r) +
+          "A" + (r - 1) + "," + (r - 1) + " 0 1,1 " + (cx - 0.5) + "," + (cy - r) +
+          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx + 0.5) + "," + (cy - r) + "Z";
+
+        finalPath = "M" + (cx + 0.5) + "," + (cy - r) +
+          "A" + (r * 1.1) + "," + (r * 1.1) + " 0 1,1 " + (cx - 0.5) + "," + (cy - r) +
+          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx + 0.5) + "," + (cy - r) + "Z";
+
+        rotation = direction === 'topright' ? -135 : 135;
+        transformString = "r" + rotation + "," + cx + "," + cy;
+
+      } else if(['bottomright', 'bottomleft'].indexOf(direction) > -1) {
+        initialPath = "M" + (cx - 0.5) + "," + (cy + r) +
+          "A" + (r - 1) + "," + (r - 1) + " 0 1,1 " + (cx + 0.5) + "," + (cy + r) +
+          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx - 0.5) + "," + (cy + r) + "Z";
+
+        finalPath = "M" + (cx - 0.5) + "," + (cy + r) +
+          "A" + (r * 1.1) + "," + (r * 1.1) + " 0 1,1 " + (cx + 0.5) + "," + (cy + r) +
+          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx - 0.5) + "," + (cy + r) + "Z";
+
+        rotation = direction === 'bottomleft' ? -180 : 180;
+        transformString = "r" + rotation + "," + cx + "," + cy;
+
+      }
+
+      circle.paper.hint.stop();
+
+      circle.paper.hint.attr({
+        opacity: 0,
+        path: initialPath,
+        transform: "r0," + cx + "," + cy,
+        fill: 'rgb(0,151,219)',
+        'stroke-opacity': 0
+      });
+
+      circle.paper.hint.animation = Raphael.animation({
+        path: finalPath,
+        transform: transformString,
+        opacity: .4
+      }, 325, 'linear');
+
+      circle.paper.hint.animate(circle.paper.hint.animation);
+
+    };
+
+    var hintMouseLeave = function (circle) {
+      circle.paper.hint.stop(circle.paper.hint.animation);
+      circle.paper.hint.attr({opacity: 0});
+    };
+
+    this.initMainBlurbs = function () {
+      var Blurb = function(){
+        var blurbSelf = this;
+
+        this.objectSet = null;
+        this.callouts = [["Quality digital content for safe student use",
+          "Hands-on activities and digital assets complement classroom learning",
+          "Designed for group and independent assignments. No pop-ups or ads."],
+          ["Complete integration makes the best use of my time",
+            "Dynamic and editable yearly planning tool",
+            "Instantly pull reports of student comprehension of standards"],
+          ["Dynamic lessons with a few classroom devices",
+            "Manage the classroom from a single point: present activities using your laptop and IWB",
+            "Online labs for seamless collaboration and on-demand printing"],
+          ["21st century skill-building",
+            "Multi-strategy learning options and assessments available online",
+            "Web 2.0 tools prepare students for college and online standardized tests"],
+          ["Interactives features get students engaged",
+            "Interactive iPad tools for dynamic explanations and learning",
+            "Videos, tutorials, virtual labs, and games bring content to life"],
+          ["Online personal tutors build confidence",
+            "Each lesson has videos and guidance for continuous access to concepts",
+            "Games and animation for hands-on learning beyond the classroom"],
+          ["Integrate coursework with social media",
+            "Students use social networking features to discuss lessons and homework",
+            "Monitor the conversation to keep tabs on where students struggle"],
+          ["Real-world interactive experiences",
+            "Online assessments with simple auto-grade online assessments",
+            "Diverse, multimedia homework options for matching learning style to student need"],
+          ["Out-of-class support for a flipped classroom",
+            "Reading and multimedia assets for at home learning",
+            "Collaborative lessons for classroom support flipped learning model"],
+          ["Seamlessly blend digital and print",
+            "Customize note-taking guides for your program",
+            "Print drills and homeworks on demand"],
+          ["Real-time progress reports",
+            "Teachers and administrators can assess student progress",
+            "Seamless integration for administrators"],
+          ["Instant Assessment, Remediation, and Enrichment",
+            "Instantly assess student learning levels",
+            "Access to materials from all grades",
+            "Reach content from other grades for reteach and challenge exercises"],
+          ["Optimized lessons for ELL students",
+            "Emphasis on vocabulary development builds language and skill comprehension",
+            "Hands-on, animated supplements provide extra support for language challenge"],
+          ["Virtual labs for flawless experiments",
+            "Visual and experiential learning despite budgets",
+            "Online access to labs for absent students"],
+          ["Interactive tools backed by real lessons",
+            "Virtual labs, animations, and tutorials keep students engaged",
+            "Save all videos and materials you’ve collected in the planner"],
+          ["Curated lessons with creative teaching styles",
+            "Develop unique programs",
+            "Import and house additional material onto CINCH platform"],
+          ["Streamline accountability",
+            "Pull instant assessments of student progress",
+            "Both teachers and administrators can track classroom progress"],
+          ["Online, Customized Assessments",
+            "Customize assessment for individual students",
+            "No more copying: assessments assigned and completed online",
+            "Prepares students for new online state assessments"],
+          ["Activities that capture student attention",
+            "Tools for making lessons more dynamic",
+            "Students have fun with wideos, virtual labs, social networking tools"],
+          ["Collaboratively plan the week from the CINCH app",
+            "Planner tool makes it easy to follow scope and sequence",
+            "Plan as a group and tweak day-by-day using the CINCH app"],
+          ["Universal access",
+            "On-demand printing and smartphone access ensures all students can access homework",
+            "Tailor homework help to specific student needs"],
+          ["Transforming iPads into classroom tools",
+            "Cloud-based system allows you to access, save, and resume work from multiple devices",
+            "Tools and resources optimized for iPad integration"],
+          ["Teach, assign, assess: all in one place",
+            "Cloud-based system allows access from any device",
+            "Tailor lessons to your teaching style"],
+          ["Customizable IWB activities",
+            "Create original, dynamic IWB presentations, preloaded with slides that you can customize",
+            "Keep IWB presentations and any digital content in one place"],
+          ["Easy to adopt CCSS",
+            "Browse, search, and assess student comprehension by standard",
+            "Align standard reports with lessons for easy CCSS integration"],
+          ["Build a custom scope and sequence",
+            "Digitally distribute your curriculum and order custom printing of textbooks and materials",
+            "Create unique curriculum to match my curriculum map"],
+          ["Easy to use and customize",
+            "Easy to navigate and simple customization tool makes it easy to add additional content",
+            "Preloaded with resources for standard scope and sequences"],
+          ["Cloud-based software works on any device",
+            "Works on any device, providing flexibility to update technology as needed",
+            "Perfect for adapting to changing classroom technology"],
+          ["Makes it easy to align curriculum with CCSS",
+            "Align curriculum map with standards and assess students understanding of concepts",
+            "Multiple learning models makes it accessible for any student"],
+          ["Optimal guide for new teachers",
+            "Comes with assets and resources, organized by lesson and standard",
+            "One-stop-shop for plans, presentations, and supplemental resources"],
+          ["Teach in the order you choose",
+            "Collect all your teaching materials in one place: Rearrange content for your teaching style",
+            "Make material instantly available to students with a few clicks"],
+          ["Easy for parents to stay connected to classroom",
+            "Parents can access student progress reports online",
+            "Provides refresher material and tutorials online for interested parents"],
+          ["The most up-to-date curriculum for your budget",
+            "Modern digital platforms and Access to 6-12 curriculum for efficient use of budgets",
+            "Universal device optimization for efficient technology spending"],
+          ["Works seamlessly on all devices",
+            "Cloud-based software works on any device",
+            "Safe website for students to surf at school or at home"],
+          ["The most current content",
+            "Online platform with current content that’s researched, proven, teacher-approved",
+            "Universal device optimization for efficient technology spending"],
+          ["Customize to your teaching style",
+            "Create new or edit existing interactive lesson presentations",
+            "Plan, leave notes and assign homework all from one place"],
+          ["Cost Effective",
+            "Includes supplementary materials for above and below learners",
+            "Monitor student progress and administer extra support all from one place"],
+          ["Customized Printing",
+            "Print workbooks for students with limited technology access",
+            "Design unique note-taking pages to help guide students through lessons"],
+          ["All your files organized in one place",
+            "Easy prep: plan, teach, assess, remediate all from the online platform",
+            "Browse multimedia assets, worksheets, and activities by standard or lesson"],
+          ["Easy to integrate technology into the classroom",
+            "Huge library of engagement resources",
+            "Bring labs and lessons online with follow up exercises "]];
+
+        this.textToLines = function (text, CHARLIMIT) {
+          if(typeof(CHARLIMIT) === 'undefined') CHARLIMIT = 32;
+          var textLines = [];
+          var tempLine, tempArray;
+          var tempText = text;
+          while(tempText.length > 0) {
+            tempLine = $.trim(tempText.substr(0, CHARLIMIT));
+            // Test if we're in the middle of a word
+            if(tempText.charAt(CHARLIMIT) !== ' ' && tempText.charAt(CHARLIMIT) !== '') {
+              // Remove anything after the last space
+              tempArray = tempLine.split(' ');
+              tempArray.pop();
+              tempLine = tempArray.join(' ');
+            }
+            textLines.push(tempLine);
+            tempText = tempText.substr(tempLine.length+1);
+          }
+          return textLines;
+        };
+
+        this.display = function (circle) {
+          this.removeObjectSet();
+
+          var track = circle.data('track');
+          if([39, 36, 27, 4, 29].indexOf(track) > -1) {
+            this.direction = 'bottomright';
+
+          } else if([2, 32, 10, 14, 5].indexOf(track) > -1) {
+            this.direction = 'bottomleft';
+
+          } else if([37, 16, 28, 35, 9, 15, 26, 7, 19, 6, 38, 17, 24, 30, 23, 20].indexOf(track) > -1) {
+            this.direction = 'topright';
+
+          } else if([34, 18, 11, 8, 22, 1, 33, 3, 40, 25, 13, 12, 31, 21].indexOf(track) > -1) {
+            this.direction = 'topleft';
+
+          } else {
+            // this shouldn't happen
+            this.direction = 'bottomright';
+          }
+
+          var paper = circle.paper;
+          var objectSet = paper.set();
+          var bbox = circle.getBBox();
+          var middle = bbox.x + bbox.width/2;
+
+          var initialPath, p, finalPath, rotation, transformString;
+
+          var o = 0.95;
+
+          if(['topright', 'topleft'].indexOf(this.direction) > -1) {
+
+            initialPath = "M" + (middle + 0.5) + "," + bbox.y +
+              "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,1 " + (middle - 0.5) + "," + bbox.y +
+              "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,0 " + (middle + 0.5) + "," + bbox.y + "Z";
+
+            finalPath = "M" + (middle + 0.5) + "," + bbox.y +
+              "A200,200 0 1,1 " + (middle - 0.5) + "," + bbox.y +
+              "A" + (bbox.width / 2 - 1) + "," + (bbox.width / 2 - 1) + " 0 1,0 " + (middle + 0.5) + "," + bbox.y + "Z";
+
+            rotation = this.direction === 'topright' ? -135 : 135;
+            transformString = "R" + rotation + "," + middle + "," + (bbox.y + bbox.height / 2);
+
+          } else if(['bottomright', 'bottomleft'].indexOf(this.direction) > -1) {
+
+            initialPath = "M" + (middle - 0.5) + "," + (bbox.y + bbox.height) +
+              "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,1 " + (middle + 0.5) + "," + (bbox.y + bbox.height) +
+              "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,0 " + (middle - 0.5) + "," + (bbox.y + bbox.height) + "Z";
+
+            finalPath = "M" + (middle - 0.5) + "," + (bbox.y + bbox.height) +
+              "A200,200 0 1,1 " + (middle + 0.5) + "," + (bbox.y + bbox.height) +
+              "A" + (bbox.width / 2 - 1) + "," + (bbox.width / 2 - 1) + " 0 1,0 " + (middle - 0.5) + "," + (bbox.y + bbox.height) + "Z";
+
+            rotation = this.direction === 'bottomleft' ? -180 : 180;
+            transformString = "R" + rotation + "," + middle + "," + (bbox.y + bbox.height / 2);
+
+          }
+
+          p = paper.path(initialPath).attr({
+            fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
+            'stroke-opacity': 0
+          }).animate({path: finalPath, transform: transformString}, 500, 'linear', function () {
+              $('body').trigger('blurbs:animationComplete', [blurbSelf]);
             });
 
-            //LOAD STUFF
-            this.video.load();
+          objectSet.push(p);
 
-            //SET UP API
-            this.resume = function(){
-              this.load(0);
-              if(this.video.paused) this.video.play();
-            };
+          var objectAnimationDuration = 1250;
 
-            this.pause = function(){
-              this.video.pause();
-              this.aud.pause();
-            };
+          var x, y;
+          if(this.direction.search('top') > -1) {
+            y = bbox.y - 155;
 
-            this.load = function(track){
-              this.aud.pause();
-              if(track === 0 || typeof track === 'undefined'){
-                this.currentChannel = 0;
-                $aud.prop('muted', true);
-                $vid.prop('muted', false);
-              }else{
-                $aud.off('canplaythrough').one('canplaythrough',function(){
-                  self.aud.currentTime = self.video.currentTime;
-                  self.aud.play();
-                  self.currentChannel = track;
-                  $('body').trigger('audioLoaded',[self, track, self.aud]);
-                  $vid.prop('muted', true);
-                  $aud.prop('muted', false);
-                });
-                loadTrack(track);
-              }
-            };
+            if(this.direction.search('right') > -1) {
+              x = bbox.x;
+            } else {
+              x = bbox.x - 210;
+            }
+          } else {
+            y = bbox.y + 120;
+            x = bbox.x - 115;
+          }
 
-            function loadTrack(track){
-              if(self.aud.canPlayType('audio/mp4')){
-                self.aud.setAttribute('src','audio/' + zeroPad(track, 2) + '.m4a');
-                self.aud.setAttribute('type', 'audio/mp4');
-              }else
-              if(self.aud.canPlayType('audio/ogg')){
-                self.aud.setAttribute('src','audio/' + zeroPad(track, 2) + '.ogg');
-                self.aud.setAttribute('type', 'audio/ogg');
-              }else{
-                self.aud.setAttribute('src','audio/' + zeroPad(track, 2) + '.mp3');
-                self.aud.setAttribute('type', 'audio/mpeg');
-              }
-              self.aud.load();
+          var calloutArray = this.callouts[track-1];
+
+          var i, j, k, tempY;
+          var textLines = [];
+          for(i=0; calloutArray[i]; i++) {
+
+            textLines.push(this.textToLines(calloutArray[i], i === 0 ? 34 : 48));
+            for(j=0; textLines[i][j]; j++) {
+              tempY = y +
+                (i > 0 ? 30 * textLines[0].length : 0) +
+                (i > 1 ? 25 * textLines[1].length : 0) +
+                (i > 2 ? 25 * textLines[2].length : 0);
+
+              var t = paper.text(x, tempY + j * (i === 0 ? 28 : 20), textLines[i][j]).attr({
+                'stroke-opacity': 0,
+                fill: 'white',
+                'text-anchor': 'start',
+                'font-size': i === 0 ? 20 : 14,
+                'font-family': 'Arial, sans-serif',
+                'fill-opacity': 0
+              }).animate({'fill-opacity': 1}, objectAnimationDuration);
+
+              objectSet.push(t);
+            }
+          }
+
+          tempY = y +
+            (i > 0 ? 30 * textLines[0].length : 0) +
+            (i > 1 ? 25 * textLines[1].length : 0) +
+            (i > 2 ? 25 * textLines[2].length : 0) +
+            (i > 3 ? 25 * textLines[3].length : 0) + 10;
+
+          var tempX;
+
+          if(this.direction.search('bottom') > -1) {
+            tempX = bbox.x + bbox.width / 2;
+          } else {
+            tempX = this.direction.search('left') > -1 ? bbox.x - 75 : bbox.x + 150;
+          }
+
+          var link = paper.text(tempX, tempY, 'Learn more').attr({
+            'stroke-opacity': 0,
+            fill: 'white',
+            'text-anchor': 'middle',
+            'font-size': 14,
+            'font-weight': 'bold',
+            'font-family': 'Arial, sans-serif',
+            'fill-opacity': 0,
+            cursor: 'pointer'
+          }).animate({'fill-opacity': 1}, objectAnimationDuration);
+
+          objectSet.push(link);
+
+          var linkBBox = link.getBBox();
+          var linePath = 'M' + linkBBox.x + ',' + (linkBBox.y + linkBBox.height) +
+            'L' + (linkBBox.x + linkBBox.width) + ',' + (linkBBox.y + linkBBox.height) + 'Z';
+          var line = paper.path(linePath).attr({
+            stroke: 'white',
+            'stroke-width': 1,
+            fill: 'white',
+            opacity: 0,
+            cursor: 'pointer'
+          }).animate({opacity: 1}, objectAnimationDuration).click(function () {
+              $('#nav-link-list a.about').trigger('click');
+            });
+
+          objectSet.push(line);
+
+          var linkHitArea = paper.rect(linkBBox.x, linkBBox.y, linkBBox.width, linkBBox.height).attr({
+            opacity: 0.00001,
+            'stroke-opacity': 0,
+            fill: 'white',
+            cursor: 'pointer'
+          }).toFront().click(function () {
+              $('#nav-link-list a.about').trigger('click');
+            });
+
+          objectSet.push(linkHitArea);
+
+          var image = paper.image('img/circle-close-x.png', tempX - 23, tempY + 30, 46, 46).attr({
+            opacity: 0,
+            cursor: 'pointer'
+          }).animate({opacity: 1}, objectAnimationDuration).click(function () {
+              self.interpreter.gen({
+                name: 'leaveSpecific'
+              });
+              blurbSelf.removeObjectSet();
+            });
+
+          objectSet.push(image);
+
+          this.objectSet = objectSet;
+        };
+
+        this.removeObjectSet = function () {
+          if(this.objectSet !== null) {
+            var tempObjectSet = this.objectSet;
+            this.objectSet = null;
+            tempObjectSet.animate({opacity: 0}, 150, '<>', function () {
+              this.remove();
+            });
+          }
+        };
+      };
+
+      this.blurb = new Blurb();
+      return this;
+    };
+
+    this.showState = function (toState) {
+      var bubbleData = this[toState + 'BubbleData'];
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+
+      var bubbles = this.paper.set();
+
+      var i;
+      for(i=0; bubbleData[i]; i++) {
+        var o = (0.2+(Math.random()*0.3)).toFixed(2);
+        var fill = '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')';
+
+        var cx = bubbleData[i].anchor.x === 'right' ? windowWidth + 1000 : -1000;
+        var cy = bubbleData[i].anchor.y === 'bottom' ? windowHeight + 1000 : -1000;
+        var b = this.paper.circle(cx, cy, bubbleData[i].r).attr({
+          'stroke-opacity': 0,
+          fill: fill
+        })
+          .animate({
+            cx: bubbleData[i].cx + (bubbleData[i].anchor.x === 'right' ? windowWidth : 0),
+            cy: bubbleData[i].cy + (bubbleData[i].anchor.y === 'bottom' ? windowHeight : 0),
+            r: bubbleData[i].r
+          }, 500, 'easeOut')
+          .data('bubbleData', bubbleData[i]);
+
+        bubbles.push(b);
+      }
+
+      this[toState + 'BubbleSet'] = bubbles;
+
+      var methodName = 'show' + toState.substr(0, 1).toUpperCase() + toState.substr(1) + 'State';
+      if (typeof(this[methodName]) !== 'undefined') {
+        this[methodName]();
+      }
+
+      setTimeout((function () {
+        $('body').trigger('transition:complete');
+        self.state = toState;
+      }), 500);
+
+      return this;
+    };
+
+    this.showMainState = function () {
+      $('#nav-link-list a').not('.main').removeClass('active');
+      $('#nav-link-list a.main').addClass('active');
+      $('#hitAreas, #viewport').fadeIn();
+      self.media.resume();
+    };
+
+    this.aboutSpecialBubbleData = {
+      cinch: {cx: 575, cy: 150, r: 50, code: 'cinch'},
+      course: {cx: 630, cy: 245, r: 50, code: 'course'},
+      students: {cx: 640, cy: 350, r: 50, code: 'students'},
+      classroom: {cx: 620, cy: 455, r: 50, code: 'classroom'}
+    };
+
+    this.aboutExpandedBubbleParams = {cx: 320, cy: 330, r: 280};
+
+    this.showAboutState = function () {
+      $('#nav-link-list a').not('.about').removeClass('active');
+      $('#nav-link-list a.about').addClass('active');
+
+      if(typeof(self.aboutSpecialBubbleSet) === 'undefined') {
+        self.createAboutSpecialBubbles();
+      }
+
+      self.showAboutSpecialBubbles();
+    };
+
+    this.createAboutSpecialBubbles = function () {
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+
+      var paper = self.paper;
+      var specialBubbleData = self.aboutSpecialBubbleData;
+      var specialBubbleSet = paper.set();
+
+      for (var x in specialBubbleData) {
+        if(specialBubbleData.hasOwnProperty(x)) {
+          var o = (0.2+(Math.random()*0.3)).toFixed(2);
+          var fill = '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')';
+
+          var b = paper.circle(windowWidth + 1000, windowHeight + 1000, 0).attr({
+            'stroke-opacity': 0,
+            fill: fill
+          });
+
+          specialBubbleSet.push(b);
+
+          b.data('code', x);
+          b.mouseover(self.aboutSpecialBubbleMouseOverCallback)
+            .mouseout(self.aboutSpecialBubbleMouseOutCallback)
+            .click(self.aboutSpecialBubbleClickCallback);
+
+          // Create text element in Raphael
+          var link = paper.text(windowWidth + 1000, windowHeight + 1000, self.aboutCopy[x].link).attr({
+            'text-anchor': 'middle',
+            'stroke-opacity': 0,
+            'font-family': 'Arial, sans',
+            'fill': '#ffffff',
+            'font-size': 16,
+            'fill-opacity': 0,
+            'cursor': 'pointer'
+          });
+
+          // Add reference to bubble object to text objects for events
+          link.data('code', x);
+          link.data('bubbleObject', b);
+          b.data('linkObject', link);
+          link.mouseover(self.aboutSpecialBubbleMouseOverCallback)
+            .mouseout(self.aboutSpecialBubbleMouseOutCallback)
+            .click(self.aboutSpecialBubbleClickCallback);
+        }
+      }
+
+      self.aboutSpecialBubbleSet = specialBubbleSet;
+    };
+
+    this.showAboutSpecialBubbles = function () {
+      var windowWidth = $(window).width();
+      var bubbles = self.aboutSpecialBubbleSet;
+      var margin = (windowWidth - 800) / 2;
+
+      for (var i=0; bubbles[i]; i++) {
+        var b = bubbles[i];
+        var code = b.data('code');
+        var cx = self.aboutSpecialBubbleData[code].cx + margin;
+        var cy = self.aboutSpecialBubbleData[code].cy;
+        var r = self.aboutSpecialBubbleData[code].r;
+
+        b.animate({
+          cx: cx, cy: cy, r: r
+        }, 500, '<>', function () {
+          self.aboutSpecialBubbleDestroyAndShrink(null);
+          self.aboutSpecialBubbleEnlarge('cinch');
+        });
+
+        b.data('linkObject').animate({
+          'fill-opacity': 1,
+          x: cx,
+          y: cy
+        }, 500, '<>');
+      }
+    };
+
+    var defaultOpacity = .8;
+    var hoverOpacity = 1;
+    var disabledOpacity = .1;
+
+    this.aboutSpecialBubbleMouseOverCallback = function() {
+      var tempBubble = typeof(this.data('bubbleObject')) === 'undefined' ? this : this.data('bubbleObject');
+      if(tempBubble.attrs.r !== 50 || (typeof(self['animateInProgress']) !== 'undefined' && self['animateInProgress'] === true)) {
+        return;
+      }
+      tempBubble.attr({'opacity': hoverOpacity, 'cursor': 'pointer'});
+    };
+
+    this.aboutSpecialBubbleMouseOutCallback = function() {
+      var tempBubble = typeof(this.data('bubbleObject')) === 'undefined' ? this : this.data('bubbleObject');
+      if(tempBubble.attrs.r !== 50 || (typeof(self['animateInProgress']) !== 'undefined' && self['animateInProgress'] === true)) {
+        return;
+      }
+      tempBubble.attr('opacity', defaultOpacity);
+    };
+
+    this.aboutSpecialBubbleClickCallback = function () {
+      var clickedBubble = typeof(this.data('bubbleObject')) === 'undefined' ? this : this.data('bubbleObject');
+      if(clickedBubble.attrs.r !== 50 || (typeof(self['animateInProgress']) !== 'undefined' && self['animateInProgress'] === true)) {
+        return;
+      }
+      self.aboutSpecialBubbleDestroyAndShrink(clickedBubble);
+      self.aboutSpecialBubbleEnlarge(clickedBubble.data('code'));
+    };
+
+    this.aboutSpecialBubbleDestroyAndShrink = function (skipBubble) {
+      var duration = 100;
+      var margin = ($(window).width() - 800) / 2;
+      var code = typeof(skipBubble) !== 'undefined' && skipBubble !== null ? skipBubble.data('code') : null;
+
+      // Destroy current text set and shrink bubble
+      for(var i=0; self.aboutSpecialBubbleSet[i]; i++) {
+        var tempBubble = self.aboutSpecialBubbleSet[i];
+
+        if(tempBubble.data('code') !== code) {
+          tempBubble.attr({'fill-opacity': disabledOpacity});
+
+          var params = self.aboutSpecialBubbleData[tempBubble.data('code')];
+
+          tempBubble.animate({
+            cx: params.cx + margin,
+            cy: params.cy,
+            r: params.r,
+            opacity: defaultOpacity,
+            cursor: 'pointer'
+          }, duration, '<>', function() {
+            this.attr({
+              'fill-opacity': defaultOpacity
+            }).data('linkObject').attr({
+                cursor: 'pointer'
+              }).animate({
+                'fill-opacity': 1
+              }, 100);
+          });
+
+          if(typeof(tempBubble.data('textSet')) !== 'undefined' && tempBubble.data('textSet') !== null) {
+            tempBubble.data('textSet').forEach(function (e) {
+              e.animate({'fill-opacity': 0}, 100, '<>', function () {
+                this.remove();
+              });
+            });
+            tempBubble.data('textSet', null);
+          }
+        }
+      }
+
+    };
+
+    this.aboutSpecialBubbleEnlarge = function (code) {
+      self['animateInProgress'] = true;
+      var duration = 325;
+      var margin = ($(window).width() - 800) / 2;
+      var clickedBubble = null;
+
+      for (var i=0; self.aboutSpecialBubbleSet[i]; i++) {
+        if(self.aboutSpecialBubbleSet[i].data('code') === code) {
+          clickedBubble = self.aboutSpecialBubbleSet[i];
+        }
+      }
+
+      if(clickedBubble === null) return;
+
+      var cx = self.aboutExpandedBubbleParams.cx + margin;
+      var cy = self.aboutExpandedBubbleParams.cy;
+      var r = self.aboutExpandedBubbleParams.r;
+
+      clickedBubble.attr({cursor: 'default'}).animate({
+        cx: cx,
+        cy: cy,
+        r: r,
+        opacity: hoverOpacity
+      }, duration, '<>', function () {
+        this.toBack();
+      });
+
+      clickedBubble.data('linkObject').animate({'fill-opacity': 0}, duration, '<>');
+
+      var paper = self.paper;
+      var textSet = paper.set();
+
+      var title = paper.text(cx - r*11/20, cy - r*7/10, self.aboutCopy[code].title).attr({
+        'text-anchor': 'start',
+        'stroke-opacity': 0,
+        'fill': '#ffffff',
+        'font-family': 'Arial, sans',
+        'font-size': 32,
+        'fill-opacity': 0
+      }).toBack();
+      textSet.push(title);
+
+      var subtitle = paper.text(cx - r*11/20, cy - r*7/10 + 45, self.aboutCopy[code].subtitle).attr({
+        'text-anchor': 'start',
+        'stroke-opacity': 0,
+        'fill': '#ffffff',
+        'font-family': 'Arial, sans',
+        'font-size': 26,
+        'fill-opacity': 0
+      }).toBack();
+      textSet.push(subtitle);
+
+      var textLines = self.aboutCopy[code].text.split('\n');
+      for(var j=0; textLines[j]; j++) {
+        textSet.push(
+          paper.text(cx - r*11/20, cy - r*7/10 + 85 + j*20, textLines[j]).attr({
+            'text-anchor': 'start',
+            'stroke-opacity': 0,
+            'fill': '#ffffff',
+            'font-family': 'Arial, sans',
+            'font-size': 14,
+            'fill-opacity': 0
+          }).toBack()
+        );
+      }
+
+      clickedBubble.data('textSet', textSet);
+      textSet.animate({
+        'fill-opacity': 1
+      }, duration, '<>', function () {
+        self['animateInProgress'] = false;
+        for(var i=0; self.aboutSpecialBubbleSet[i]; i++) {
+          if(self.aboutSpecialBubbleSet[i].attrs['fill-opacity'] < defaultOpacity) {
+            self.aboutSpecialBubbleSet[i].attr({'fill-opacity': defaultOpacity});
+          }
+        }
+      });
+    };
+
+    this.contactSpecialBubbleData = {
+      cx: 300, cy: 225, r: 155
+    };
+
+    this.showContactState = function () {
+      $('#nav-link-list a').not('.contact').removeClass('active');
+      $('#nav-link-list a.contact').addClass('active');
+
+      if(typeof(self.contactSpecialBubble) === 'undefined') {
+        self.createContactSpecialBubble();
+      }
+
+      self.showContactSpecialBubble();
+    };
+
+    this.createContactSpecialBubble = function () {
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+
+      var paper = self.paper;
+
+      var fill = '0-rgba(0,151,219,.8)-rgba(0,100,178,.9)';
+
+      this.contactSpecialBubble = paper.circle(windowWidth + 1000, windowHeight + 1000, 0).attr({
+        'stroke-opacity': 0,
+        fill: fill
+      });
+    };
+
+    this.showContactSpecialBubble = function () {
+      var windowWidth = $(window).width();
+
+      var margin = (windowWidth - 800) / 2;
+      var specialBubbleData = self.contactSpecialBubbleData;
+
+      var cx = specialBubbleData.cx + margin;
+      var cy = specialBubbleData.cy;
+      var r = specialBubbleData.r;
+
+      this.contactSpecialBubble.animate({cx: cx, cy: cy, r: r}, 500, '<>', function () {
+        self.createAndShowContactSpecialBubbleText();
+        self.createAndShowContactExtraBubbles();
+      });
+    };
+
+    this.createAndShowContactSpecialBubbleText = function () {
+      var paper = this.paper;
+      var textSet = paper.set();
+      var bubble = this.contactSpecialBubble;
+
+      var contactCopy = {
+        'title': 'Contact Us',
+        'text': "For more information, about\nplease CINCH Learning, please\nemail us or use our contact form."
+      };
+
+      var x = bubble.attrs.cx - bubble.attrs.r * 13/20;
+      var y = bubble.attrs.cy - bubble.attrs.r * 10/40;
+
+      var contactTitle = paper.text(x, y, contactCopy.title).attr({
+        'text-anchor': 'start',
+        'stroke-opacity': 0,
+        'fill': '#ffffff',
+        'font-family': 'Arial, sans',
+        'font-size': 32,
+        'fill-opacity': 1
+      });
+      textSet.push(contactTitle);
+
+      var contactTextLines = contactCopy.text.split('\n');
+      for(var i=0; contactTextLines[i]; i++) {
+        textSet.push(
+          paper.text(x, y + 30 + i * 20, contactTextLines[i]).attr({
+            'text-anchor': 'start',
+            'stroke-opacity': 0,
+            'fill': '#ffffff',
+            'font-family': 'Arial, sans',
+            'font-size': 14,
+            'fill-opacity': 1
+          })
+        );
+      }
+
+      bubble.data('textSet', textSet);
+
+    };
+
+    this.contactExtraBubbleData = [
+      {cx: 455, cy: 385, r: 50},
+      {cx: 350, cy: 405, r: 35},
+      {cx: 267, cy: 389, r: 28},
+      {cx: 205, cy: 355, r: 20},
+      {cx: 174, cy: 313, r: 10}
+    ];
+
+    this.createAndShowContactExtraBubbles = function () {
+      var bubbleData = self.contactExtraBubbleData;
+      var paper = self.paper;
+      var bubbleSet = paper.set();
+
+      var windowWidth = $(window).width();
+      var margin = (windowWidth - 800) / 2;
+
+      for(var i=0; i < 5; i++) {
+        var o = (0.2 + (Math.random() * 0.3)).toFixed(2);
+        var cx = bubbleData[i].cx + margin;
+        var cy = bubbleData[i].cy;
+        var r = bubbleData[i].r;
+
+        var b = paper.circle(cx, cy, r).attr({
+          'stroke-opacity': 0,
+          fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
+          'fill-opacity': 0
+        }).toFront().animate({'fill-opacity': .4}, 500);
+        bubbleSet.push(b);
+      }
+
+      var defaultOpacity = .8;
+      var hoverOpacity = 1;
+
+      var mouseOverCallback = function() {
+        var tempBubble = typeof(this.data('bubbleObject')) !== 'undefined' ? this.data('bubbleObject') : this;
+        tempBubble.attr({'opacity': hoverOpacity, 'fill-opacity': hoverOpacity, 'cursor': 'pointer'});
+      };
+
+      var mouseOutCallback = function() {
+        var tempBubble = typeof(this.data('bubbleObject')) !== 'undefined' ? this.data('bubbleObject') : this;
+        tempBubble.attr({'opacity': defaultOpacity, 'fill-opacity': defaultOpacity, 'cursor': 'pointer'});
+      };
+
+      var clickCallback = function() {
+        window.open('http://mheducation.force.com/MHE/SEG_Sampling_Leads?id=701C0000000UKSx', '_blank');
+      };
+
+      var x, y, bbox;
+
+      bbox = bubbleSet[0].getBBox();
+      x = bbox.x + bbox.width / 2;
+      y = bbox.y + bbox.height / 2;
+      var contactLink = paper.text(x, y, 'Contact\nForm').attr({
+        'text-anchor': 'middle',
+        'stroke-opacity': 0,
+        'font-family': 'Arial, sans',
+        'fill': '#ffffff',
+        'font-size': 18,
+        'fill-opacity': 0,
+        'cursor': 'pointer'
+      }).animate({'fill-opacity':1}, 500);
+
+      contactLink.mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
+      bubbleSet[0].mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
+      bubbleSet[0].attr({'cursor': 'pointer'}).animate({'fill-opacity': defaultOpacity}, 500);
+      contactLink.data('bubbleObject', bubbleSet[0]);
+      bubbleSet[0].data('textObject', contactLink);
+
+      self.contactExtraBubbleSet = bubbleSet;
+    };
+
+    this.hideState = function () {
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+      var state = this.state;
+      this.state = 'transition';
+      if(typeof(this[state + 'BubbleSet']) !== 'undefined') {
+        var bubbleSet = this[state + 'BubbleSet'];
+        this[state + 'BubbleSet'] = null;
+
+        for (var i=0; bubbleSet[i]; i++) {
+          var x = bubbleSet[i].data('bubbleData').anchor.x === 'left' ? -1000 : windowWidth + 1000;
+          var y = bubbleSet[i].data('bubbleData').anchor.y === 'top' ? -1000 : windowHeight + 1000;
+          bubbleSet[i].animate({cx: x, cy: y}, 500, 'easeIn', function () {
+            this.remove();
+            $('body').trigger('transitionHide:complete');
+          });
+        }
+      }
+
+      var methodName = 'hide' + state.substr(0, 1).toUpperCase() + state.substr(1) + 'State';
+      if (typeof(this[methodName]) !== 'undefined') {
+        this[methodName]();
+      }
+
+      return this;
+    };
+
+    this.hideMainState = function () {
+      self.media.pause();
+      self.blurb.removeObjectSet();
+      $('#hitAreas, #viewport').fadeOut();
+    };
+
+    this.hideAboutState = function () {
+      self.aboutSpecialBubbleDestroyAndShrink(null);
+      var bubbles = self.aboutSpecialBubbleSet;
+      var windowWidth = $(window).width();
+
+      for (var i=0; bubbles[i]; i++) {
+        bubbles[i].animate({
+          cx: windowWidth + 1000
+        }, 500, '<>');
+
+        bubbles[i].data('linkObject').animate({
+          x: windowWidth + 1000
+        }, 500, '<>');
+      }
+    };
+
+    this.hideContactState = function () {
+      self.contactSpecialBubbleTextDestroy();
+      self.contactExtraBubblesDestroy();
+      var windowWidth = $(window).width();
+
+      self.contactSpecialBubble.animate({
+        cx: windowWidth + 1000
+      }, 500, '<>');
+    };
+
+    this.contactSpecialBubbleTextDestroy = function () {
+      if(typeof(self.contactSpecialBubble.data('textSet')) !== 'undefined') {
+        var textSet = self.contactSpecialBubble.data('textSet');
+        textSet.animate({'fill-opacity': 0}, 100, '<>', function () {
+          this.remove();
+        });
+        self.contactSpecialBubble.data('textSet', null);
+      }
+    };
+
+    this.contactExtraBubblesDestroy = function () {
+      self.contactExtraBubbleSet.forEach(function (e) {
+        if(typeof(e.data('textObject')) !== 'undefined') {
+          e.data('textObject').remove();
+        }
+        e.remove();
+      });
+    };
+
+    this.transition = function (toState) {
+      var validStates = ['main', 'about', 'contact'];
+      if (validStates.indexOf(toState) === -1) toState = 'main';
+      if (this.state === toState) return;
+
+      $('body').on('transitionHide:complete', function () {
+        $('body').off('transitionHide:complete');
+        self.showState(toState);
+      });
+      this.hideState();
+
+      return this;
+    };
+
+    this.initMedia = function () {
+      this.MediaSubstrate = function (canDoVideo) {
+
+        var $body = $('body');
+        this.video = {};
+        var self = this;
+
+        function zeroPad(num, places) {
+          var zero = places - (num + '').length + 1;
+          return Array(+(zero > 0 && zero)).join("0") + num;
+        }
+
+        if(canDoVideo){
+
+          //VIDEO BUSINESS
+          var $vid = $('video.faces');
+          this.video = $vid.get(0);
+          this.video.$el = $vid;
+
+          //AUDIO BUSINESS
+          var $aud = $('#facesAudio');
+          this.aud = $aud.get(0);
+          this.aud.$el = $aud;
+          this.currentChannel = 0;
+
+          //TRIGGERING COMPLETE AT THE RIGHT MOMENT
+          var videoReady = $.Deferred(function(dfd){
+            $vid.on('canplaythrough', function(){
+              dfd.resolve();
+            });
+          }).promise();
+
+          $.when(videoReady).done(function () {
+            $('body').on('media:set', function () {
+              $('body').trigger('media:complete');
+            }).trigger('media:set');
+          });
+
+          //LOAD STUFF
+          this.video.load();
+
+          //SET UP API
+          this.resume = function () {
+            this.load(0);
+            if(this.video.paused) this.video.play();
+          };
+
+          this.pause = function () {
+            this.video.pause();
+            this.aud.pause();
+          };
+
+          this.load = function (track) {
+            this.aud.pause();
+            if(track === 0 || typeof track === 'undefined'){
+              this.currentChannel = 0;
+              $aud.prop('muted', true);
+              $vid.prop('muted', false);
+            }else{
+              $aud.off('canplaythrough').one('canplaythrough', function () {
+                self.aud.currentTime = self.video.currentTime;
+                self.aud.play();
+                self.currentChannel = track;
+                $body.trigger('audioLoaded',[self, track, self.aud]);
+                $vid.prop('muted', true);
+                $aud.prop('muted', false);
+              });
+              loadTrack(track);
+            }
+          };
+
+          function loadTrack(track){
+            if(self.aud.canPlayType('audio/mp4')){
+              self.aud.setAttribute('src','audio/' + zeroPad(track, 2) + '.m4a');
+              self.aud.setAttribute('type', 'audio/mp4');
+            }else
+            if(self.aud.canPlayType('audio/ogg')){
+              self.aud.setAttribute('src','audio/' + zeroPad(track, 2) + '.ogg');
+              self.aud.setAttribute('type', 'audio/ogg');
+            }else{
+              self.aud.setAttribute('src','audio/' + zeroPad(track, 2) + '.mp3');
+              self.aud.setAttribute('type', 'audio/mpeg');
+            }
+            self.aud.load();
 //              $aud.off('loadedmetadata').on('loadedmetadata',function(){
 //                self.aud.currentTime = self.video.currentTime;
 //              });
-            }
+          }
 
-          }else{ ////////////////////////////////////////////////////////////////////
+        }else{ ////////////////////////////////////////////////////////////////////
 
-            this.video = $f(0).play();
-            this.audio = $f(1);
-            this.currentChannel = 0;
-            this.audioLag = 0.5;
+          this.video = $f(0).play();
+          this.audio = $f(1);
+          this.currentChannel = 0;
+          this.audioLag = 0.5;
 
-            //TRIGGERING COMPLETE AT THE RIGHT MOMENT
+          //TRIGGERING COMPLETE AT THE RIGHT MOMENT
 
-            this.vReady = $.Deferred(function(dfd){
-              self.video.getClip(0).onStart(function(){
-                $('body').trigger('video:loop');
-                console.log('Video ready!');
-                dfd.resolve();
+          this.vReady = $.Deferred(function(dfd){
+            self.video.getClip(0).onStart(function(){
+              $body.trigger('video:loop');
+              dfd.resolve();
+            });
+          }).promise();
+
+          this.aReady = $.Deferred(function(dfd){
+            self.aDfd = dfd;
+          }).promise();
+
+          $body.off('video:loop').on('video:loop',function(){
+            self.audio.play();
+          });
+
+          var loadChannels = function(){
+            console.log('Getting channels!');
+            var c;
+            for(c=1;c<=40;c+=1){
+              self.audio.addClip({
+                url: 'audio/' + zeroPad(c, 2) + '.m4a',
+                autoPlay: false,
+                autoBuffering: true,
+                scaling: "fit",
+                fadeInSpeed: 0,
+                fadeOutSpeed: 0
               });
-            }).promise();
-
-            this.aReady = $.Deferred(function(dfd){
-              self.aDfd = dfd;
-            }).promise();
-
-            $('body').off('video:loop').on('video:loop',function(){
-              self.audio.play();
-            });
-
-            var loadChannels = function(){
-              console.log('Getting channels!');
-              var c;
-              for(c=1;c<=40;c+=1){
-                self.audio.addClip({
-                  url: 'audio/' + zeroPad(c, 2) + '.m4a',
-                  autoPlay: false,
-                  autoBuffering: true,
-                  scaling: "fit",
-                  fadeInSpeed: 0,
-                  fadeOutSpeed: 0
-                });
-              }
-              self.aDfd.resolve();
-            };
-
-            this.audio.isLoaded() ? loadChannels() : this.audio.onLoad(loadChannels);
-
-            $.when(this.vReady, this.aReady).done(function(){
-              console.log('Media ready!');
-              $('body').trigger('media:complete',[self]);
-            });
-
-            //THIS IS THE API::::
-
-            var sync = function(){
-              self.audioLag = (new Date().getTime() - self.audioStarted) / 1000;
-              self.audio.seek(self.video.getTime() + self.audioLag);
-              $('body').trigger('audioLoaded', [self, self.currentChannel, self.audio]);
-            };
-
-            this.start = function(){
-              console.log('Playing!');
-              this.audio.getClip(this.currentChannel).onBegin(sync);
-              this.audioStarted = new Date().getTime();
-            };
-
-            this.load = function(track){
-              var t = 0;
-              if(typeof track !== 'undefined'){t = track}
-              this.currentChannel = t;
-              this.start();
-            };
-
-            this.pause = function(){
-              this.video.pause();
-              this.audio.pause();
-            };
-
-            this.resume = function(){
-              this.audio.resume();
-              this.video.resume();
-            };
-
-          }
-
-          function zeroPad(num, places) {
-            var zero = places - num.toString().length + 1;
-            return Array(+(zero > 0 && zero)).join("0") + num;
-          }
-
-        };
-
-        $(function(){
-
-          var $container = $('.faces').parent();
-
-          $('body').one('shimsLoaded', function(){
-            var media = new Media(Modernizr.video);
-          });
-
-          Modernizr.load([
-            {
-              test: Modernizr.video,
-              nope: ['js/libs/flowplayer.js','js/libs/html5media.js'],
-              complete: function(){
-                $('body').trigger('shimsLoaded');
-              }
             }
-          ]);
+            self.aDfd.resolve();
+          };
 
-        });
+          this.audio.isLoaded() ? loadChannels() : this.audio.onLoad(loadChannels);
 
-        function scaleFactor(ch, cw, th, tw){
-          return Math.min(
-            (ch/th), (cw/tw)
-          );
-        }
-
-        function centerInside ($elem, $container) {
-
-          var cW = $container.width();
-
-          return $elem.each(function(){
-
-            var $this = $(this);
-            var tW = $this.width();
-
-            $this.css({
-              left: (cW - tW) / 2
-            });
-
+          $.when(this.vReady, this.aReady).done(function(){
+            $body.trigger('media:complete');
           });
 
+          //THIS IS THE API::::
+
+          var sync = function(){
+            self.audioLag = (new Date().getTime() - self.audioStarted) / 1000;
+            self.audio.seek(self.video.getTime() + self.audioLag);
+            $body.trigger('audioLoaded', [self, self.currentChannel, self.audio]);
+          };
+
+          this.start = function(){
+            console.log('Playing!');
+            this.audio.getClip(this.currentChannel).onBegin(sync);
+            this.audioStarted = new Date().getTime();
+          };
+
+          this.load = function(track){
+            var t = 0;
+            if(typeof track !== 'undefined'){t = track}
+            this.currentChannel = t;
+            this.start();
+          };
+
+          this.pause = function(){
+            this.video.pause();
+            this.audio.pause();
+          };
+
+          this.resume = function(){
+            this.audio.resume();
+            this.video.resume();
+          };
+
         }
+      };
 
-        function fitInside ($elem, $container) {
-
-          var cW = $container.width(), cH = $container.height();
-
-          return $elem.each(function(){
-
-            var $this = $(this);
-            var oW, oH;
-
-            if($this.data('orig-width') == null){
-              oW = parseInt($this.width(),10);
-              $this.data('orig-width', oW);
-            }else{ oW = parseInt($this.data('orig-width'),10); }
-
-            if($this.data('orig-height') == null){
-              oH = parseInt($this.height(),10);
-              $this.data('orig-height', oH);
-            }else{ oH = parseInt($this.data('orig-height'),10); }
-
-            var s = scaleFactor(cH, cW, oH, oW);
-
-            $this.width (oW * s);
-            $this.height(oH * s);
-
-          });
-        }
-
-      })(window, $, Modernizr);
+      return this;
     };
 
+    this.runScion = function () {
+      var scion = require('scion');
+
+      scion.urlToModel("scxml/40faces.sc.xml", function (err, model) {
+        if(err) throw err;
+        var interpreter = new scion.SCXML(model);
+        interpreter.start();
+
+        var $body = $('body');
+        self.interpreter = interpreter;
+        interpreter.gen({name: "init", data: {app: self}});
+
+        //NAVIGATION:
+        var navCallback = function(event) {
+          event.preventDefault();
+          var className = $.trim(event.target.className);
+          if(['main', 'about', 'contact'].indexOf(className) === -1) return;
+          var target = className.substr(0, 1).toUpperCase() + className.substr(1);
+
+          $('#nav-link-list a').off('click').on('click', function(e) {e.preventDefault()});
+
+          var _this = this;
+          interpreter.gen({name : 'to'+target, data: {app: self}});
+
+          $body.on('transition:complete', function () {
+            $('body').off('transition:complete');
+            $('#nav-link-list a').off('click').on('click', navCallback);
+          });
+        };
+
+        $('#nav-link-list a').on('click', navCallback);
+
+        //LOADING MEDIA:
+        var media;
+
+        var mediaComplete = $.Deferred(function (dfd) {
+          $body.on('media:complete', function (e) {
+            dfd.resolve();
+          });
+          $body.trigger('media:set');
+        }).promise();
+
+        var bubblesComplete = $.Deferred(function (dfd) {
+          $body.on('mainBubbles:complete', function (e) {
+            dfd.resolve();
+          });
+        }).promise();
+
+        $.when(mediaComplete, bubblesComplete).done(function () {
+          self.mainIntroSet.animate({'opacity': 0}, 600, '<>', function () {
+            self.mainIntroSet.forEach(function(e){e.remove()});
+          });
+          $('#video').fadeIn(2e3, function () {
+            $body.data('readyForHint', true);
+            if(typeof(self.hitAreaSet) !== 'undefined') {
+              self.hitAreaSet.attr({cursor: 'pointer'});
+            }
+          });
+
+          interpreter.gen({
+            name: 'readyForMain',
+            data: {
+              media: self.media,
+              blurb: self.blurb
+            }
+          });
+        });
+
+        //SWITCHING MEDIA:
+        $body.off('audioLoaded').on('audioLoaded', function (e, m, track, a) {
+          interpreter.gen({
+            name: 'trackLoaded'
+          });
+        });
+        $body.off('blurbs:animationComplete').on('blurbs:animationComplete', function (e, b) {
+          interpreter.gen({
+            name: 'animationComplete'
+          });
+        });
+
+        $body.one('shimsLoaded', function () {
+          self.media = new self.MediaSubstrate(Modernizr.video);
+        });
+
+        Modernizr.load([
+          {
+            test: Modernizr.video,
+            nope: ['js/libs/flowplayer.js','js/libs/html5media.js'],
+            complete: function () {
+              $body.trigger('shimsLoaded');
+            }
+          }
+        ]);
+      });
+
+      return this;
+    };
+
+    this.aboutCopy = {
+      'cinch': {
+        'link': 'About\nCINCH',
+        'title': 'CINCH Learning',
+        'subtitle': 'Make it Personal',
+        'text': "No one else connects with, engages or excites\n" +
+          "students exactly like you. With CINCH Learning\n" +
+          "you’re in control of how and what you teach like\n" +
+          "never before. CINCH Learning provides convenient\n" +
+          "cloud-based access to quality math and science\n" +
+          "content for grades 5-12 along with robust planning\n" +
+          "and assessment tools. Choose what you want to\n" +
+          "teach, what resources you want to use, and what\n" +
+          "device you want to use to deliver the lesson.\n" +
+          "Put it all together to create a compelling learning\n" +
+          "experience that is uniquely yours and highly\n" +
+          "personalized to your students.\n \n" +
+          "Get up close and personal with CINCH. Explore\n" +
+          "this site and then contact us for a product demo."
+      },
+      'course': {
+        'link': 'Your\nCourse',
+        'title': 'Your Course',
+        'subtitle': 'Personalize content',
+        'text': "You know what you want to teach and how you\n" +
+          "want to teach it. CINCH puts all the resources you\n" +
+          "need in one place to use any way you want.\n \n" +
+          "Choose from thousands of pre-built lessons to\n" +
+          "create your own unique scope and sequence.\n \n" +
+          "Customize lessons to match your personal teaching\n" +
+          "style. Add and use your own favorite content.\n \n" +
+          "Integrate videos, games, interactive labs and\n" +
+          "other multimedia assets."
+      },
+      'students': {
+        'link': 'Your\nStudents',
+        'title': 'Your Students',
+        'subtitle': 'Personalize learning',
+        'text': "You’ve got students who love math and\n" +
+          "science and students who haven’t yet unlocked\n" +
+          "the secrets. With CINCH, you can meet all\n" +
+          "their needs.\n \n" +
+          "Assign content, assessments, homework, and\n" +
+          "even games to each individual student based\n" +
+          "on specific learning needs.\n \n" +
+          "Encourage collaboration and communication\n" +
+          "with built-in social networking tools.\n \n" +
+          "Keep learning active with IWBs, student\n" +
+          "response systems, and hundreds of\n" +
+          "multimedia resources."
+      },
+      'classroom': {
+        'link': 'Your\nClassroom',
+        'title': 'Your Classroom',
+        'subtitle': 'Personalize the experience',
+        'text': "Wherever your classroom is in the digital\n" +
+          "transition, CINCH is right there with you\n" +
+          "helping you make the most of your school’s\n" +
+          "technology resources.\n \n" +
+          "Access and edit content from any device –\n" +
+          "desktops, laptops, IWBs, tablets or smartphones.\n" +
+          "Plan, assess and communicate on-the-go\n" +
+          "with the CINCH app.\n \n" +
+          "Always have the latest resources aligned to the\n" +
+          "most current standards with real-time updates.\n" +
+          "Integrate print and digital with print\n" +
+          "on demand options."
+      }
+    };
   };
 
   window.Cinch = Cinch;
