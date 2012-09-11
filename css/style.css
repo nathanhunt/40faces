@@ -363,6 +363,7 @@ td { vertical-align: top; }
     top: 0;
     left: 0;
     width: 100%;
+    min-width: 800px;
     height: 40px;
     background: #0063b1; /* Old browsers */
     /* IE9 SVG, needs conditional override of 'filter' to 'none' */
@@ -375,8 +376,10 @@ td { vertical-align: top; }
     background: linear-gradient(to right,  #0098dc 0%,#0063b1 100%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0098dc', endColorstr='#0063b1',GradientType=1 ); /* IE6-8 */
     z-index: 9999999999999999;
-    box-shadow: 0px 1px 5px 1px #333;
-    min-width: 900px;
+    -moz-box-shadow: 0 1px 5px 1px #333;
+    -webkit-box-shadow: 0 1px 5px 1px #333;
+    box-shadow: 0 1px 5px 1px #333;
+    behavior: url(ie-css3.htc);
 }
 
 .fixed-top-bar #cinch-logo {
@@ -446,9 +449,13 @@ td { vertical-align: top; }
     padding: 0 1%;
     height: 36px;
     text-align: right;
-    background-color: #1786cc;    box-shadow: 0 -1px 8px 1px #777;
+    background-color: #1786cc;
     text-align: right;
     z-index: 9999999999999999;
+    -moz-box-shadow: 0 1px 5px 1px #333;
+    -webkit-box-shadow: 0 1px 5px 1px #333;
+    box-shadow: 0 -1px 5px 1px #333;
+    behavior: url(ie-css3.htc);
 }
 
 .fixed-bottom-bar a.logoLink {
