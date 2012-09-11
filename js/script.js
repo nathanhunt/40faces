@@ -43,6 +43,7 @@
           '</div>' +
           '<div role="viewport" id="viewport">'+
           '  <div role="video" id="video">'+
+          '    <div id="occluder"></div>' +
           '    <video class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop">'+
           '      <source src="video/grid-with-audio.ogv" type="video/ogg" />'+
           '      <source src="video/grid-with-audio.mp4" type="video/mp4" />'+
@@ -1520,7 +1521,7 @@
           self.mainIntroSet.animate({'opacity': 0}, 600, '<>', function () {
             self.mainIntroSet.forEach(function(e){e.remove()});
           });
-          $('#video').fadeIn(2e3, function () {
+          $('#occluder').fadeOut(2e3, function () {
             $body.data('readyForHint', true);
             if(typeof(self.hitAreaSet) !== 'undefined') {
               self.hitAreaSet.attr({cursor: 'pointer'});

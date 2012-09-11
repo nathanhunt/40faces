@@ -299,12 +299,23 @@ td { vertical-align: top; }
 }
 
 #video {
-    display: none;
+    display: block;
     position: relative;
     margin: 0 auto;
     width: 800px;
     height: 600px;
     background: none;
+}
+
+#occluder {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    z-index: 9999999999;
 }
 
 #vector-content{
