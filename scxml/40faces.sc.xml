@@ -29,31 +29,27 @@
                 media.load();
             </script>
         </transition>
+
+        <onexit>
+            <script>
+                app.showMainState();
+            </script>
+        </onexit>
+
     </state>
 
     <state id="mainView">
-
-        <onentry>
-            <script>
-                if(typeof(window.mainDisplayedOnce) === 'undefined') {
-                    app.showMainState();
-                    window.mainDisplayedOnce = true;
-                }
-            </script>
-        </onentry>
 
         <initial>
             <transition target="general"/>
         </initial>
 
         <transition event="toAbout" target="aboutView">
-            <assign location="app" expr="_event.data.app"/>
             <script>
                 app.transition('about');
             </script>
         </transition>
         <transition event="toContact" target="contactView">
-            <assign location="app" expr="_event.data.app"/>
             <script>
                 app.transition('contact');
             </script>
@@ -105,13 +101,11 @@
 
     <state id="aboutView">
         <transition event="toMain" target="mainView">
-            <assign location="app" expr="_event.data.app"/>
             <script>
                 app.transition('main');
             </script>
         </transition>
         <transition event="toContact" target="contactView">
-            <assign location="app" expr="_event.data.app"/>
             <script>
                 app.transition('contact');
             </script>
@@ -120,13 +114,11 @@
 
     <state id="contactView">
         <transition event="toMain" target="mainView">
-            <assign location="app" expr="_event.data.app"/>
             <script>
                 app.transition('main');
             </script>
         </transition>
         <transition event="toAbout" target="aboutView">
-            <assign location="app" expr="_event.data.app"/>
             <script>
                 app.transition('about');
             </script>

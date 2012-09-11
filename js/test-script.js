@@ -44,24 +44,17 @@
           ' <span>|</span>' +
           ' <a href="https://www.mheonline.com/" target="_blank">McGraw Hill Education</a>' +
           '</div>' +
-          ''+
-          '  <div role="viewport" id="viewport">'+
-          ''+
-          '    <div role="video" id="video">'+
-          '      <video class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop">'+
-          '        <source src="video/grid.mp4" type="video/mp4" />'+
-          '        <source src="video/grid.ogv" type="video/ogg" />'+
-          '      </video>'+
-          '      <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/mp4" preload="auto" autobuffer="autobuffer"></audio>'+
-          '    </div>'+
-          ''+
-          '    <div role="occluder" id="occluder"></div>'+
-          ''+
+          '<div role="viewport" id="viewport">'+
+          '  <div role="video" id="video">'+
+          '    <video class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop">'+
+          '      <source src="video/grid.mp4" type="video/mp4" />'+
+          '      <source src="video/grid.ogv" type="video/ogg" />'+
+          '    </video>'+
+          '    <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/mp4" preload="auto" autobuffer="autobuffer"></audio>'+
           '  </div>'+
-          ''+
-          '  <div id="vector-content"></div>'+
-          ''+
-          '  <div id="hitAreas"></div>'
+          '</div>'+
+          '<div id="vector-content"></div>' +
+          '<div id="hitAreaWrapper"><div id="hitAreas"></div></div>'
       );
 
       return this;
@@ -159,7 +152,7 @@
         'fill': '0-rgba(0,151,219,0.9)-rgba(0,100,178,0.9)',
         'stroke-opacity': 0
       }).toFront());
-      s.push(paper.text(x+180, y+180, "Make it\npersonal").attr({
+      s.push(paper.text(x+180, y+180, "Make it\nPersonal").attr({
         'text-anchor': 'middle',
         'stroke-opacity': 0,
         'fill': '#ffffff',
@@ -212,7 +205,8 @@
     };
 
     this.initMainHitAreas = function () {
-      var paper = Raphael('hitAreas', 800, 600);
+      var paper = Raphael('hitAreas', 1200, 1000);
+      $('#hitAreas > *').css('left', -200);
 
       paper.hint = paper.path("M0,0L1,0Z").attr({
         opacity: 0,
@@ -251,7 +245,7 @@
       };
 
       var offset = {
-        x: -45.541,
+        x: 200-45.541,
         y: -42.119
       };
 
@@ -684,7 +678,7 @@
             this.objectSet = null;
             tempObjectSet.animate({opacity: 0}, 150, '<>', function () {
               this.remove();
-            })
+            });
           }
         };
       };
@@ -1151,16 +1145,18 @@
       var windowHeight = $(window).height();
       var state = this.state;
       this.state = 'transition';
-      var bubbleSet = this[state + 'BubbleSet'];
-      this[state + 'BubbleSet'] = null;
+      if(typeof(this[state + 'BubbleSet']) !== 'undefined') {
+        var bubbleSet = this[state + 'BubbleSet'];
+        this[state + 'BubbleSet'] = null;
 
-      for (var i=0; bubbleSet[i]; i++) {
-        var x = bubbleSet[i].data('bubbleData').anchor.x === 'left' ? -1000 : windowWidth + 1000;
-        var y = bubbleSet[i].data('bubbleData').anchor.y === 'top' ? -1000 : windowHeight + 1000;
-        bubbleSet[i].animate({cx: x, cy: y}, 500, 'easeIn', function () {
-          this.remove();
-          $('body').trigger('transitionHide:complete');
-        });
+        for (var i=0; bubbleSet[i]; i++) {
+          var x = bubbleSet[i].data('bubbleData').anchor.x === 'left' ? -1000 : windowWidth + 1000;
+          var y = bubbleSet[i].data('bubbleData').anchor.y === 'top' ? -1000 : windowHeight + 1000;
+          bubbleSet[i].animate({cx: x, cy: y}, 500, 'easeIn', function () {
+            this.remove();
+            $('body').trigger('transitionHide:complete');
+          });
+        }
       }
 
       var methodName = 'hide' + state.substr(0, 1).toUpperCase() + state.substr(1) + 'State';
@@ -1173,6 +1169,7 @@
 
     this.hideMainState = function () {
       self.media.pause();
+      self.blurb.removeObjectSet();
       $('#hitAreas, #viewport').fadeOut();
     };
 
@@ -1203,11 +1200,13 @@
     };
 
     this.contactSpecialBubbleTextDestroy = function () {
-      var textSet = self.contactSpecialBubble.data('textSet');
-      textSet.animate({'fill-opacity': 0}, 100, '<>', function () {
-        this.remove();
-      });
-      self.contactSpecialBubble.data('textSet', null);
+      if(typeof(self.contactSpecialBubble.data('textSet')) !== 'undefined') {
+        var textSet = self.contactSpecialBubble.data('textSet');
+        textSet.animate({'fill-opacity': 0}, 100, '<>', function () {
+          this.remove();
+        });
+        self.contactSpecialBubble.data('textSet', null);
+      }
     };
 
     this.contactExtraBubblesDestroy = function () {
@@ -1441,17 +1440,17 @@
         var navCallback = function(event) {
           event.preventDefault();
           var className = $.trim(event.target.className);
-          var target = (className === 'about' ? 'About' : (className === 'contact' ? 'Contact' : 'Main'));
+          if(['main', 'about', 'contact'].indexOf(className) === -1) return;
+          var target = className.substr(0, 1).toUpperCase() + className.substr(1);
 
-          self.blurb.removeObjectSet();
-          $(this).off('click').on('click', function(e) {e.preventDefault()});
+          $('#nav-link-list a').off('click').on('click', function(e) {e.preventDefault()});
 
           var _this = this;
           interpreter.gen({name : 'to'+target, data: {app: self}});
 
           $body.on('transition:complete', function () {
             $('body').off('transition:complete');
-            $(_this).off('click').on('click', navCallback);
+            $('#nav-link-list a').off('click').on('click', navCallback);
           });
         };
 
@@ -1473,7 +1472,7 @@
         }).promise();
 
         $.when(mediaComplete, bubblesComplete).done(function () {
-          $('#occluder').fadeOut(2e3, function () {
+          $('#video').fadeIn(2e3, function () {
             $body.data('readyForHint', true);
             if(typeof(self.hitAreaSet) !== 'undefined') {
               self.hitAreaSet.attr({cursor: 'pointer'});
