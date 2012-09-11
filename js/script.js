@@ -785,8 +785,6 @@
 
         $(document).ready(function(){
 
-          var $body = $('body');
-
           scion.urlToModel("scxml/40faces.sc.xml",function(err,model){
 
             if(err) throw err;
@@ -826,18 +824,19 @@
             var media, introFadeOut;
 
             var mediaComplete = $.Deferred(function (dfd) {
-                $body.on('media:complete', function (e, m) {
-                  media = m;
-                  dfd.resolve();
-                });
-              }).promise();
+              $('body').on('media:complete', function (e, m) {
+                media = m;
+                dfd.resolve();
+              });
+              $('body').trigger('media:set');
+            }).promise();
 
             var bubblesComplete = $.Deferred(function (dfd) {
-                $body.on('bubbles:complete', function (e, i) {
-                  introFadeOut = i;
-                  dfd.resolve();
-                });
-              }).promise();
+              $('body').on('bubbles:complete', function (e, i) {
+                introFadeOut = i;
+                dfd.resolve();
+              });
+            }).promise();
 
             $.when(mediaComplete, bubblesComplete).done(function(){
                 window.video = video;
@@ -858,12 +857,12 @@
             });
 
             //SWITCHING MEDIA:
-            $body.off('audioLoaded').on('audioLoaded',function(e, m, track, a){
+            $('body').off('audioLoaded').on('audioLoaded',function(e, m, track, a){
               interpreter.gen({
                 name: 'trackLoaded'
               });
             });
-            $body.off('blurbs:animationComplete').on('blurbs:animationComplete',function(e, b){
+            $('body').off('blurbs:animationComplete').on('blurbs:animationComplete',function(e, b){
               interpreter.gen({
                 name: 'animationComplete'
               });
@@ -1410,7 +1409,6 @@
 
         var Media = function(canDoVideo){
 
-          var $body = $('body');
           var $container = $('.faces').parent();
 
           this.video = {};
@@ -1442,7 +1440,9 @@
                 });
               }).promise();
             $.when(videoReady).done(function(){
-              $('body').trigger('media:complete',[self]);
+              $('body').on('media:set',function(){
+                $('body').trigger('media:complete',[self]);
+              }).trigger('media:set');
             });
 
             //LOAD STUFF
@@ -1470,7 +1470,7 @@
                   self.aud.currentTime = self.video.currentTime;
                   self.aud.play();
                   self.currentChannel = track;
-                  $body.trigger('audioLoaded',[self, track, self.aud]);
+                  $('body').trigger('audioLoaded',[self, track, self.aud]);
                   $vid.prop('muted', true);
                   $aud.prop('muted', false);
                 });
@@ -1507,7 +1507,7 @@
 
             this.vReady = $.Deferred(function(dfd){
               self.video.getClip(0).onStart(function(){
-                $body.trigger('video:loop');
+                $('body').trigger('video:loop');
                 console.log('Video ready!');
                 dfd.resolve();
               });
@@ -1517,7 +1517,7 @@
               self.aDfd = dfd;
             }).promise();
 
-            $body.off('video:loop').on('video:loop',function(){
+            $('body').off('video:loop').on('video:loop',function(){
               self.audio.play();
             });
 
@@ -1541,7 +1541,7 @@
 
             $.when(this.vReady, this.aReady).done(function(){
               console.log('Media ready!');
-              $body.trigger('media:complete',[self]);
+              $('body').trigger('media:complete',[self]);
             });
 
             //THIS IS THE API::::
@@ -1549,7 +1549,7 @@
             var sync = function(){
               self.audioLag = (new Date().getTime() - self.audioStarted) / 1000;
               self.audio.seek(self.video.getTime() + self.audioLag);
-              $body.trigger('audioLoaded', [self, self.currentChannel, self.audio]);
+              $('body').trigger('audioLoaded', [self, self.currentChannel, self.audio]);
             };
 
             this.start = function(){
@@ -1586,10 +1586,9 @@
 
         $(function(){
 
-          var $body = $('body');
           var $container = $('.faces').parent();
 
-          $body.one('shimsLoaded', function(){
+          $('body').one('shimsLoaded', function(){
             var media = new Media(Modernizr.video);
           });
 
@@ -1598,7 +1597,7 @@
               test: Modernizr.video,
               nope: ['js/libs/flowplayer.js','js/libs/html5media.js'],
               complete: function(){
-                $body.trigger('shimsLoaded');
+                $('body').trigger('shimsLoaded');
               }
             }
           ]);
