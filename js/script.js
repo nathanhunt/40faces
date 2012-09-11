@@ -42,8 +42,8 @@
           ''+
           '    <div role="video" id="video">'+
           '      <video class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop">'+
-          '        <source src="video/grid-with-audio.ogv" type="video/ogg" />'+
           '        <source src="video/grid-with-audio.mp4" type="video/mp4" />'+
+          '        <source src="video/grid-with-audio.ogv" type="video/ogg" />'+
           '      </video>'+
           '      <audio class="faces" id="facesAudio" autobuffer="autobuffer" preload="auto" loop="loop" muted="muted"></audio>'+
           '    </div>'+
