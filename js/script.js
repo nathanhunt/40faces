@@ -262,12 +262,12 @@
 
         if(Modernizr.video){
 
-          (function(circle){
+          (function (circle) {
             var $c = $(circle['0']);
-            $c.off('mouseenter').on('mouseenter', function(e){
+            $c.off('mouseenter').on('mouseenter', function (e) {
               hintMouseEnter(circle);
               var $c = $(e.target);
-              var transition = function(circle){
+              var transition = function (circle) {
                 self.interpreter.gen({
                   name: 'toSpecific',
                   data: {
@@ -277,10 +277,10 @@
                 });
               };
               var trans = setTimeout(transition, 1500, circle);
-              $c.one('mouseleave',function(e){
+              $c.one('mouseleave', function (e) {
                 clearTimeout(trans);
               });
-            }).on('mouseleave',function(){
+            }).on('mouseleave', function () {
                 hintMouseLeave(circle);
               });
           }(c));
@@ -295,7 +295,11 @@
                 track: this.data('track')
               }
             });
-          }).mouseover(function(){hintMouseEnter(this)}).mouseout(function(){hintMouseLeave(this)});
+          }).mouseover(function () {
+              hintMouseEnter(this);
+            }).mouseout(function () {
+              hintMouseLeave(this);
+            });
         }
       }
 
@@ -767,13 +771,13 @@
     };
 
     this.aboutSpecialBubbleData = {
-      cinch: {cx: 575, cy: 150, r: 50, code: 'cinch'},
-      course: {cx: 630, cy: 245, r: 50, code: 'course'},
-      students: {cx: 640, cy: 350, r: 50, code: 'students'},
-      classroom: {cx: 620, cy: 455, r: 50, code: 'classroom'}
+      cinch: {cx: 575, cy: 100, r: 50, code: 'cinch'},
+      course: {cx: 630, cy: 195, r: 50, code: 'course'},
+      students: {cx: 640, cy: 300, r: 50, code: 'students'},
+      classroom: {cx: 620, cy: 405, r: 50, code: 'classroom'}
     };
 
-    this.aboutExpandedBubbleParams = {cx: 320, cy: 330, r: 280};
+    this.aboutExpandedBubbleParams = {cx: 320, cy: 280, r: 280};
 
     this.showAboutState = function () {
       $('#nav-link-list a').not('.about').removeClass('active');
@@ -1014,7 +1018,7 @@
     };
 
     this.contactSpecialBubbleData = {
-      cx: 300, cy: 225, r: 155
+      cx: 300, cy: 175, r: 155
     };
 
     this.showContactState = function () {
@@ -1260,6 +1264,10 @@
       this.hideState();
 
       return this;
+    };
+
+    this.adjustViewingArea = function () {
+      // This function is a callback
     };
 
     this.initMedia = function () {
