@@ -30,7 +30,7 @@
           '   <li><span>|</span></li>' +
           '   <li><a href="#" class="contact">Contact</a></li>' +
           '   <li><span>|</span></li>' +
-          '   <li><a href="http://www.cinchlearning.com">Login</a></li>' +
+          '   <li><a href="http://www.cinchlearning.com" class="login" target="_blank">Login</a></li>' +
           ' </ul>' +
           '</div>' +
           '<div class="standard fixed-bottom-bar">' +
@@ -1104,11 +1104,11 @@
     };
 
     this.contactExtraBubbleData = [
-      {cx: 455, cy: 385, r: 50},
-      {cx: 350, cy: 405, r: 35},
-      {cx: 267, cy: 389, r: 28},
-      {cx: 205, cy: 355, r: 20},
-      {cx: 174, cy: 313, r: 10}
+      {cx: 455, cy: 335, r: 50},
+      {cx: 350, cy: 355, r: 35},
+      {cx: 267, cy: 339, r: 28},
+      {cx: 205, cy: 305, r: 20},
+      {cx: 174, cy: 263, r: 10}
     ];
 
     this.createAndShowContactExtraBubbles = function () {
@@ -1253,8 +1253,7 @@
     };
 
     this.transition = function (toState) {
-      var validStates = ['main', 'about', 'contact'];
-      if (validStates.indexOf(toState) === -1) toState = 'main';
+      if (['main', 'about', 'contact'].indexOf(toState) === -1) toState = 'main';
       if (this.state === toState) return;
 
       $('body').on('transitionHide:complete', function () {
@@ -1267,7 +1266,29 @@
     };
 
     this.adjustViewingArea = function () {
-      // This function is a callback
+      // This function is a callback for window resize and orientationchange
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+
+      var state = self.state;
+      if (['main', 'about', 'contact'].indexOf(state) === -1) return;
+      if(typeof(this[state + 'BubbleData']) === 'undefined' || typeof(this[state + 'BubbleSet']) === 'undefined') {
+        return;
+      }
+
+      var bubbleData = this[state + 'BubbleData'];
+      var bubbleSet = this[state + 'BubbleSet'];
+
+      console.log(state);
+      console.log(bubbleSet);
+
+      for(var i=0; bubbleSet[i]; i++) {
+        bubbleSet[i].attr({
+          cx: bubbleData[i].cx + (bubbleData[i].anchor.x === 'right' ? windowWidth : 0),
+          cy: bubbleData[i].cy + (bubbleData[i].anchor.y === 'bottom' ? windowHeight : 0)
+        });
+      }
+
     };
 
     this.initMedia = function () {
@@ -1461,18 +1482,21 @@
           if(['main', 'about', 'contact'].indexOf(className) === -1) return;
           var target = className.substr(0, 1).toUpperCase() + className.substr(1);
 
-          $('#nav-link-list a').off('click').on('click', function(e) {e.preventDefault()});
+          $('#nav-link-list a').not('.login').off('click').on('click', function(e) {e.preventDefault()});
 
-          var _this = this;
           interpreter.gen({name : 'to'+target, data: {app: self}});
 
           $body.on('transition:complete', function () {
             $('body').off('transition:complete');
-            $('#nav-link-list a').off('click').on('click', navCallback);
+            $('#nav-link-list a').not('.login').off('click').on('click', navCallback);
           });
         };
 
-        $('#nav-link-list a').on('click', navCallback);
+        $('#nav-link-list a').not('.login').on('click', navCallback);
+
+        $(window).on('resize orientationchange', function () {
+          self.adjustViewingArea();
+        }).trigger('resize');
 
         //LOADING MEDIA:
         var media;
