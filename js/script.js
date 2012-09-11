@@ -14,10 +14,7 @@
       $('body').css({
         overflow: 'hidden',
         'padding-top': 40
-      }).append(
-        '<script type="text/javascript" src="js/libs/scion.js"><\/script>' +
-          '<script type="text/javascript" src="js/libs/raphael.free_transform.js"><\/script>'
-      );
+      });
 
       $('#app').html(
         '<div class="standard fixed-top-bar">' +
@@ -47,10 +44,10 @@
           '<div role="viewport" id="viewport">'+
           '  <div role="video" id="video">'+
           '    <video class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop">'+
-          '      <source src="video/grid.mp4" type="video/mp4" />'+
-          '      <source src="video/grid.ogv" type="video/ogg" />'+
+          '      <source src="video/grid-with-audio.ogv" type="video/ogg" />'+
+          '      <source src="video/grid-with-audio.mp4" type="video/mp4" />'+
           '    </video>'+
-          '    <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/mp4" preload="auto" autobuffer="autobuffer"></audio>'+
+          '    <audio class="faces" id="facesAudio" autobuffer="autobuffer" preload="auto" loop="loop" muted="muted"></audio>'+
           '  </div>'+
           '</div>'+
           '<div id="vector-content"></div>' +
@@ -267,32 +264,57 @@
         c.data('track', circleAttrs.track[h]);
         c.data('seek', circleAttrs.seek[h]);
 
-        c.click(function () {
-          self.interpreter.gen({
-            name: 'toSpecific',
-            data: {
-              circle: this,
-              track: this.data('track'),
-              startPoint: this.data('seek')
-            }
-          });
-        }).mouseover(hitAreaMouseOverCallback).mouseout(function () {
-            paper.hint.stop().attr({opacity: 0});
-          });
+        if(Modernizr.video){
+
+          (function(circle){
+            var $c = $(circle['0']);
+            $c.off('mouseenter').on('mouseenter', function(e){
+              hintMouseEnter(circle);
+              var $c = $(e.target);
+              var transition = function(circle){
+                self.interpreter.gen({
+                  name: 'toSpecific',
+                  data: {
+                    circle: circle,
+                    track: circle.data('track')
+                  }
+                });
+              };
+              var trans = setTimeout(transition, 1500, circle);
+              $c.one('mouseleave',function(e){
+                clearTimeout(trans);
+              });
+            }).on('mouseleave',function(){
+                hintMouseLeave(circle);
+              });
+          }(c));
+
+        } else {
+
+          c.click(function () {
+            self.interpreter.gen({
+              name: 'toSpecific',
+              data: {
+                circle: this,
+                track: this.data('track')
+              }
+            });
+          }).mouseover(function(){hintMouseEnter(this)}).mouseout(function(){hintMouseLeave(this)});
+        }
       }
 
       this.hitAreaSet = hitAreaSet;
       return this;
     };
 
-    var hitAreaMouseOverCallback = function () {
+    var hintMouseEnter = function (circle) {
       if(typeof($('body').data('readyForHint')) === 'undefined' || $('body').data('readyForHint') !== true) return;
-      var paper = this.paper;
-      var cx = this.attrs.cx;
-      var cy = this.attrs.cy;
-      var r = this.attrs.r;
 
-      var track = this.data('track');
+      var cx = circle.attrs.cx;
+      var cy = circle.attrs.cy;
+      var r = circle.attrs.r;
+
+      var track = circle.data('track');
       var direction;
       if([39, 36, 27, 4, 29].indexOf(track) > -1) {
         direction = 'bottomright';
@@ -333,18 +355,29 @@
 
       }
 
-      paper.hint.stop().attr({
+      circle.paper.hint.stop();
+
+      circle.paper.hint.attr({
         opacity: 0,
         path: initialPath,
         transform: "r0," + cx + "," + cy,
         fill: 'rgb(0,151,219)',
         'stroke-opacity': 0
-      }).animate({
-          path: finalPath,
-          transform: transformString,
-          opacity: .4
-        }, 325, 'linear');
+      });
 
+      circle.paper.hint.animation = Raphael.animation({
+        path: finalPath,
+        transform: transformString,
+        opacity: .4
+      }, 325, 'linear');
+
+      circle.paper.hint.animate(circle.paper.hint.animation);
+
+    };
+
+    var hintMouseLeave = function (circle) {
+      circle.paper.hint.stop(circle.paper.hint.animation);
+      circle.paper.hint.attr({opacity: 0});
     };
 
     this.initMainBlurbs = function () {
@@ -734,6 +767,7 @@
       $('#nav-link-list a').not('.main').removeClass('active');
       $('#nav-link-list a.main').addClass('active');
       $('#hitAreas, #viewport').fadeIn();
+      self.media.resume();
     };
 
     this.aboutSpecialBubbleData = {
@@ -1236,7 +1270,6 @@
       this.MediaSubstrate = function (canDoVideo) {
 
         var $body = $('body');
-
         this.video = {};
         var self = this;
 
@@ -1245,7 +1278,7 @@
           return Array(+(zero > 0 && zero)).join("0") + num;
         }
 
-        if (canDoVideo) {
+        if(canDoVideo){
 
           //VIDEO BUSINESS
           var $vid = $('video.faces');
@@ -1256,50 +1289,28 @@
           var $aud = $('#facesAudio');
           this.aud = $aud.get(0);
           this.aud.$el = $aud;
+          this.currentChannel = 0;
 
           //TRIGGERING COMPLETE AT THE RIGHT MOMENT
-          var videoReady = $.Deferred(function (dfd) {
-            $vid.on('canplaythrough', function () {
+          var videoReady = $.Deferred(function(dfd){
+            $vid.on('canplaythrough', function(){
               dfd.resolve();
             });
           }).promise();
 
-          var mainAudReady = $.Deferred(function (dfd) {
-            $aud.on('canplaythrough', function () {
-              dfd.resolve();
-            });
-          }).promise();
-
-          $.when(videoReady, mainAudReady).done(function () {
-            $body.trigger('media:complete');
+          $.when(videoReady).done(function () {
+            $('body').on('media:set', function () {
+              $('body').trigger('media:complete');
+            }).trigger('media:set');
           });
 
           //LOAD STUFF
           this.video.load();
-          loadTrack(0);
 
           //SET UP API
-          this.play = function(track){
-            if (track === 0) {
-              $aud.off('canplaythrough').one('canplaythrough', function () {
-                self.video.play();
-                self.aud.currentTime = self.video.currentTime;
-                self.aud.play();
-              });
-              loadTrack(0);
-            } else {
-              $vid.off('playing').one('playing', function () {
-                self.aud.play();
-              });
-              this.video.play();
-            }
-
-            $vid.off('ended').on('ended', function () {
-              self.video.currentTime = 0;
-              self.aud.currentTime = 0;
-              self.play();
-            });
-
+          this.resume = function () {
+            this.load(0);
+            if(this.video.paused) this.video.play();
           };
 
           this.pause = function () {
@@ -1307,23 +1318,23 @@
             this.aud.pause();
           };
 
-          this.seek = function (t) {
-            this.video.currentTime = t;
-            this.aud.currentTime = t;
-          };
-
-          this.load = function (track, seek) {
-            this.pause();
-
-            $aud.off('loadedmetadata').one('loadedmetadata', function () {
-              self.seek(seek);
-            });
-
-            $aud.off('canplaythrough').one('canplaythrough', function () {
-              $body.trigger('audioLoaded', [self, track, self.aud]);
-            });
-
-            loadTrack(track);
+          this.load = function (track) {
+            this.aud.pause();
+            if(track === 0 || typeof track === 'undefined'){
+              this.currentChannel = 0;
+              $aud.prop('muted', true);
+              $vid.prop('muted', false);
+            }else{
+              $aud.off('canplaythrough').one('canplaythrough', function () {
+                self.aud.currentTime = self.video.currentTime;
+                self.aud.play();
+                self.currentChannel = track;
+                $body.trigger('audioLoaded',[self, track, self.aud]);
+                $vid.prop('muted', true);
+                $aud.prop('muted', false);
+              });
+              loadTrack(track);
+            }
           };
 
           function loadTrack(track){
@@ -1339,39 +1350,39 @@
               self.aud.setAttribute('type', 'audio/mpeg');
             }
             self.aud.load();
+//              $aud.off('loadedmetadata').on('loadedmetadata',function(){
+//                self.aud.currentTime = self.video.currentTime;
+//              });
           }
 
-        } else { ////////////////////////////////////////////////////////////////////
+        }else{ ////////////////////////////////////////////////////////////////////
 
           this.video = $f(0).play();
           this.audio = $f(1);
           this.currentChannel = 0;
+          this.audioLag = 0.5;
 
-          this.vReady = $.Deferred(function (dfd) {
-            self.video.getClip(0).onStart(function () {
-              console.log('Video ready!');
-              self.video.pause();
+          //TRIGGERING COMPLETE AT THE RIGHT MOMENT
+
+          this.vReady = $.Deferred(function(dfd){
+            self.video.getClip(0).onStart(function(){
+              $body.trigger('video:loop');
               dfd.resolve();
             });
           }).promise();
 
-          this.aReady = $.Deferred(function (dfd) {
+          this.aReady = $.Deferred(function(dfd){
             self.aDfd = dfd;
           }).promise();
 
-          var loadAudio = function () {
+          $body.off('video:loop').on('video:loop',function(){
             self.audio.play();
-          };
+          });
 
-          var loadChannels = function () {
-            self.audio.stop();
+          var loadChannels = function(){
             console.log('Getting channels!');
-            self.audio.getClip(0).onBegin(function () {
-              self.video.mute();
-            });
-
             var c;
-            for (c=1; c <= 40; c += 1) {
+            for(c=1;c<=40;c+=1){
               self.audio.addClip({
                 url: 'audio/' + zeroPad(c, 2) + '.m4a',
                 autoPlay: false,
@@ -1384,38 +1395,41 @@
             self.aDfd.resolve();
           };
 
-          this.video.isLoaded() ? loadAudio() : this.video.onLoad(loadAudio);
           this.audio.isLoaded() ? loadChannels() : this.audio.onLoad(loadChannels);
 
-          //TRIGGERING COMPLETE AT THE RIGHT MOMENT
-
-          $.when(this.vReady, this.aReady).done(function () {
-            console.log('Media ready!');
+          $.when(this.vReady, this.aReady).done(function(){
             $body.trigger('media:complete');
           });
 
           //THIS IS THE API::::
 
-          this.start = function (track) {
+          var sync = function(){
+            self.audioLag = (new Date().getTime() - self.audioStarted) / 1000;
+            self.audio.seek(self.video.getTime() + self.audioLag);
+            $body.trigger('audioLoaded', [self, self.currentChannel, self.audio]);
+          };
+
+          this.start = function(){
             console.log('Playing!');
-            if(!this.video.isPlaying()) this.video.play();
+            this.audio.getClip(this.currentChannel).onBegin(sync);
+            this.audioStarted = new Date().getTime();
           };
 
-          this.load = function (track) {
+          this.load = function(track){
             var t = 0;
-            if (typeof track !== 'undefined') {t = track;}
-            this.start(t);
+            if(typeof track !== 'undefined'){t = track}
             this.currentChannel = t;
-            this.audio.getClip(t).onBegin(function () {
-              self.audio.seek(self.video.getTime());
-              $body.trigger('audioLoaded', [self, t, self.audio]);
-            });
-            this.audio.play(t);
+            this.start();
           };
 
-          this.pause = function () {
+          this.pause = function(){
             this.video.pause();
             this.audio.pause();
+          };
+
+          this.resume = function(){
+            this.audio.resume();
+            this.video.resume();
           };
 
         }
@@ -1463,6 +1477,7 @@
           $body.on('media:complete', function (e) {
             dfd.resolve();
           });
+          $body.trigger('media:set');
         }).promise();
 
         var bubblesComplete = $.Deferred(function (dfd) {
@@ -1472,6 +1487,7 @@
         }).promise();
 
         $.when(mediaComplete, bubblesComplete).done(function () {
+          console.log('video fade in');
           $('#video').fadeIn(2e3, function () {
             $body.data('readyForHint', true);
             if(typeof(self.hitAreaSet) !== 'undefined') {

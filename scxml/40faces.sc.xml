@@ -9,7 +9,6 @@
         <data id="blurb"/>
         <data id="circle"/>
         <data id="track"/>
-        <data id="startPoint"/>
     </datamodel>
 
     <state id="initial-default">
@@ -25,9 +24,6 @@
         <transition event="readyForMain" target="mainView">
             <assign location="media" expr="_event.data.media"/>
             <assign location="blurb" expr="_event.data.blurb"/>
-            <script>
-                media.load();
-            </script>
         </transition>
 
         <onexit>
@@ -59,14 +55,13 @@
             <transition event="toSpecific" target="loadSpecific">
                 <assign location="circle" expr="_event.data.circle"/>
                 <assign location="track" expr="_event.data.track"/>
-                <assign location="startPoint" expr="_event.data.startPoint"/>
             </transition>
         </state>
 
         <state id="loadSpecific">
             <onentry>
                 <script>
-                    media.load(track, startPoint);
+                    media.load(track);
                     blurb.display(circle);
                 </script>
             </onentry>
@@ -88,11 +83,14 @@
                 <transition event="animationComplete" target="specificReady"/>
             </state>
             <state id="specificReady">
-                <transition event="leaveSpecific" target="general"/>
+                <transition event="leaveSpecific" target="general">
+                    <script>
+                        media.load(0);
+                    </script>
+                </transition>
                 <transition event="toSpecific" target="loadSpecific">
                     <assign location="circle" expr="_event.data.circle"/>
                     <assign location="track" expr="_event.data.track"/>
-                    <assign location="startPoint" expr="_event.data.startPoint"/>
                 </transition>
             </state>
         </state>
