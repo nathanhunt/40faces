@@ -9,8 +9,7 @@
         overflow: 'hidden',
         'padding-top': 40
       }).append(
-        '<script type="text/javascript" src="js/libs/scion.js"><\/script>' +
-          '<script type="text/javascript" src="js/libs/raphael.free_transform.js"><\/script>'
+        '<script type="text/javascript" src="js/libs/raphael.free_transform.js"><\/script>'
       );
 
       $('#app').html(
@@ -43,10 +42,10 @@
           ''+
           '    <div role="video" id="video">'+
           '      <video class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop">'+
-          '        <source src="video/grid-with-audio.mp4" type="video/mp4" />'+
           '        <source src="video/grid-with-audio.ogv" type="video/ogg" />'+
+          '        <source src="video/grid-with-audio.mp4" type="video/mp4" />'+
           '      </video>'+
-          '      <audio class="faces" id="facesAudio" src="audio/00.m4a" type="audio/mp4" autobuffer="autobuffer" preload="auto" loop="loop" muted="muted"></audio>'+
+          '      <audio class="faces" id="facesAudio" autobuffer="autobuffer" preload="auto" loop="loop" muted="muted"></audio>'+
           '    </div>'+
           ''+
           '    <div role="occluder" id="occluder"></div>'+
@@ -1442,8 +1441,8 @@
                   dfd.resolve();
                 });
               }).promise();
-            $.when(videoReady, mainAudReady).done(function(){
-              $body.trigger('media:complete',[self]);
+            $.when(videoReady).done(function(){
+              $('body').trigger('media:complete',[self]);
             });
 
             //LOAD STUFF
@@ -1452,7 +1451,7 @@
             //SET UP API
             this.resume = function(){
               this.load(0);
-              this.video.play();
+              if(this.video.paused) this.video.play();
             };
 
             this.pause = function(){
