@@ -137,7 +137,7 @@
       var s = paper.set();
 
       var x = 350 + margin;
-      var y = 270;
+      var y = 220;
 
       s.push(paper.circle(x, y, 200).attr({
         'fill': '0-rgba(0,151,219,0.7)-rgba(0,100,178,0.7)',
@@ -371,7 +371,7 @@
       circle.paper.hint.animation = Raphael.animation({
         path: finalPath,
         transform: transformString,
-        opacity: .4
+        opacity: 1
       }, 325, 'linear');
 
       circle.paper.hint.animate(circle.paper.hint.animation);
@@ -1072,7 +1072,7 @@
 
       var contactCopy = {
         'title': 'Contact Us',
-        'text': "For more information, about\nplease CINCH Learning, please\nemail us or use our contact form."
+        'text': "For more information, about\nplease CINCH Learning, please\nuse our contact form."
       };
 
       var x = bubble.attrs.cx - bubble.attrs.r * 13/20;
@@ -1132,7 +1132,7 @@
           'stroke-opacity': 0,
           fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
           'fill-opacity': 0
-        }).toFront().animate({'fill-opacity': .4}, 500);
+        }).toFront().animate({'fill-opacity': (i === 0 ? 1 : .4)}, 500);
         bubbleSet.push(b);
       }
 
