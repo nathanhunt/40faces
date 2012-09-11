@@ -156,11 +156,7 @@
         'font-size': 28
       }).toFront());
 
-      $('body').on('mainBubbles:complete', function () {
-        s.animate({'opacity': 0}, 600, '<>', function () {
-          s.forEach(function(e){e.remove()});
-        });
-      });
+      self.mainIntroSet = s;
 
       var mainBubbleData = this.mainBubbleData;
 
@@ -1487,7 +1483,9 @@
         }).promise();
 
         $.when(mediaComplete, bubblesComplete).done(function () {
-          console.log('video fade in');
+          self.mainIntroSet.animate({'opacity': 0}, 600, '<>', function () {
+            self.mainIntroSet.forEach(function(e){e.remove()});
+          });
           $('#video').fadeIn(2e3, function () {
             $body.data('readyForHint', true);
             if(typeof(self.hitAreaSet) !== 'undefined') {
