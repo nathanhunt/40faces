@@ -30,7 +30,7 @@
           '   <li><span>|</span></li>' +
           '   <li><a href="#" class="contact">Contact</a></li>' +
           '   <li><span>|</span></li>' +
-          '   <li><a href="http://www.cinchlearning.com">Login</a></li>' +
+          '   <li><a href="http://www.cinchlearning.com" class="login" target="_blank">Login</a></li>' +
           ' </ul>' +
           '</div>' +
           '<div class="standard fixed-bottom-bar">' +
@@ -43,6 +43,7 @@
           '</div>' +
           '<div role="viewport" id="viewport">'+
           '  <div role="video" id="video">'+
+          '    <div id="occluder"></div>' +
           '    <video class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop">'+
           '      <source src="video/grid-with-audio.ogv" type="video/ogg" />'+
           '      <source src="video/grid-with-audio.mp4" type="video/mp4" />'+
@@ -128,9 +129,13 @@
     };
 
     this.displayMainIntro = function () {
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+      var margin = (windowWidth - 800) / 2;
+
       var paper = this.paper;
       var s = paper.set();
-      var margin = ($(window).width() - 800) / 2;
+
       var x = 350 + margin;
       var y = 270;
 
@@ -138,6 +143,7 @@
         'fill': '0-rgba(0,151,219,0.7)-rgba(0,100,178,0.7)',
         'stroke-opacity': 0
       }).toFront());
+
       s.push(paper.text(x, y, "See how teachers,\nadministrators and\nparents are using\nCinch technology\ntoday.").attr({
         'text-anchor': 'middle',
         'stroke-opacity': 0,
@@ -149,6 +155,7 @@
         'fill': '0-rgba(0,151,219,0.9)-rgba(0,100,178,0.9)',
         'stroke-opacity': 0
       }).toFront());
+
       s.push(paper.text(x+180, y+180, "Make it\nPersonal").attr({
         'text-anchor': 'middle',
         'stroke-opacity': 0,
@@ -159,18 +166,14 @@
       self.mainIntroSet = s;
 
       var mainBubbleData = this.mainBubbleData;
-
-      var windowWidth = $(window).width();
-      var windowHeight = $(window).height();
-
-      var mainBubbles = this.paper.set();
+      var mainBubbles = paper.set();
 
       var i;
       for(i=0; mainBubbleData[i]; i++) {
         var o = (0.2+(Math.random()*0.3)).toFixed(2);
         var fill = '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')';
 
-        var b = this.paper.circle(windowHeight/2, windowHeight/2, 0).attr({
+        var b = paper.circle(windowWidth/2, windowHeight/2, 0).attr({
           'stroke-opacity': 0,
           fill: fill
         });
@@ -262,12 +265,12 @@
 
         if(Modernizr.video){
 
-          (function(circle){
+          (function (circle) {
             var $c = $(circle['0']);
-            $c.off('mouseenter').on('mouseenter', function(e){
+            $c.off('mouseenter').on('mouseenter', function (e) {
               hintMouseEnter(circle);
               var $c = $(e.target);
-              var transition = function(circle){
+              var transition = function (circle) {
                 self.interpreter.gen({
                   name: 'toSpecific',
                   data: {
@@ -277,10 +280,10 @@
                 });
               };
               var trans = setTimeout(transition, 1500, circle);
-              $c.one('mouseleave',function(e){
+              $c.one('mouseleave', function (e) {
                 clearTimeout(trans);
               });
-            }).on('mouseleave',function(){
+            }).on('mouseleave', function () {
                 hintMouseLeave(circle);
               });
           }(c));
@@ -295,7 +298,11 @@
                 track: this.data('track')
               }
             });
-          }).mouseover(function(){hintMouseEnter(this)}).mouseout(function(){hintMouseLeave(this)});
+          }).mouseover(function () {
+              hintMouseEnter(this);
+            }).mouseout(function () {
+              hintMouseLeave(this);
+            });
         }
       }
 
@@ -767,13 +774,13 @@
     };
 
     this.aboutSpecialBubbleData = {
-      cinch: {cx: 575, cy: 150, r: 50, code: 'cinch'},
-      course: {cx: 630, cy: 245, r: 50, code: 'course'},
-      students: {cx: 640, cy: 350, r: 50, code: 'students'},
-      classroom: {cx: 620, cy: 455, r: 50, code: 'classroom'}
+      cinch: {cx: 575, cy: 100, r: 50, code: 'cinch'},
+      course: {cx: 630, cy: 195, r: 50, code: 'course'},
+      students: {cx: 640, cy: 300, r: 50, code: 'students'},
+      classroom: {cx: 620, cy: 405, r: 50, code: 'classroom'}
     };
 
-    this.aboutExpandedBubbleParams = {cx: 320, cy: 330, r: 280};
+    this.aboutExpandedBubbleParams = {cx: 320, cy: 280, r: 280};
 
     this.showAboutState = function () {
       $('#nav-link-list a').not('.about').removeClass('active');
@@ -1014,7 +1021,7 @@
     };
 
     this.contactSpecialBubbleData = {
-      cx: 300, cy: 225, r: 155
+      cx: 300, cy: 175, r: 155
     };
 
     this.showContactState = function () {
@@ -1100,11 +1107,11 @@
     };
 
     this.contactExtraBubbleData = [
-      {cx: 455, cy: 385, r: 50},
-      {cx: 350, cy: 405, r: 35},
-      {cx: 267, cy: 389, r: 28},
-      {cx: 205, cy: 355, r: 20},
-      {cx: 174, cy: 313, r: 10}
+      {cx: 455, cy: 335, r: 50},
+      {cx: 350, cy: 355, r: 35},
+      {cx: 267, cy: 339, r: 28},
+      {cx: 205, cy: 305, r: 20},
+      {cx: 174, cy: 263, r: 10}
     ];
 
     this.createAndShowContactExtraBubbles = function () {
@@ -1249,8 +1256,7 @@
     };
 
     this.transition = function (toState) {
-      var validStates = ['main', 'about', 'contact'];
-      if (validStates.indexOf(toState) === -1) toState = 'main';
+      if (['main', 'about', 'contact'].indexOf(toState) === -1) toState = 'main';
       if (this.state === toState) return;
 
       $('body').on('transitionHide:complete', function () {
@@ -1260,6 +1266,32 @@
       this.hideState();
 
       return this;
+    };
+
+    this.adjustViewingArea = function () {
+      // This function is a callback for window resize and orientationchange
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+
+      var state = self.state;
+      if (['main', 'about', 'contact'].indexOf(state) === -1) return;
+      if(typeof(this[state + 'BubbleData']) === 'undefined' || typeof(this[state + 'BubbleSet']) === 'undefined') {
+        return;
+      }
+
+      var bubbleData = this[state + 'BubbleData'];
+      var bubbleSet = this[state + 'BubbleSet'];
+
+      console.log(state);
+      console.log(bubbleSet);
+
+      for(var i=0; bubbleSet[i]; i++) {
+        bubbleSet[i].attr({
+          cx: bubbleData[i].cx + (bubbleData[i].anchor.x === 'right' ? windowWidth : 0),
+          cy: bubbleData[i].cy + (bubbleData[i].anchor.y === 'bottom' ? windowHeight : 0)
+        });
+      }
+
     };
 
     this.initMedia = function () {
@@ -1453,18 +1485,21 @@
           if(['main', 'about', 'contact'].indexOf(className) === -1) return;
           var target = className.substr(0, 1).toUpperCase() + className.substr(1);
 
-          $('#nav-link-list a').off('click').on('click', function(e) {e.preventDefault()});
+          $('#nav-link-list a').not('.login').off('click').on('click', function(e) {e.preventDefault()});
 
-          var _this = this;
           interpreter.gen({name : 'to'+target, data: {app: self}});
 
           $body.on('transition:complete', function () {
             $('body').off('transition:complete');
-            $('#nav-link-list a').off('click').on('click', navCallback);
+            $('#nav-link-list a').not('.login').off('click').on('click', navCallback);
           });
         };
 
-        $('#nav-link-list a').on('click', navCallback);
+        $('#nav-link-list a').not('.login').on('click', navCallback);
+
+        $(window).on('resize orientationchange', function () {
+          self.adjustViewingArea();
+        }).trigger('resize');
 
         //LOADING MEDIA:
         var media;
@@ -1486,7 +1521,7 @@
           self.mainIntroSet.animate({'opacity': 0}, 600, '<>', function () {
             self.mainIntroSet.forEach(function(e){e.remove()});
           });
-          $('#video').fadeIn(2e3, function () {
+          $('#occluder').fadeOut(2e3, function () {
             $body.data('readyForHint', true);
             if(typeof(self.hitAreaSet) !== 'undefined') {
               self.hitAreaSet.attr({cursor: 'pointer'});
