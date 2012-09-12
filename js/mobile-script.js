@@ -478,18 +478,11 @@
       var contactBubbleData = [
         {
           title: 'Contact Us',
-          copy: "For more information,\nabout please CINCH\nLearning, please email\nus or use our contact form.",
+          copy: "For more information about\nCINCH Learning, please use\nour contact form.",
           type: 'text',
           cx: 145,
           cy: 205,
           r: 115
-        }, {
-          text: 'Email us',
-          type: 'link',
-          href: "mailto:",
-          cx: 170,
-          cy: 348,
-          r: 40
         }, {
           text: 'Contact\nForm',
           type: 'link',
