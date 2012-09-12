@@ -963,8 +963,7 @@
 
       for (var x in specialBubbleData) {
         if(specialBubbleData.hasOwnProperty(x)) {
-          var o = (0.2+(Math.random()*0.3)).toFixed(2);
-          var fill = '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')';
+          var fill = '0-rgba(0,151,219,.6)-rgba(0,100,178,1)';
 
           var cx = specialBubbleData[x].cx;
           var cy = specialBubbleData[x].cy;
