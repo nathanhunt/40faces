@@ -358,25 +358,45 @@
 
       var initialPath, finalPath, rotation, transformString;
       if(['topright', 'topleft'].indexOf(direction) > -1) {
-        initialPath = "M" + (cx + 0.5) + "," + (cy - r) +
-          "A" + (r - 1) + "," + (r - 1) + " 0 1,1 " + (cx - 0.5) + "," + (cy - r) +
-          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx + 0.5) + "," + (cy - r) + "Z";
+        initialPath = "M" + (cx + 0.5) + "," + (cy - r - 1.5) +
+          "A" + (r - 1) + "," + (r - 1) + " 0 1,1 " + (cx - 0.5) + "," + (cy - r - 1.5) +
+          "L" + (cx + 0.5) + "," + (cy - r - 1.5) +
+          "L" + (cx + 0.5) + "," + (cy - r) +
+          "L" + (cx - 0.5) + "," + (cy - r) +
+          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx + 0.5) + "," + (cy - r) +
+          "L" + (cx + 0.5) + "," + (cy - r - 1.5) +
+          "Z";
 
-        finalPath = "M" + (cx + 0.5) + "," + (cy - r) +
-          "A" + (r * 1.1) + "," + (r * 1.1) + " 0 1,1 " + (cx - 0.5) + "," + (cy - r) +
-          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx + 0.5) + "," + (cy - r) + "Z";
+        finalPath = "M" + (cx + 0.5) + "," + (cy - r - 1.5) +
+          "A" + (r * 1.1) + "," + (r * 1.1) + " 0 1,1 " + (cx - 0.5) + "," + (cy - r - 1.5) +
+          "L" + (cx + 0.5) + "," + (cy - r - 1.5) +
+          "L" + (cx + 0.5) + "," + (cy - r) +
+          "L" + (cx - 0.5) + "," + (cy - r) +
+          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx + 0.5) + "," + (cy - r) +
+          "L" + (cx + 0.5) + "," + (cy - r - 1.5) +
+          "Z";
 
         rotation = direction === 'topright' ? -135 : 135;
         transformString = "r" + rotation + "," + cx + "," + cy;
 
       } else if(['bottomright', 'bottomleft'].indexOf(direction) > -1) {
-        initialPath = "M" + (cx - 0.5) + "," + (cy + r) +
-          "A" + (r - 1) + "," + (r - 1) + " 0 1,1 " + (cx + 0.5) + "," + (cy + r) +
-          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx - 0.5) + "," + (cy + r) + "Z";
+        initialPath = "M" + (cx - 0.5) + "," + (cy + r + 1.5) +
+          "A" + (r - 1) + "," + (r - 1) + " 0 1,1 " + (cx + 0.5) + "," + (cy + r + 1.5) +
+          "L" + (cx - 0.5) + "," + (cy + r + 1.5) +
+          "L" + (cx - 0.5) + "," + (cy + r) +
+          "L" + (cx + 0.5) + "," + (cy + r) +
+          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx - 0.5) + "," + (cy + r) +
+          "L" + (cx - 0.5) + "," + (cy + r + 1.5) +
+          "Z";
 
-        finalPath = "M" + (cx - 0.5) + "," + (cy + r) +
-          "A" + (r * 1.1) + "," + (r * 1.1) + " 0 1,1 " + (cx + 0.5) + "," + (cy + r) +
-          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx - 0.5) + "," + (cy + r) + "Z";
+        finalPath = "M" + (cx - 0.5) + "," + (cy + r + 1.5) +
+          "A" + (r * 1.1) + "," + (r * 1.1) + " 0 1,1 " + (cx + 0.5) + "," + (cy + r + 1.5) +
+          "L" + (cx - 0.5) + "," + (cy + r + 1.5) +
+          "L" + (cx - 0.5) + "," + (cy + r) +
+          "L" + (cx + 0.5) + "," + (cy + r) +
+          "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx - 0.5) + "," + (cy + r) +
+          "L" + (cx - 0.5) + "," + (cy + r + 1.5) +
+          "Z";
 
         rotation = direction === 'bottomleft' ? -180 : 180;
         transformString = "r" + rotation + "," + cx + "," + cy;
@@ -580,37 +600,58 @@
           var paper = circle.paper;
           var objectSet = paper.set();
           var bbox = circle.getBBox();
-          var middle = bbox.x + bbox.width/2;
 
           var initialPath, p, finalPath, rotation, transformString;
+
+          var cx = bbox.x + bbox.width / 2;
+          var cy = bbox.y + bbox.height / 2;
+          var r = bbox.width / 2;
 
           var o = 0.95;
 
           if(['topright', 'topleft'].indexOf(this.direction) > -1) {
+            initialPath = "M" + (cx + 0.5) + "," + (cy - r - 1.5) +
+              "A" + (r - 1) + "," + (r - 1) + " 0 1,1 " + (cx - 0.5) + "," + (cy - r - 1.5) +
+              "L" + (cx + 0.5) + "," + (cy - r - 1.5) +
+              "L" + (cx + 0.5) + "," + (cy - r) +
+              "L" + (cx - 0.5) + "," + (cy - r) +
+              "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx + 0.5) + "," + (cy - r) +
+              "L" + (cx + 0.5) + "," + (cy - r - 1.5) +
+              "Z";
 
-            initialPath = "M" + (middle + 0.5) + "," + bbox.y +
-              "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,1 " + (middle - 0.5) + "," + bbox.y +
-              "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,0 " + (middle + 0.5) + "," + bbox.y + "Z";
-
-            finalPath = "M" + (middle + 0.5) + "," + bbox.y +
-              "A200,200 0 1,1 " + (middle - 0.5) + "," + bbox.y +
-              "A" + (bbox.width / 2 - 1) + "," + (bbox.width / 2 - 1) + " 0 1,0 " + (middle + 0.5) + "," + bbox.y + "Z";
+            finalPath = "M" + (cx + 0.5) + "," + (cy - r - 1.5) +
+              "A200,200 0 1,1 " + (cx - 0.5) + "," + (cy - r - 1.5) +
+              "L" + (cx + 0.5) + "," + (cy - r - 1.5) +
+              "L" + (cx + 0.5) + "," + (cy - r) +
+              "L" + (cx - 0.5) + "," + (cy - r) +
+              "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx + 0.5) + "," + (cy - r) +
+              "L" + (cx + 0.5) + "," + (cy - r - 1.5) +
+              "Z";
 
             rotation = this.direction === 'topright' ? -135 : 135;
-            transformString = "R" + rotation + "," + middle + "," + (bbox.y + bbox.height / 2);
+            transformString = "R" + rotation + "," + cx + "," + cy;
 
           } else if(['bottomright', 'bottomleft'].indexOf(this.direction) > -1) {
+            initialPath = "M" + (cx - 0.5) + "," + (cy + r + 1.5) +
+              "A" + (r - 1) + "," + (r - 1) + " 0 1,1 " + (cx + 0.5) + "," + (cy + r + 1.5) +
+              "L" + (cx - 0.5) + "," + (cy + r + 1.5) +
+              "L" + (cx - 0.5) + "," + (cy + r) +
+              "L" + (cx + 0.5) + "," + (cy + r) +
+              "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx - 0.5) + "," + (cy + r) +
+              "L" + (cx - 0.5) + "," + (cy + r + 1.5) +
+              "Z";
 
-            initialPath = "M" + (middle - 0.5) + "," + (bbox.y + bbox.height) +
-              "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,1 " + (middle + 0.5) + "," + (bbox.y + bbox.height) +
-              "A" + (bbox.width / 2 - 1) + "," + (bbox.height / 2 - 1) + " 0 1,0 " + (middle - 0.5) + "," + (bbox.y + bbox.height) + "Z";
-
-            finalPath = "M" + (middle - 0.5) + "," + (bbox.y + bbox.height) +
-              "A200,200 0 1,1 " + (middle + 0.5) + "," + (bbox.y + bbox.height) +
-              "A" + (bbox.width / 2 - 1) + "," + (bbox.width / 2 - 1) + " 0 1,0 " + (middle - 0.5) + "," + (bbox.y + bbox.height) + "Z";
+            finalPath = "M" + (cx - 0.5) + "," + (cy + r + 1.5) +
+              "A200,200 0 1,1 " + (cx + 0.5) + "," + (cy + r + 1.5) +
+              "L" + (cx - 0.5) + "," + (cy + r + 1.5) +
+              "L" + (cx - 0.5) + "," + (cy + r) +
+              "L" + (cx + 0.5) + "," + (cy + r) +
+              "A" + (r - 1) + "," + (r - 1) + " 0 1,0 " + (cx - 0.5) + "," + (cy + r) +
+              "L" + (cx - 0.5) + "," + (cy + r + 1.5) +
+              "Z";
 
             rotation = this.direction === 'bottomleft' ? -180 : 180;
-            transformString = "R" + rotation + "," + middle + "," + (bbox.y + bbox.height / 2);
+            transformString = "R" + rotation + "," + cx + "," + cy;
 
           }
 
