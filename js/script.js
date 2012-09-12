@@ -767,7 +767,6 @@
     this.showMainState = function (fromState) {
       $('#nav-link-list a').not('.main').removeClass('active');
       $('#nav-link-list a.main').addClass('active');
-      $('#hitAreas, #viewport').fadeIn();
       self.media.resume();
 
       var windowWidth = $(window).width();
@@ -812,6 +811,26 @@
         });
 
       }
+
+      $('#hitAreas').fadeIn();
+      $('#viewport').animate(
+        {
+          top: 0,
+          left: 0,
+          'text-indent': 0
+        }, {
+          duration: duration,
+          step: function (now, fx) {
+            if(fx.prop === 'textIndent') {
+              $(this).css({
+                '-webkit-transform': 'rotate('+now+'deg)',
+                '-moz-transform': 'rotate('+now+'deg)',
+                'transform': 'rotate('+now+'deg)'
+              });
+            }
+          }
+        }
+      );
     };
 
     this.aboutSpecialBubbleData = {
@@ -857,7 +876,10 @@
           }, duration, 'easeOut');
         }
 
-        specialBubblePreAnimationParams = {};
+        specialBubblePreAnimationParams = {
+          left: windowWidth,
+          top: -windowHeight
+        };
 
       } else if (fromState === 'main') {
 
@@ -869,7 +891,11 @@
           }).animate({transform: 'R0,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeOut');
         });
 
-        specialBubblePreAnimationParams = {};
+        specialBubblePreAnimationParams = {
+          left: windowWidth,
+          top: -windowHeight,
+          'text-indent': 90
+        };
 
       } else if (fromState === 'contact') {
 
@@ -881,11 +907,32 @@
           }).animate({transform: 'R0,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeOut');
         });
 
-        specialBubblePreAnimationParams = {left: -windowWidth};
+        specialBubblePreAnimationParams = {
+          left: -windowWidth,
+          top: windowHeight,
+          'text-indent': -90
+        };
 
       }
 
-      $('#about-content-wrapper').css(specialBubblePreAnimationParams).animate({left: 0}, 500);
+      $('#about-content-wrapper').css(specialBubblePreAnimationParams).animate(
+        {
+          top: 0,
+          left: 0,
+          'text-indent': 0
+        }, {
+          duration: duration,
+          step: function (now, fx) {
+            if(fx.prop === 'textIndent') {
+              $(this).css({
+                '-webkit-transform': 'rotate('+now+'deg)',
+                '-moz-transform': 'rotate('+now+'deg)',
+                'transform': 'rotate('+now+'deg)'
+              });
+            }
+          }
+        }
+      );
     };
 
     this.createAboutSpecialBubbles = function () {
@@ -1099,8 +1146,6 @@
         self.createContactSpecialBubble();
       }
 
-      self.showContactSpecialBubble();
-
       var duration = 500;
 
       setTimeout((function () {
@@ -1143,6 +1188,34 @@
         });
 
       }
+
+      var extraBubblePreAnimationParams = {
+        left: windowWidth,
+        top: -windowHeight,
+        'text-indent': 90
+      };
+
+      $('#contact-content-wrapper').css(extraBubblePreAnimationParams).animate(
+        {
+          top: 0,
+          left: 0,
+          'text-indent': 0
+        }, {
+          duration: duration,
+          step: function (now, fx) {
+            if(fx.prop === 'textIndent') {
+              $(this).css({
+                '-webkit-transform': 'rotate('+now+'deg)',
+                '-moz-transform': 'rotate('+now+'deg)',
+                'transform': 'rotate('+now+'deg)'
+              });
+            }
+          },
+          complete: function () {
+            self.createAndShowContactExtraBubbles();
+          }
+        }
+      );
     };
 
     this.createContactSpecialBubble = function () {
@@ -1161,12 +1234,6 @@
       });
 
       self.createAndShowContactSpecialBubbleText();
-    };
-
-    this.showContactSpecialBubble = function () {
-      $('#contact-content-wrapper').animate({left: 0}, 500, function () {
-        self.createAndShowContactExtraBubbles();
-      });
     };
 
     this.createAndShowContactSpecialBubbleText = function () {
@@ -1376,7 +1443,6 @@
     this.hideMainState = function (toState) {
       self.media.pause();
       self.blurb.removeObjectSet();
-      $('#hitAreas, #viewport').fadeOut();
 
       var windowWidth = $(window).width();
       var windowHeight = $(window).height();
@@ -1421,6 +1487,24 @@
         });
 
       }
+
+      $('#hitAreas').fadeOut();
+      $('#viewport').animate({
+        top: windowHeight*2,
+        left: -windowWidth*2,
+        'text-indent': -90
+      }, {
+        duration: duration,
+        step: function (now, fx) {
+          if(fx.prop === 'textIndent') {
+            $(this).css({
+              '-webkit-transform': 'rotate('+now+'deg)',
+              '-moz-transform': 'rotate('+now+'deg)',
+              'transform': 'rotate('+now+'deg)'
+            });
+          }
+        }
+      });
     };
 
     this.hideAboutState = function (toState) {
@@ -1436,7 +1520,7 @@
         $('body').trigger('transitionHide:complete');
       }), duration);
 
-      var specialBubbleDestination;
+      var specialBubbleDestinationParams;
 
       if($.browser.msie && parseInt($.browser.version) < 9) {
 
@@ -1447,7 +1531,7 @@
           bubbleSet[i].animate({cx: x, cy: y}, duration, 'easeIn');
         }
 
-        specialBubbleDestination = windowWidth;
+        specialBubbleDestinationParams = {left: windowWidth};
 
       } else if(toState === 'main') {
 
@@ -1461,7 +1545,11 @@
           });
         });
 
-        specialBubbleDestination = windowWidth;
+        specialBubbleDestinationParams = {
+          left: windowWidth,
+          top: -windowHeight,
+          'text-indent': 90
+        };
 
       } else if(toState === 'contact') {
 
@@ -1475,13 +1563,33 @@
           });
         });
 
-        specialBubbleDestination = -windowWidth;
+        specialBubbleDestinationParams = {
+          left: -windowWidth,
+          top: windowHeight,
+          'text-indent': -90
+        };
 
       }
 
-      $('#about-content-wrapper').animate({left: specialBubbleDestination}, 500, function () {
-        this.style.left = '100%';
-      });
+      $('#about-content-wrapper').animate(
+        specialBubbleDestinationParams,
+        {
+          duration: duration,
+          step: function (now, fx) {
+            if(fx.prop === 'textIndent') {
+              $(this).css({
+                '-webkit-transform': 'rotate('+now+'deg)',
+                '-moz-transform': 'rotate('+now+'deg)',
+                'transform': 'rotate('+now+'deg)'
+              });
+            }
+          },
+          complete:  function () {
+            this.style.left = '100%';
+            this.style.top = '0px';
+          }
+        }
+      );
     };
 
     this.hideContactState = function (toState) {
@@ -1526,7 +1634,11 @@
           });
         });
 
-        wrapperDestinationParams = {left: windowWidth};
+        wrapperDestinationParams = {
+          left: windowWidth,
+          top: -windowHeight,
+          'text-indent': 90
+        };
 
       } else if(toState === 'about') {
 
@@ -1540,14 +1652,33 @@
           });
         });
 
-        wrapperDestinationParams = {left: windowWidth};
+        wrapperDestinationParams = {
+          left: windowWidth,
+          top: -windowHeight,
+          'text-indent': 90
+        };
 
       }
 
-      $('#contact-content-wrapper').animate(wrapperDestinationParams, 500, function () {
-        this.style.left = '100%';
-        this.style.top = '0px';
-      });
+      $('#contact-content-wrapper').animate(
+        wrapperDestinationParams,
+        {
+          duration: duration,
+          step: function (now, fx) {
+            if(fx.prop === 'textIndent') {
+              $(this).css({
+                '-webkit-transform': 'rotate('+now+'deg)',
+                '-moz-transform': 'rotate('+now+'deg)',
+                'transform': 'rotate('+now+'deg)'
+              });
+            }
+          },
+          complete:  function () {
+            this.style.left = '100%';
+            this.style.top = '0px';
+          }
+        }
+      );
     };
 
     this.contactSpecialBubbleTextDestroy = function () {
