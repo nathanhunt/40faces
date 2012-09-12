@@ -1048,7 +1048,7 @@
 
       var contactCopy = {
         'title': 'Contact Us',
-        'text': "For more information, about\nplease CINCH Learning, please\nuse our contact form."
+        'text': "For more information about\n CINCH Learning, please\nuse our contact form."
       };
 
       var x = bubble.attrs.cx - bubble.attrs.r * 13/20;
@@ -1090,64 +1090,148 @@
       {cx: 174, cy: 263, r: 10}
     ];
 
+    var animateBubble = function (bubble, delay, duration, maxTime, eqX, eqY, finalRadius) {
+      setTimeout((function() {
+        var timer = 0;
+        if(typeof(bubble.attrs) !== 'undefined') {
+          var initialRadius = bubble.attrs.r;
+          setInterval((function() {
+            if(timer >= duration || typeof(bubble.attrs) === 'undefined') {
+              clearInterval(this);
+            } else {
+              var time = timer/maxTime;
+              var newXT = eqX(time);
+              var newYT = eqY(time);
+              if(!isNaN(newXT) && !isNaN(newYT)) {
+                bubble.attr({cx: newXT, cy: newYT, r: time*(finalRadius-initialRadius)});
+              }
+              timer += 10;
+            }
+          }), 10);
+        }
+      }), delay);
+    };
+
+    var makeCBXFunction = function (x0, x1, x2, x3) {
+      return function(t) {
+        return (1-t)*(1-t)*(1-t)*x0 + 3*t*(1-t)*(1-t)*x1 + 3*t*t*(1-t)*x2 + t*t*t*x3;
+      };
+    };
+
+    var makeCBYFunction = function (y0, y1, y2, y3) {
+      return function(t) {
+        return (1-t)*(1-t)*(1-t)*y0 + 3*t*(1-t)*(1-t)*y1 + 3*t*t*(1-t)*y2 + t*t*t*y3;
+      };
+    };
+
     this.createAndShowContactExtraBubbles = function () {
       var bubbleData = self.contactExtraBubbleData;
       var paper = self.contactPaper;
       var bubbleSet = paper.set();
 
-      for(var i=0; i < 5; i++) {
-        var o = (0.2 + (Math.random() * 0.3)).toFixed(2);
-        var cx = bubbleData[i].cx;
-        var cy = bubbleData[i].cy;
-        var r = bubbleData[i].r;
+      var i, o, b, contactLinkFadeInDuration, contactLinkFontSize;
 
-        var b = paper.circle(cx, cy, r).attr({
-          'stroke-opacity': 0,
-          fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
-          'fill-opacity': 0
-        }).toFront().animate({'fill-opacity': (i === 0 ? 1 : .4)}, 500);
-        bubbleSet.push(b);
+      if($.browser.msie) {
+        for(i=0; i < 5; i++) {
+          o = (0.2 + (Math.random() * 0.3)).toFixed(2);
+          var cx = bubbleData[i].cx;
+          var cy = bubbleData[i].cy;
+          var r = bubbleData[i].r;
+
+          b = paper.circle(cx, cy, r).attr({
+            'stroke-opacity': 0,
+            fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
+            'fill-opacity': 0
+          }).toFront().animate({'fill-opacity': (i === 0 ? 1 : .4)}, 500);
+          bubbleSet.push(b);
+        }
+
+        contactLinkFadeInDuration = 0;
+        contactLinkFontSize = 18;
+      } else {
+        var x, y, h, w, x0, x1, x2, x3, y0, y1, y2, y3;
+
+        var bbox = self.contactSpecialBubble.getBBox();
+        x = bbox.x;
+        y = bbox.y;
+        h = bbox.height;
+        w = bbox.width;
+
+        x0 = x+w/12;
+        x1 = x+w/12;
+        x2 = x+w*3/5;
+        x3 = x+w;
+
+        y0 = y+h*3/4;
+        y1 = y+h*19/20;
+        y2 = y+h*6/5;
+        y3 = y+h;
+
+        // Create mini bubbles from the left side of the larger bubble, around the bottom, counter-clockwise.
+        for(i=0; i < 5; i++) {
+          o = (0.2+(Math.random()*0.3)).toFixed(2);
+          b = self.contactPaper.circle(x0, y0, 0).attr({
+            'stroke-opacity': 0,
+            fill: '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')',
+            'fill-opacity': .4
+          }).toBack();
+          bubbleSet.push(b);
+        }
+
+        var maxTime = 1000;
+        var maxRadius = 45;
+        for(i=0; bubbleSet[i]; i++) {
+          var delay = maxTime/5*i+Math.sqrt(i*5000);
+          var duration = maxTime-delay;
+          var finalRadius = maxRadius+Math.pow(i,1.5)*5;
+          if(typeof(bubbleSet[i+1]) === 'undefined') finalRadius = 200;
+          animateBubble(bubbleSet[i], delay, duration, maxTime, makeCBXFunction(x0, x1, x2, x3), makeCBYFunction(y0, y1, y2, y3), finalRadius);
+        }
+
+        contactLinkFadeInDuration = 1200;
+        contactLinkFontSize = 17;
       }
 
-      var defaultOpacity = .8;
-      var hoverOpacity = 1;
-
-      var mouseOverCallback = function() {
-        var tempBubble = typeof(this.data('bubbleObject')) !== 'undefined' ? this.data('bubbleObject') : this;
-        tempBubble.attr({'opacity': hoverOpacity, 'fill-opacity': hoverOpacity, 'cursor': 'pointer'});
-      };
-
-      var mouseOutCallback = function() {
-        var tempBubble = typeof(this.data('bubbleObject')) !== 'undefined' ? this.data('bubbleObject') : this;
-        tempBubble.attr({'opacity': defaultOpacity, 'fill-opacity': defaultOpacity, 'cursor': 'pointer'});
-      };
-
-      var clickCallback = function() {
-        window.open('http://mheducation.force.com/MHE/SEG_Sampling_Leads?id=701C0000000UKSx', '_blank');
-      };
-
-      var x, y, bbox;
-
-      bbox = bubbleSet[0].getBBox();
-      x = bbox.x + bbox.width / 2;
-      y = bbox.y + bbox.height / 2;
-      var contactLink = paper.text(x, y, 'Contact\nForm').attr({
-        'text-anchor': 'middle',
-        'stroke-opacity': 0,
-        'font-family': 'Arial, sans',
-        'fill': '#ffffff',
-        'font-size': 18,
-        'fill-opacity': 0,
-        'cursor': 'pointer'
-      }).animate({'fill-opacity':1}, 500);
-
-      contactLink.mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
-      bubbleSet[0].mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
-      bubbleSet[0].attr({'cursor': 'pointer'}).animate({'fill-opacity': defaultOpacity}, 500);
-      contactLink.data('bubbleObject', bubbleSet[0]);
-      bubbleSet[0].data('textObject', contactLink);
-
       self.contactExtraBubbleSet = bubbleSet;
+
+      setTimeout((function () {
+        var defaultOpacity = .8;
+        var hoverOpacity = 1;
+
+        var mouseOverCallback = function() {
+          var tempBubble = typeof(this.data('bubbleObject')) !== 'undefined' ? this.data('bubbleObject') : this;
+          tempBubble.attr({'opacity': hoverOpacity, 'fill-opacity': hoverOpacity, 'cursor': 'pointer'});
+        };
+
+        var mouseOutCallback = function() {
+          var tempBubble = typeof(this.data('bubbleObject')) !== 'undefined' ? this.data('bubbleObject') : this;
+          tempBubble.attr({'opacity': defaultOpacity, 'fill-opacity': defaultOpacity, 'cursor': 'pointer'});
+        };
+
+        var clickCallback = function() {
+          window.open('http://mheducation.force.com/MHE/SEG_Sampling_Leads?id=701C0000000UKSx', '_blank');
+        };
+
+        var bubble = self.contactExtraBubbleSet[0];
+        bbox = bubble.getBBox();
+        x = bbox.x + bbox.width / 2;
+        y = bbox.y + bbox.height / 2;
+        var contactLink = paper.text(x, y, 'Contact\nForm').attr({
+          'text-anchor': 'middle',
+          'stroke-opacity': 0,
+          'font-family': 'Arial, sans',
+          'fill': '#ffffff',
+          'font-size': contactLinkFontSize,
+          'fill-opacity': 0,
+          'cursor': 'pointer'
+        }).animate({'fill-opacity':1}, 500);
+
+        contactLink.mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
+        bubble.mouseover(mouseOverCallback).mouseout(mouseOutCallback).click(clickCallback);
+        bubble.attr({'cursor': 'pointer'}).animate({'fill-opacity': defaultOpacity}, 500);
+        contactLink.data('bubbleObject', bubble);
+        bubble.data('textObject', contactLink);
+      }), contactLinkFadeInDuration);
     };
 
     this.hideState = function () {
