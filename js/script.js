@@ -13,15 +13,28 @@
     };
 
     this.updateDOM = function () {
+      if(!($.browser.msie && $.browser.version < 9)) {
+        $('head').append(
+          '<style type="text/css">' +
+            '.fixed-top-bar {' +
+            'background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzAwOThkYyIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDYzYjEiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);' +
+            'background: -moz-linear-gradient(left,  #0098dc 0%, #0063b1 100%);' +
+            'background: -webkit-gradient(linear, left top, right top, color-stop(0%,#0098dc), color-stop(100%,#0063b1));' +
+            'background: -webkit-linear-gradient(left,  #0098dc 0%,#0063b1 100%);' +
+            'background: -o-linear-gradient(left,  #0098dc 0%,#0063b1 100%);' +
+            'background: -ms-linear-gradient(left,  #0098dc 0%,#0063b1 100%);' +
+            'background: linear-gradient(to right,  #0098dc 0%,#0063b1 100%);' +
+            '}' +
+            '</style>'
+        )
+      }
+
       $('body').css({
         'padding-top': 40
       });
 
-      $('#app').css({
-        width: $(window).width(),
-        height: Math.max($(window).height(), 700)
-      }).html(
-        '<div class="standard fixed-top-bar">' +
+      $('#app').html(
+        '<div class="fixed-top-bar">' +
           ' <a id="cinch-logo"></a>' +
           ' <a href="#" class="volume-icon-link on">' +
           '   <img class="on" src="img/volume-on.png" />' +
@@ -37,7 +50,7 @@
           '   <li><a href="http://www.cinchlearning.com" class="login" target="_blank">Login</a></li>' +
           ' </ul>' +
           '</div>' +
-          '<div class="standard fixed-bottom-bar">' +
+          '<div class="fixed-bottom-bar">' +
           ' <a class="logoLink" href="https://www.mheonline.com/" target="_blank"><img src="img/mhe_logo_94x26.png" /></a>' +
           ' <a href="http://www.mcgraw-hill.com/site/tools/terms-of-use" target="_blank">Terms of Use</a>' +
           ' <span>|</span>' +
@@ -61,7 +74,11 @@
           '<div id="contact-content-wrapper"><div id="contact-content"></div></div>'
       );
 
-      return this;
+      if($.browser.msie && $.browser.version < 9) {
+        $('.fixed-bottom-bar').css({'padding-bottom': 5});
+      }
+
+     return this;
     };
 
     this.initPapers = function () {
