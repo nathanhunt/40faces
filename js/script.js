@@ -6,17 +6,21 @@
 
     var self = this;
 
+    this.MIN_IE_VERSION = 8;
+
     this.initApp = function () {
       return this.updateDOM().initPapers().putLogo().initMedia().runScion();
     };
 
     this.updateDOM = function () {
       $('body').css({
-        overflow: 'hidden',
         'padding-top': 40
       });
 
-      $('#app').html(
+      $('#app').css({
+        width: $(window).width(),
+        height: Math.max($(window).height(), 700)
+      }).html(
         '<div class="standard fixed-top-bar">' +
           ' <a id="cinch-logo"></a>' +
           ' <a href="#" class="volume-icon-link on">' +
@@ -781,7 +785,7 @@
         self.state = 'main';
       }), duration);
 
-      if($.browser.msie && parseInt($.browser.version) < 9) {
+      if($.browser.msie && parseInt($.browser.version) < self.MIN_IE_VERSION) {
 
         for(var i=0; bubbleSet[i]; i++) {
           bubbleSet[i].animate({
@@ -867,7 +871,7 @@
 
       var specialBubblePreAnimationParams;
 
-      if($.browser.msie && parseInt($.browser.version) < 9) {
+      if($.browser.msie && parseInt($.browser.version) < self.MIN_IE_VERSION) {
 
         for(var i=0; bubbleSet[i]; i++) {
           bubbleSet[i].animate({
@@ -1158,7 +1162,7 @@
       var bubbleData = this.contactBubbleData;
       var bubbleSet = this.contactBubbleSet;
 
-      if($.browser.msie && parseInt($.browser.version) < 9) {
+      if($.browser.msie && parseInt($.browser.version) < self.MIN_IE_VERSION) {
 
         for(var i=0; bubbleSet[i]; i++) {
           bubbleSet[i].animate({
@@ -1454,7 +1458,7 @@
         $('body').trigger('transitionHide:complete');
       }), duration);
 
-      if($.browser.msie && parseInt($.browser.version) < 9) {
+      if($.browser.msie && parseInt($.browser.version) < self.MIN_IE_VERSION) {
 
         for (var i=0; bubbleSet[i]; i++) {
           var x = bubbleSet[i].data('bubbleData').anchor.x === 'left' ? -1000 : windowWidth + 1000;
@@ -1522,7 +1526,7 @@
 
       var specialBubbleDestinationParams;
 
-      if($.browser.msie && parseInt($.browser.version) < 9) {
+      if($.browser.msie && parseInt($.browser.version) < self.MIN_IE_VERSION) {
 
         for (var i=0; bubbleSet[i]; i++) {
           var x = bubbleSet[i].data('bubbleData').anchor.x === 'left' ? -1000 : windowWidth + 1000;
@@ -1611,7 +1615,7 @@
 
       var wrapperDestinationParams;
 
-      if($.browser.msie && parseInt($.browser.version) < 9) {
+      if($.browser.msie && parseInt($.browser.version) < self.MIN_IE_VERSION) {
 
         for (var i=0; bubbleSet[i]; i++) {
           var x = bubbleSet[i].data('bubbleData').anchor.x === 'left' ? -1000 : windowWidth + 1000;
@@ -1721,6 +1725,11 @@
       var windowWidth = $(window).width();
       var windowHeight = $(window).height();
 
+      $('#app').css({
+        width: windowWidth,
+        height: Math.max(windowHeight, 700)
+      });
+
       var state = self.state;
       if (['main', 'about', 'contact'].indexOf(state) === -1) return;
       if(typeof(this[state + 'BubbleData']) === 'undefined' || typeof(this[state + 'BubbleSet']) === 'undefined') {
@@ -1736,15 +1745,6 @@
           cy: bubbleData[i].cy + (bubbleData[i].anchor.y === 'top' ? 0 : windowHeight)
         });
       }
-
-      switch(state) {
-        case 'about':
-
-          break;
-        case 'contact':
-          break;
-      }
-
     };
 
     this.initMedia = function () {
