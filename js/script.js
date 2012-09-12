@@ -727,54 +727,91 @@
       return this;
     };
 
-    this.showState = function (toState) {
-      var bubbleData = this[toState + 'BubbleData'];
+    this.showState = function (toState, fromState) {
+      if(typeof(this[toState + 'BubbleSet']) === 'undefined') {
+        self.createStateBubbleSet(toState);
+      }
+
+      var methodName = 'show' + toState.substr(0, 1).toUpperCase() + toState.substr(1) + 'State';
+      if (typeof(this[methodName]) !== 'undefined') {
+        this[methodName](fromState);
+      }
+
+      return this;
+    };
+
+    this.createStateBubbleSet = function (state) {
+      var bubbleData = this[state + 'BubbleData'];
       var windowWidth = $(window).width();
       var windowHeight = $(window).height();
+      var paper = self.paper;
+      var bubbles = paper.set();
 
-      var bubbles = this.paper.set();
-
-      var i;
-      for(i=0; bubbleData[i]; i++) {
+      for(var i=0; bubbleData[i]; i++) {
         var o = (0.2+(Math.random()*0.3)).toFixed(2);
         var fill = '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')';
 
         var cx = bubbleData[i].anchor.x === 'right' ? windowWidth + 1000 : -1000;
         var cy = bubbleData[i].anchor.y === 'bottom' ? windowHeight + 1000 : -1000;
-        var b = this.paper.circle(cx, cy, bubbleData[i].r).attr({
+        var b = paper.circle(cx, cy, bubbleData[i].r).attr({
           'stroke-opacity': 0,
           fill: fill
-        })
-          .animate({
-            cx: bubbleData[i].cx + Math.max(windowWidth/2, 400),
-            cy: bubbleData[i].cy + (bubbleData[i].anchor.y === 'top' ? 0 : windowHeight),
-            r: bubbleData[i].r
-          }, 500, 'easeOut')
-          .data('bubbleData', bubbleData[i]);
+        }).data('bubbleData', bubbleData[i]);
 
         bubbles.push(b);
       }
 
-      this[toState + 'BubbleSet'] = bubbles;
-
-      var methodName = 'show' + toState.substr(0, 1).toUpperCase() + toState.substr(1) + 'State';
-      if (typeof(this[methodName]) !== 'undefined') {
-        this[methodName]();
-      }
-
-      setTimeout((function () {
-        $('body').trigger('transition:complete');
-        self.state = toState;
-      }), 500);
-
-      return this;
+      this[state + 'BubbleSet'] = bubbles;
     };
 
-    this.showMainState = function () {
+    this.showMainState = function (fromState) {
       $('#nav-link-list a').not('.main').removeClass('active');
       $('#nav-link-list a.main').addClass('active');
       $('#hitAreas, #viewport').fadeIn();
       self.media.resume();
+
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+      var bubbleData = this.mainBubbleData;
+      var bubbleSet = this.mainBubbleSet;
+
+      var duration = 500;
+
+      setTimeout((function () {
+        $('body').trigger('transition:complete');
+        self.state = 'main';
+      }), duration);
+
+      if($.browser.msie && parseInt($.browser.version) < 9) {
+
+        for(var i=0; bubbleSet[i]; i++) {
+          bubbleSet[i].animate({
+            cx: bubbleData[i].cx + Math.max(windowWidth/2, 400),
+            cy: bubbleData[i].cy + (bubbleData[i].anchor.y === 'top' ? 0 : windowHeight)
+          }, duration, 'easeOut');
+        }
+
+      } else if (fromState === 'about') {
+
+        bubbleSet.forEach(function (el) {
+          el.attr({
+            cx: el.data('bubbleData').cx + Math.max(windowWidth/2, 400),
+            cy: el.data('bubbleData').cy + (el.data('bubbleData').anchor.y === 'top' ? 0 : windowHeight),
+            transform: 'R-90,'+(windowWidth*2)+','+(windowHeight*2)
+          }).animate({transform: 'R0,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeOut');
+        });
+
+      } else if (fromState === 'contact') {
+
+        bubbleSet.forEach(function (el) {
+          el.attr({
+            cx: el.data('bubbleData').cx + Math.max(windowWidth/2, 400),
+            cy: el.data('bubbleData').cy + (el.data('bubbleData').anchor.y === 'top' ? 0 : windowHeight),
+            transform: 'T0,-1000R-180,'+(windowWidth*2)+','+(windowHeight*2)
+          }).animate({transform: 'T0,0R0,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeOut');
+        });
+
+      }
     };
 
     this.aboutSpecialBubbleData = {
@@ -786,7 +823,7 @@
 
     this.aboutExpandedBubbleParams = {cx: 320, cy: 280, r: 280};
 
-    this.showAboutState = function () {
+    this.showAboutState = function (fromState) {
       $('#nav-link-list a').not('.about').removeClass('active');
       $('#nav-link-list a.about').addClass('active');
 
@@ -794,7 +831,61 @@
         self.createAboutSpecialBubbles();
       }
 
-      self.showAboutSpecialBubbles();
+      self.aboutSpecialBubbleDestroyAndShrink(null);
+      self.aboutSpecialBubbleEnlarge('cinch');
+
+      var duration = 500;
+
+      setTimeout((function () {
+        $('body').trigger('transition:complete');
+        self.state = 'about';
+      }), duration);
+
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+      var bubbleData = this.aboutBubbleData;
+      var bubbleSet = this.aboutBubbleSet;
+
+      var specialBubblePreAnimationParams;
+
+      if($.browser.msie && parseInt($.browser.version) < 9) {
+
+        for(var i=0; bubbleSet[i]; i++) {
+          bubbleSet[i].animate({
+            cx: bubbleData[i].cx + Math.max(windowWidth/2, 400),
+            cy: bubbleData[i].cy + (bubbleData[i].anchor.y === 'top' ? 0 : windowHeight)
+          }, duration, 'easeOut');
+        }
+
+        specialBubblePreAnimationParams = {};
+
+      } else if (fromState === 'main') {
+
+        bubbleSet.forEach(function (el) {
+          el.attr({
+            cx: el.data('bubbleData').cx + Math.max(windowWidth/2, 400),
+            cy: el.data('bubbleData').cy + (el.data('bubbleData').anchor.y === 'top' ? 0 : windowHeight),
+            transform: 'R90,'+(windowWidth*2)+','+(windowHeight*2)
+          }).animate({transform: 'R0,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeOut');
+        });
+
+        specialBubblePreAnimationParams = {};
+
+      } else if (fromState === 'contact') {
+
+        bubbleSet.forEach(function (el) {
+          el.attr({
+            cx: el.data('bubbleData').cx + Math.max(windowWidth/2, 400),
+            cy: el.data('bubbleData').cy + (el.data('bubbleData').anchor.y === 'top' ? 0 : windowHeight),
+            transform: 'R-90,'+(windowWidth*1.5)+','+(windowHeight*4)
+          }).animate({transform: 'R0,'+(windowWidth*1.5)+','+(windowHeight*4)}, duration, 'easeOut');
+        });
+
+        specialBubblePreAnimationParams = {left: -windowWidth};
+
+      }
+
+      $('#about-content-wrapper').css(specialBubblePreAnimationParams).animate({left: 0}, 500);
     };
 
     this.createAboutSpecialBubbles = function () {
@@ -845,12 +936,6 @@
       }
 
       self.aboutSpecialBubbleSet = specialBubbleSet;
-    };
-
-    this.showAboutSpecialBubbles = function () {
-      self.aboutSpecialBubbleDestroyAndShrink(null);
-      self.aboutSpecialBubbleEnlarge('cinch');
-      $('#about-content-wrapper').animate({left: 0}, 500);
     };
 
     var defaultOpacity = .8;
@@ -1006,7 +1091,7 @@
       cx: 300, cy: 175, r: 155
     };
 
-    this.showContactState = function () {
+    this.showContactState = function (fromState) {
       $('#nav-link-list a').not('.contact').removeClass('active');
       $('#nav-link-list a.contact').addClass('active');
 
@@ -1015,6 +1100,49 @@
       }
 
       self.showContactSpecialBubble();
+
+      var duration = 500;
+
+      setTimeout((function () {
+        $('body').trigger('transition:complete');
+        self.state = 'contact';
+      }), duration);
+
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+      var bubbleData = this.contactBubbleData;
+      var bubbleSet = this.contactBubbleSet;
+
+      if($.browser.msie && parseInt($.browser.version) < 9) {
+
+        for(var i=0; bubbleSet[i]; i++) {
+          bubbleSet[i].animate({
+            cx: bubbleData[i].cx + Math.max(windowWidth/2, 400),
+            cy: bubbleData[i].cy + (bubbleData[i].anchor.y === 'top' ? 0 : windowHeight)
+          }, duration, 'easeOut');
+        }
+
+      } else if (fromState === 'main') {
+
+        bubbleSet.forEach(function (el) {
+          el.attr({
+            cx: el.data('bubbleData').cx + Math.max(windowWidth/2, 400),
+            cy: el.data('bubbleData').cy + (el.data('bubbleData').anchor.y === 'top' ? 0 : windowHeight),
+            transform: 'T0,1000R180,'+(windowWidth*2)+','+(windowHeight*2)
+          }).animate({transform: 'T0,0R0,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeOut');
+        });
+
+      } else if (fromState === 'about') {
+
+        bubbleSet.forEach(function (el) {
+          el.attr({
+            cx: el.data('bubbleData').cx + Math.max(windowWidth/2, 400),
+            cy: el.data('bubbleData').cy + (el.data('bubbleData').anchor.y === 'top' ? 0 : windowHeight),
+            transform: 'T0,-1000R-180,'+(windowWidth*2)+','+(windowHeight*2)
+          }).animate({transform: 'R0,'+(windowWidth/2)+','+(windowHeight*4)}, duration, 'easeOut');
+        });
+
+      }
     };
 
     this.createContactSpecialBubble = function () {
@@ -1093,7 +1221,7 @@
     var animateBubble = function (bubble, delay, duration, maxTime, eqX, eqY, finalRadius) {
       setTimeout((function() {
         var timer = 0;
-        if(typeof(bubble.attrs) !== 'undefined') {
+        if(typeof(bubble.attrs) !== 'undefined' && bubble.attrs !== null) {
           var initialRadius = bubble.attrs.r;
           setInterval((function() {
             if(timer >= duration || typeof(bubble.attrs) === 'undefined') {
@@ -1194,7 +1322,7 @@
 
       self.contactExtraBubbleSet = bubbleSet;
 
-      setTimeout((function () {
+      self.contactExtraBubbleLinkTimeout = setTimeout((function () {
         var defaultOpacity = .8;
         var hoverOpacity = 1;
 
@@ -1211,6 +1339,8 @@
         var clickCallback = function() {
           window.open('http://mheducation.force.com/MHE/SEG_Sampling_Leads?id=701C0000000UKSx', '_blank');
         };
+
+        if(typeof(self.contactExtraBubbleSet[0]) === 'undefined') clearTimeout(this);
 
         var bubble = self.contactExtraBubbleSet[0];
         bbox = bubble.getBBox();
@@ -1234,50 +1364,189 @@
       }), contactLinkFadeInDuration);
     };
 
-    this.hideState = function () {
-      var windowWidth = $(window).width();
-      var windowHeight = $(window).height();
-      var state = this.state;
-      this.state = 'transition';
-      if(typeof(this[state + 'BubbleSet']) !== 'undefined') {
-        var bubbleSet = this[state + 'BubbleSet'];
-        this[state + 'BubbleSet'] = null;
-
-        for (var i=0; bubbleSet[i]; i++) {
-          var x = bubbleSet[i].data('bubbleData').anchor.x === 'left' ? -1000 : windowWidth + 1000;
-          var y = bubbleSet[i].data('bubbleData').anchor.y === 'top' ? -1000 : windowHeight + 1000;
-          bubbleSet[i].animate({cx: x, cy: y}, 500, 'easeIn', function () {
-            this.remove();
-            $('body').trigger('transitionHide:complete');
-          });
-        }
-      }
-
-      var methodName = 'hide' + state.substr(0, 1).toUpperCase() + state.substr(1) + 'State';
+    this.hideState = function (toState, currentState) {
+      var methodName = 'hide' + currentState.substr(0, 1).toUpperCase() + currentState.substr(1) + 'State';
       if (typeof(this[methodName]) !== 'undefined') {
-        this[methodName]();
+        this[methodName](toState);
       }
 
       return this;
     };
 
-    this.hideMainState = function () {
+    this.hideMainState = function (toState) {
       self.media.pause();
       self.blurb.removeObjectSet();
       $('#hitAreas, #viewport').fadeOut();
+
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+      var bubbleSet = this.mainBubbleSet;
+
+      var duration = 500;
+
+      setTimeout((function () {
+        $('body').trigger('transitionHide:complete');
+      }), duration);
+
+      if($.browser.msie && parseInt($.browser.version) < 9) {
+
+        for (var i=0; bubbleSet[i]; i++) {
+          var x = bubbleSet[i].data('bubbleData').anchor.x === 'left' ? -1000 : windowWidth + 1000;
+          var y = bubbleSet[i].data('bubbleData').anchor.y === 'top' ? -1000 : windowHeight + 1000;
+          bubbleSet[i].animate({cx: x, cy: y}, duration, 'easeIn');
+        }
+
+      } else if(toState === 'about') {
+
+        bubbleSet.forEach(function (el) {
+          el.animate({transform: 'R-90,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeIn', function () {
+            this.attr({
+              cx: windowWidth + 1000,
+              cy: -1000,
+              transform: 'R0,'+(windowWidth*2)+','+(windowHeight*2)
+            });
+          });
+        });
+
+      } else if(toState === 'contact') {
+
+        bubbleSet.forEach(function (el) {
+          el.animate({transform: 'T0,-1000R-180,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeIn', function () {
+            this.attr({
+              cx: windowWidth + 1000,
+              cy: -1000,
+              transform: 'T0,0R0,'+(windowWidth*2)+','+(windowHeight*2)
+            });
+          });
+        });
+
+      }
     };
 
-    this.hideAboutState = function () {
+    this.hideAboutState = function (toState) {
       self.aboutSpecialBubbleDestroyAndShrink(null);
-      $('#about-content-wrapper').animate({left: $(window).width()}, 500, function () {
+
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+      var bubbleSet = this.aboutBubbleSet;
+
+      var duration = 500;
+
+      setTimeout((function () {
+        $('body').trigger('transitionHide:complete');
+      }), duration);
+
+      var specialBubbleDestination;
+
+      if($.browser.msie && parseInt($.browser.version) < 9) {
+
+        for (var i=0; bubbleSet[i]; i++) {
+          var x = bubbleSet[i].data('bubbleData').anchor.x === 'left' ? -1000 : windowWidth + 1000;
+          var y = bubbleSet[i].data('bubbleData').anchor.y === 'top' ? -1000 : windowHeight + 1000;
+
+          bubbleSet[i].animate({cx: x, cy: y}, duration, 'easeIn');
+        }
+
+        specialBubbleDestination = windowWidth;
+
+      } else if(toState === 'main') {
+
+        bubbleSet.forEach(function (el) {
+          el.animate({transform: 'R90,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeIn', function () {
+            this.attr({
+              cx: windowWidth + 1000,
+              cy: -1000,
+              transform: 'R0,'+(windowWidth*2)+','+(windowHeight*2)
+            });
+          });
+        });
+
+        specialBubbleDestination = windowWidth;
+
+      } else if(toState === 'contact') {
+
+        bubbleSet.forEach(function (el) {
+          el.animate({transform: 'R-90,'+(windowWidth*1.5)+','+(windowHeight*4)}, duration, 'easeIn', function () {
+            this.attr({
+              cx: windowWidth + 1000,
+              cy: -1000,
+              transform: 'R0,'+(windowWidth*1.5)+','+(windowHeight*4)
+            });
+          });
+        });
+
+        specialBubbleDestination = -windowWidth;
+
+      }
+
+      $('#about-content-wrapper').animate({left: specialBubbleDestination}, 500, function () {
         this.style.left = '100%';
       });
     };
 
-    this.hideContactState = function () {
+    this.hideContactState = function (toState) {
+      if(typeof(self.contactExtraBubbleLinkTimeout) !== 'undefined' && self.contactExtraBubbleLinkTimeout) {
+        clearTimeout(self.contactExtraBubbleLinkTimeout);
+        self.contactExtraBubbleLinkTimeout = null;
+      }
       self.contactExtraBubblesDestroy();
-      $('#contact-content-wrapper').animate({left: $(window).width()}, 500, function () {
+
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+      var bubbleSet = this.contactBubbleSet;
+
+      var duration = 500;
+
+      setTimeout((function () {
+        $('body').trigger('transitionHide:complete');
+      }), duration);
+
+      var wrapperDestinationParams;
+
+      if($.browser.msie && parseInt($.browser.version) < 9) {
+
+        for (var i=0; bubbleSet[i]; i++) {
+          var x = bubbleSet[i].data('bubbleData').anchor.x === 'left' ? -1000 : windowWidth + 1000;
+          var y = bubbleSet[i].data('bubbleData').anchor.y === 'top' ? -1000 : windowHeight + 1000;
+
+          bubbleSet[i].animate({cx: x, cy: y}, duration, 'easeIn');
+        }
+
+        wrapperDestinationParams = {left: windowWidth};
+
+      } else if(toState === 'main') {
+
+        bubbleSet.forEach(function (el) {
+          el.animate({transform: 'T0,1000R180,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeIn', function () {
+            this.attr({
+              cx: windowWidth + 1000,
+              cy: -1000,
+              transform: 'T0,0R0,'+(windowWidth*2)+','+(windowHeight*2)
+            });
+          });
+        });
+
+        wrapperDestinationParams = {top: -windowHeight};
+
+      } else if(toState === 'about') {
+
+        bubbleSet.forEach(function (el) {
+          el.animate({transform: 'R90,'+(windowWidth/2)+','+(windowHeight*4)}, duration, 'easeIn', function () {
+            this.attr({
+              cx: windowWidth + 1000,
+              cy: -1000,
+              transform: 'R0,'+(windowWidth/2)+','+(windowHeight*4)
+            });
+          });
+        });
+
+        wrapperDestinationParams = {left: windowWidth};
+
+      }
+
+      $('#contact-content-wrapper').animate(wrapperDestinationParams, 500, function () {
         this.style.left = '100%';
+        this.style.top = '0px';
       });
     };
 
@@ -1304,11 +1573,14 @@
       if (['main', 'about', 'contact'].indexOf(toState) === -1) toState = 'main';
       if (this.state === toState) return;
 
+      var currentState = this.state;
+      this.state = 'transition';
+
       $('body').on('transitionHide:complete', function () {
         $('body').off('transitionHide:complete');
-        self.showState(toState);
+        self.showState(toState, currentState);
       });
-      this.hideState();
+      this.hideState(toState, currentState);
 
       return this;
     };
