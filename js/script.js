@@ -19,7 +19,7 @@
       $('#app').html(
         '<div class="standard fixed-top-bar">' +
           ' <a id="cinch-logo"></a>' +
-          ' <a href="#" class="volume-icon-link on">' +
+          ' <a href="#" id="volume-icon" class="volume-icon-link on">' +
           '   <img class="on" src="img/volume-on.png" />' +
           '   <img class="off" src="img/volume-off.png" />' +
           ' </a>' +
@@ -1311,6 +1311,12 @@
           return Array(+(zero > 0 && zero)).join("0") + num;
         }
 
+        $('#volume-icon').click(function(){
+          self.muted = !self.muted;
+          self.muted ? $(this).removeClass('on').addClass('off') : $(this).removeClass('off').addClass('on')
+          self.toggleMute();
+        });
+
         if(canDoVideo){
 
           //VIDEO BUSINESS
@@ -1323,6 +1329,21 @@
           this.aud = $aud.get(0);
           this.aud.$el = $aud;
           this.currentChannel = 0;
+
+          this.muted = false;
+
+          this.toggleMute = function(){
+            if(this.muted){
+              $vid.prop('muted',true);
+              $aud.prop('muted',true);
+            }else{
+              if(this.currentChannel === 0){
+                $vid.prop('muted',false);
+              }else{
+                $aud.prop('muted',false);
+              }
+            }
+          };
 
           //TRIGGERING COMPLETE AT THE RIGHT MOMENT
           var videoReady = $.Deferred(function(dfd){
@@ -1393,12 +1414,26 @@
           this.video = $f(0).play();
           this.audio = $f(1);
           this.currentChannel = 0;
+          this.muted = false;
+
+          this.toggleMute = function(){
+            if(this.muted){
+              this.video.mute();
+              this.audio.mute();
+            }else{
+              if(this.currentChannel === 0){
+                this.video.unmute();
+              }else{
+                this.audio.unmute();
+              }
+            }
+          };
 
           //TRIGGERING COMPLETE AT THE RIGHT MOMENT
 
           $body.on('video:loop',function(){
             if(self.loop) self.audio.seek(0);
-            if(self.loop &&   self.currentChannel !== 0) self.audio.unmute();
+            if(self.loop && self.currentChannel !== 0) self.audio.unmute();
           });
 
           this.vReady = $.Deferred(function(dfd){
