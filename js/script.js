@@ -718,7 +718,8 @@
 
           objectSet.push(linkHitArea);
 
-          var image = paper.image('img/circle-close-x.png', tempX - 23, tempY + 30, 46, 46).attr({
+          var src = $.browser.msie ? 'img/circle-close-x-IE.png' : 'img/circle-close-x.png';
+          var image = paper.image(src, tempX - 23, tempY + 30, 46, 46).attr({
             opacity: 0,
             cursor: 'pointer'
           }).animate({opacity: 1}, objectAnimationDuration).click(function () {
