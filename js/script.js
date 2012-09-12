@@ -807,8 +807,8 @@
           el.attr({
             cx: el.data('bubbleData').cx + Math.max(windowWidth/2, 400),
             cy: el.data('bubbleData').cy + (el.data('bubbleData').anchor.y === 'top' ? 0 : windowHeight),
-            transform: 'T0,-1000R-180,'+(windowWidth*2)+','+(windowHeight*2)
-          }).animate({transform: 'T0,0R0,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeOut');
+            transform: 'R-180,'+(windowWidth*2)+','+(windowHeight*2)
+          }).animate({transform: 'R0,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeOut');
         });
 
       }
@@ -877,8 +877,8 @@
           el.attr({
             cx: el.data('bubbleData').cx + Math.max(windowWidth/2, 400),
             cy: el.data('bubbleData').cy + (el.data('bubbleData').anchor.y === 'top' ? 0 : windowHeight),
-            transform: 'R-90,'+(windowWidth*1.5)+','+(windowHeight*4)
-          }).animate({transform: 'R0,'+(windowWidth*1.5)+','+(windowHeight*4)}, duration, 'easeOut');
+            transform: 'R-90,'+(windowWidth*2)+','+(windowHeight*2)
+          }).animate({transform: 'R0,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeOut');
         });
 
         specialBubblePreAnimationParams = {left: -windowWidth};
@@ -1128,8 +1128,8 @@
           el.attr({
             cx: el.data('bubbleData').cx + Math.max(windowWidth/2, 400),
             cy: el.data('bubbleData').cy + (el.data('bubbleData').anchor.y === 'top' ? 0 : windowHeight),
-            transform: 'T0,1000R180,'+(windowWidth*2)+','+(windowHeight*2)
-          }).animate({transform: 'T0,0R0,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeOut');
+            transform: 'R180,'+(windowWidth*2)+','+(windowHeight*2)
+          }).animate({transform: 'R0,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeOut');
         });
 
       } else if (fromState === 'about') {
@@ -1138,8 +1138,8 @@
           el.attr({
             cx: el.data('bubbleData').cx + Math.max(windowWidth/2, 400),
             cy: el.data('bubbleData').cy + (el.data('bubbleData').anchor.y === 'top' ? 0 : windowHeight),
-            transform: 'T0,-1000R-180,'+(windowWidth*2)+','+(windowHeight*2)
-          }).animate({transform: 'R0,'+(windowWidth/2)+','+(windowHeight*4)}, duration, 'easeOut');
+            transform: 'R180,'+(windowWidth*2)+','+(windowHeight*2)
+          }).animate({transform: 'R0,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeOut');
         });
 
       }
@@ -1411,11 +1411,11 @@
       } else if(toState === 'contact') {
 
         bubbleSet.forEach(function (el) {
-          el.animate({transform: 'T0,-1000R-180,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeIn', function () {
+          el.animate({transform: 'R-180,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeIn', function () {
             this.attr({
               cx: windowWidth + 1000,
               cy: -1000,
-              transform: 'T0,0R0,'+(windowWidth*2)+','+(windowHeight*2)
+              transform: 'R0,'+(windowWidth*2)+','+(windowHeight*2)
             });
           });
         });
@@ -1466,11 +1466,11 @@
       } else if(toState === 'contact') {
 
         bubbleSet.forEach(function (el) {
-          el.animate({transform: 'R-90,'+(windowWidth*1.5)+','+(windowHeight*4)}, duration, 'easeIn', function () {
+          el.animate({transform: 'R-90,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeIn', function () {
             this.attr({
               cx: windowWidth + 1000,
               cy: -1000,
-              transform: 'R0,'+(windowWidth*1.5)+','+(windowHeight*4)
+              transform: 'R0,'+(windowWidth*2)+','+(windowHeight*2)
             });
           });
         });
@@ -1517,25 +1517,25 @@
       } else if(toState === 'main') {
 
         bubbleSet.forEach(function (el) {
-          el.animate({transform: 'T0,1000R180,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeIn', function () {
+          el.animate({transform: 'R180,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeIn', function () {
             this.attr({
               cx: windowWidth + 1000,
               cy: -1000,
-              transform: 'T0,0R0,'+(windowWidth*2)+','+(windowHeight*2)
+              transform: 'R0,'+(windowWidth*2)+','+(windowHeight*2)
             });
           });
         });
 
-        wrapperDestinationParams = {top: -windowHeight};
+        wrapperDestinationParams = {left: windowWidth};
 
       } else if(toState === 'about') {
 
         bubbleSet.forEach(function (el) {
-          el.animate({transform: 'R90,'+(windowWidth/2)+','+(windowHeight*4)}, duration, 'easeIn', function () {
+          el.animate({transform: 'R90,'+(windowWidth*2)+','+(windowHeight*2)}, duration, 'easeIn', function () {
             this.attr({
               cx: windowWidth + 1000,
               cy: -1000,
-              transform: 'R0,'+(windowWidth/2)+','+(windowHeight*4)
+              transform: 'R0,'+(windowWidth*2)+','+(windowHeight*2)
             });
           });
         });
