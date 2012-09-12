@@ -7,7 +7,7 @@
     var self = this;
 
     this.initApp = function () {
-      return this.updateDOM().initPrimaryPaper().putLogo().initMedia().runScion();
+      return this.updateDOM().initPapers().putLogo().initMedia().runScion();
     };
 
     this.updateDOM = function () {
@@ -52,14 +52,18 @@
           '  </div>'+
           '</div>'+
           '<div id="vector-content"></div>' +
-          '<div id="hitAreaWrapper"><div id="hitAreas"></div></div>'
+          '<div id="hitAreaWrapper"><div id="hitAreas"></div></div>' +
+          '<div id="about-content-wrapper"><div id="about-content"></div></div>' +
+          '<div id="contact-content-wrapper"><div id="contact-content"></div></div>'
       );
 
       return this;
     };
 
-    this.initPrimaryPaper = function () {
+    this.initPapers = function () {
       this.paper = Raphael('vector-content', 3000, 1500);
+      this.aboutPaper = Raphael('about-content', 800, 600);
+      this.contactPaper = Raphael('contact-content', 800, 600);
       return this;
     };
 
@@ -794,10 +798,7 @@
     };
 
     this.createAboutSpecialBubbles = function () {
-      var windowWidth = $(window).width();
-      var windowHeight = $(window).height();
-
-      var paper = self.paper;
+      var paper = self.aboutPaper;
       var specialBubbleData = self.aboutSpecialBubbleData;
       var specialBubbleSet = paper.set();
 
@@ -806,7 +807,11 @@
           var o = (0.2+(Math.random()*0.3)).toFixed(2);
           var fill = '0-rgba(0,151,219,'+o+')-rgba(0,100,178,'+o+')';
 
-          var b = paper.circle(windowWidth + 1000, windowHeight + 1000, 0).attr({
+          var cx = specialBubbleData[x].cx;
+          var cy = specialBubbleData[x].cy;
+          var r = specialBubbleData[x].r;
+
+          var b = paper.circle(cx, cy, r).attr({
             'stroke-opacity': 0,
             fill: fill
           });
@@ -819,13 +824,13 @@
             .click(self.aboutSpecialBubbleClickCallback);
 
           // Create text element in Raphael
-          var link = paper.text(windowWidth + 1000, windowHeight + 1000, self.aboutCopy[x].link).attr({
+          var link = paper.text(cx, cy, self.aboutCopy[x].link).attr({
             'text-anchor': 'middle',
             'stroke-opacity': 0,
             'font-family': 'Arial, sans',
             'fill': '#ffffff',
             'font-size': 16,
-            'fill-opacity': 0,
+            'fill-opacity': 1,
             'cursor': 'pointer'
           });
 
@@ -843,30 +848,9 @@
     };
 
     this.showAboutSpecialBubbles = function () {
-      var windowWidth = $(window).width();
-      var bubbles = self.aboutSpecialBubbleSet;
-      var margin = (windowWidth - 800) / 2;
-
-      for (var i=0; bubbles[i]; i++) {
-        var b = bubbles[i];
-        var code = b.data('code');
-        var cx = self.aboutSpecialBubbleData[code].cx + margin;
-        var cy = self.aboutSpecialBubbleData[code].cy;
-        var r = self.aboutSpecialBubbleData[code].r;
-
-        b.animate({
-          cx: cx, cy: cy, r: r
-        }, 500, '<>', function () {
-          self.aboutSpecialBubbleDestroyAndShrink(null);
-          self.aboutSpecialBubbleEnlarge('cinch');
-        });
-
-        b.data('linkObject').animate({
-          'fill-opacity': 1,
-          x: cx,
-          y: cy
-        }, 500, '<>');
-      }
+      self.aboutSpecialBubbleDestroyAndShrink(null);
+      self.aboutSpecialBubbleEnlarge('cinch');
+      $('#about-content-wrapper').animate({left: 0}, 500);
     };
 
     var defaultOpacity = .8;
@@ -900,7 +884,6 @@
 
     this.aboutSpecialBubbleDestroyAndShrink = function (skipBubble) {
       var duration = 100;
-      var margin = ($(window).width() - 800) / 2;
       var code = typeof(skipBubble) !== 'undefined' && skipBubble !== null ? skipBubble.data('code') : null;
 
       // Destroy current text set and shrink bubble
@@ -913,7 +896,7 @@
           var params = self.aboutSpecialBubbleData[tempBubble.data('code')];
 
           tempBubble.animate({
-            cx: params.cx + margin,
+            cx: params.cx,
             cy: params.cy,
             r: params.r,
             opacity: defaultOpacity,
@@ -944,7 +927,6 @@
     this.aboutSpecialBubbleEnlarge = function (code) {
       self['animateInProgress'] = true;
       var duration = 325;
-      var margin = ($(window).width() - 800) / 2;
       var clickedBubble = null;
 
       for (var i=0; self.aboutSpecialBubbleSet[i]; i++) {
@@ -955,7 +937,7 @@
 
       if(clickedBubble === null) return;
 
-      var cx = self.aboutExpandedBubbleParams.cx + margin;
+      var cx = self.aboutExpandedBubbleParams.cx;
       var cy = self.aboutExpandedBubbleParams.cy;
       var r = self.aboutExpandedBubbleParams.r;
 
@@ -970,7 +952,7 @@
 
       clickedBubble.data('linkObject').animate({'fill-opacity': 0}, duration, '<>');
 
-      var paper = self.paper;
+      var paper = self.aboutPaper;
       var textSet = paper.set();
 
       var title = paper.text(cx - r*11/20, cy - r*7/10, self.aboutCopy[code].title).attr({
@@ -1036,37 +1018,31 @@
     };
 
     this.createContactSpecialBubble = function () {
-      var windowWidth = $(window).width();
-      var windowHeight = $(window).height();
+      var paper = self.contactPaper;
 
-      var paper = self.paper;
-
-      var fill = '0-rgba(0,151,219,.8)-rgba(0,100,178,.9)';
-
-      this.contactSpecialBubble = paper.circle(windowWidth + 1000, windowHeight + 1000, 0).attr({
-        'stroke-opacity': 0,
-        fill: fill
-      });
-    };
-
-    this.showContactSpecialBubble = function () {
-      var windowWidth = $(window).width();
-
-      var margin = (windowWidth - 800) / 2;
       var specialBubbleData = self.contactSpecialBubbleData;
-
-      var cx = specialBubbleData.cx + margin;
+      var cx = specialBubbleData.cx;
       var cy = specialBubbleData.cy;
       var r = specialBubbleData.r;
 
-      this.contactSpecialBubble.animate({cx: cx, cy: cy, r: r}, 500, '<>', function () {
-        self.createAndShowContactSpecialBubbleText();
+      var fill = '0-rgba(0,151,219,.8)-rgba(0,100,178,.9)';
+
+      this.contactSpecialBubble = paper.circle(cx, cy, r).attr({
+        'stroke-opacity': 0,
+        fill: fill
+      });
+
+      self.createAndShowContactSpecialBubbleText();
+    };
+
+    this.showContactSpecialBubble = function () {
+      $('#contact-content-wrapper').animate({left: 0}, 500, function () {
         self.createAndShowContactExtraBubbles();
       });
     };
 
     this.createAndShowContactSpecialBubbleText = function () {
-      var paper = this.paper;
+      var paper = this.contactPaper;
       var textSet = paper.set();
       var bubble = this.contactSpecialBubble;
 
@@ -1116,15 +1092,12 @@
 
     this.createAndShowContactExtraBubbles = function () {
       var bubbleData = self.contactExtraBubbleData;
-      var paper = self.paper;
+      var paper = self.contactPaper;
       var bubbleSet = paper.set();
-
-      var windowWidth = $(window).width();
-      var margin = (windowWidth - 800) / 2;
 
       for(var i=0; i < 5; i++) {
         var o = (0.2 + (Math.random() * 0.3)).toFixed(2);
-        var cx = bubbleData[i].cx + margin;
+        var cx = bubbleData[i].cx;
         var cy = bubbleData[i].cy;
         var r = bubbleData[i].r;
 
@@ -1212,28 +1185,16 @@
 
     this.hideAboutState = function () {
       self.aboutSpecialBubbleDestroyAndShrink(null);
-      var bubbles = self.aboutSpecialBubbleSet;
-      var windowWidth = $(window).width();
-
-      for (var i=0; bubbles[i]; i++) {
-        bubbles[i].animate({
-          cx: windowWidth + 1000
-        }, 500, '<>');
-
-        bubbles[i].data('linkObject').animate({
-          x: windowWidth + 1000
-        }, 500, '<>');
-      }
+      $('#about-content-wrapper').animate({left: $(window).width()}, 500, function () {
+        this.style.left = '100%';
+      });
     };
 
     this.hideContactState = function () {
-      self.contactSpecialBubbleTextDestroy();
       self.contactExtraBubblesDestroy();
-      var windowWidth = $(window).width();
-
-      self.contactSpecialBubble.animate({
-        cx: windowWidth + 1000
-      }, 500, '<>');
+      $('#contact-content-wrapper').animate({left: $(window).width()}, 500, function () {
+        this.style.left = '100%';
+      });
     };
 
     this.contactSpecialBubbleTextDestroy = function () {

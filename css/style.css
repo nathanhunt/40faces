@@ -318,7 +318,7 @@ td { vertical-align: top; }
     z-index: 9999999999;
 }
 
-#vector-content{
+#vector-content {
     position: absolute;
     top: 0;
     left: 0;
@@ -340,6 +340,46 @@ td { vertical-align: top; }
 }
 
 #hitAreas {
+    display: block;
+    position: relative;
+    margin: 0 auto;
+    width: 800px;
+    height: 600px;
+    background: none;
+}
+
+#about-content-wrapper {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: 100%;
+    height: 600px;
+    background: none;
+    z-index: 1003;
+}
+
+#about-content {
+    display: block;
+    position: relative;
+    margin: 0 auto;
+    width: 800px;
+    height: 600px;
+    background: none;
+}
+
+#contact-content-wrapper {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: 100%;
+    height: 600px;
+    background: none;
+    z-index: 1003;
+}
+
+#contact-content {
     display: block;
     position: relative;
     margin: 0 auto;
