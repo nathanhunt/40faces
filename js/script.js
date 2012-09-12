@@ -270,6 +270,16 @@
         y: -42.119
       };
 
+      var circleClickCallback = function () {
+        self.interpreter.gen({
+          name: 'toSpecific',
+          data: {
+            circle: this,
+            track: this.data('track')
+          }
+        });
+      };
+
       var radius = 48.661;
       var h;
 
@@ -288,47 +298,19 @@
         c.data('track', circleAttrs.track[h]);
         c.data('seek', circleAttrs.seek[h]);
 
-        if(Modernizr.video){
-
-          (function(circle){
-            var $c = $(circle['0']);
-            $c.off('mouseenter').on('mouseenter', function(e){
-              hintMouseEnter(circle);
-              var $c = $(e.target);
-              var transition = function(circle){
-                self.interpreter.gen({
-                  name: 'toSpecific',
-                  data: {
-                    circle: circle,
-                    track: circle.data('track')
-                  }
-                });
-              };
-              var trans = setTimeout(transition, 1500, circle);
-              $c.one('mouseleave',function(e){
-                clearTimeout(trans);
-              });
-            }).on('mouseleave',function(){
-                hintMouseLeave(circle);
-              });
-          }(c));
-
-        } else {
-
-          c.click(function () {
-            self.interpreter.gen({
-              name: 'toSpecific',
-              data: {
-                circle: this,
-                track: this.data('track')
-              }
-            });
-          }).mouseover(function () {
-              hintMouseEnter(this);
-            }).mouseout(function () {
-              hintMouseLeave(this);
-            });
-        }
+        c.click(circleClickCallback).mouseover(
+          function () {
+            hintMouseEnter(this);
+            this['timeout'] = setTimeout($.proxy(circleClickCallback, this), 1500);
+          }
+        ).mouseout(
+          function () {
+            hintMouseLeave(this);
+            if (typeof(this['timeout']) !== 'undefined' && this['timeout']) {
+              clearTimeout(this['timeout']);
+            }
+          }
+        );
       }
 
       this.hitAreaSet = hitAreaSet;
