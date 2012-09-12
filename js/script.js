@@ -1,6 +1,6 @@
 /* Author: Will Shown & Vail Gold */
 
-(function(window, $, Modernizr, Raphael, _) {
+(function(window, $, Modernizr, Raphael) {
 
   var Cinch = function () {
 
@@ -1813,8 +1813,8 @@
           this.currentChannel = 0;
 
           //TRIGGERING COMPLETE AT THE RIGHT MOMENT
-          var videoReady = $.Deferred(function(dfd){
-            $vid.on('canplaythrough', function(){
+          var videoReady = $.Deferred(function (dfd) {
+            $vid.on('canplaythrough', function () {
               dfd.resolve();
             });
           }).promise();
@@ -2140,4 +2140,4 @@
 
   window.Cinch = Cinch;
 
-})(window, window.jQuery, window.Modernizr, window.Raphael, window._);
+})(window, window.jQuery, window.Modernizr, window.Raphael);

@@ -1,6 +1,6 @@
 /* Author: Will Shown & Vail Gold */
 
-(function(window, $, Raphael, _) {
+(function(window, $, Raphael) {
 
   var MobileSite = function () {
 
@@ -781,4 +781,4 @@
 
   window.MobileSite = new MobileSite();
 
-})(window, jQuery, Raphael, _);
+})(window, window.jQuery, window.Raphael);
