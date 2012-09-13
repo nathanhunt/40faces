@@ -270,16 +270,6 @@
         y: -42.119
       };
 
-      var circleClickCallback = function () {
-        self.interpreter.gen({
-          name: 'toSpecific',
-          data: {
-            circle: this,
-            track: this.data('track')
-          }
-        });
-      };
-
       var radius = 48.661;
       var h;
 
@@ -315,6 +305,19 @@
 
       this.hitAreaSet = hitAreaSet;
       return this;
+    };
+
+    var circleClickCallback = function () {
+      if (typeof(this['timeout']) !== 'undefined' && this['timeout']) {
+        clearTimeout(this['timeout']);
+      }
+      self.interpreter.gen({
+        name: 'toSpecific',
+        data: {
+          circle: this,
+          track: this.data('track')
+        }
+      });
     };
 
     var hintMouseEnter = function (circle) {
