@@ -20,6 +20,7 @@
       $('#navigation-bubbles').css({width: $(window).width()});
 
       this.isIPad = !!navigator.userAgent.match(/iPad/i);
+      console.log('Is iPad?: ' + this.isIPad);
 
       var audioTag = '';
       if(this.isIPad){
@@ -291,31 +292,35 @@
           closeImage['textObjects'] = textObjects;
           closeImage['bubbleObject'] = bub;
 
-          if(this.isIPad){
+          console.log('Putting elements - isIpad?: '+!!navigator.userAgent.match(/iPad/i));
+          if(!!navigator.userAgent.match(/iPad/i)){
+            console.log('Putting play and stop images');
+            console.log('x='+x+' y='+y+' audioY='+audioY);
             var playImage = paper.image('img/circle-play.png', x, audioY, 46, 46).attr({
               opacity: 0,
               'stroke-opacity': 0,
               cursor: 'pointer'
-            });
+            }).toFront().animate({opacity: 1}, 500);
             var stopImage = paper.image('img/circle-stop.png', x, audioY, 46, 46).attr({
               opacity: 0,
               'stroke-opacity': 0,
               cursor: 'pointer'
-            });
+            }).toFront().animate({opacity: 1}, 500);
             $(stopImage['0']).hide();
 
             bubImage['playImage'] = playImage;
-            bubImage['stopImage'] = playImage;
+            bubImage['stopImage'] = stopImage;
 
-            var playAudio = function(){
-              self.mainBubblePlayAudio(this['bubbleObject']['imageObject']);
-            };
-            self.bindTapCallback(playImage, playAudio);
+            self.mainObjectSet.push(playImage);
+            self.mainObjectSet.push(stopImage);
 
-            var stopAudio = function(){
-              self.mainBubbleStopAudio(this['bubbleObject']['imageObject']);
-            };
-            self.bindTapCallback(stopImage, stopAudio);
+            self.bindTapCallback(playImage, function(){
+              self.mainBubblePlayAudio(bubImage);
+            });
+
+            self.bindTapCallback(stopImage, function(){
+              self.mainBubbleStopAudio(bubImage);
+            });
           }
 
           self.mainObjectSet.push(closeImage);
@@ -334,8 +339,12 @@
 
     this.mainBubblePlayAudio = function (imageObject){
       this.$audio.one('playing', function(){
-        $(imageObject['playImage']['0']).hide();
-        $(imageObject['stopImage']['0']).show();
+        $(imageObject['playImage']['0']).css('display','none');
+        $(imageObject['stopImage']['0']).css('display','block');
+      });
+      this.$audio.one('ended',function(){
+        $(imageObject['stopImage']['0']).css('display','none');
+        $(imageObject['playImage']['0']).css('display','block');
       });
       this.$audio.attr('src','audio/' + imageObject['bubbleObject'].data('track') + '.m4a').attr('type','audio/mp4');
       this.audio.play();
@@ -352,6 +361,12 @@
       imageObject['closeImage'].animate({opacity: 0}, 200, '<>', function() {
         this.remove();
       });
+      imageObject['playImage'].animate({opacity: 0}, 200, '<>', function() {
+        this.remove();
+      });
+      imageObject['stopImage'].animate({opacity: 0}, 200, '<>', function() {
+        this.remove();
+      });
       imageObject['textObjects'].animate({opacity:0}, 200, '<>', function() {
         this.remove();
       });
@@ -363,6 +378,8 @@
         this['imageObject']['opened'] = false;
         this.toBack();
       });
+      $('audio').get(0).pause();
+      $('audio').attr('src','')
     };
 
     this.initAboutPage = function () {
