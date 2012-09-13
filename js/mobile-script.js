@@ -19,6 +19,13 @@
 
       $('#navigation-bubbles').css({width: $(window).width()});
 
+      this.isIPad = !!navigator.userAgent.match(/iPad/i);
+
+      var audioTag = '';
+      if(this.isIPad){
+        audioTag = '<audio preload="auto" />'
+      }
+
       $('#app').html(
         '<div id="navigation-bubbles">' +
           '<a href="#" class="about"><span>About CINCH</span></a>' +
@@ -26,6 +33,7 @@
           '<a href="#" class="main"><span>40 Faces</span></a>' +
         '</div>' +
         '<div class="mobile-fixed-top-bar"><a id="mobile-cinch-logo"></a></div>' +
+        audioTag +
         '<div id="mobile-vector-content"></div>' +
         '<div id="mobile-footer">' +
           '<a class="logoLink" href="https://www.mheonline.com/" target="_blank"><img src="img/mhe_logo_94x26.png" /></a>' +
@@ -36,6 +44,9 @@
           '<a href="https://www.mheonline.com/" target="_blank">MHEOnline</a>' +
         '</div>'
       );
+
+      this.$audio = $('audio');
+      this.audio = this.$audio.get(0);
 
       this.placeLogo();
 
@@ -80,16 +91,16 @@
           if(active === true) cb.call(obj);
         };
 
-        obj.touchend(endCallback).touchmove(function () {
-          obj.untouchend(endCallback);
-        });
+          obj.touchend(endCallback).touchmove(function () {
+            obj.untouchend(endCallback);
+          });
 
-        obj.mouseup(endCallback).mousemove(function () {
-          obj.unmouseup(endCallback);
-        });
+          obj.mouseup(endCallback).mousemove(function () {
+            obj.unmouseup(endCallback);
+          });
       };
 
-      obj.touchstart(startCallback).mousedown(startCallback);
+        obj.touchstart(startCallback).mousedown(startCallback);
     };
 
     this.initMainPage = function () {
@@ -110,6 +121,9 @@
           fill: '0-rgb(0,151,219)-rgb(0,100,178)',
           'stroke-opacity': 0
         }).toBack();
+
+        imageBubble.data('track',data[j].name);
+
         objectSet.push(imageBubble);
         image['bubbleObject'] = imageBubble;
         imageBubble['imageObject'] = image;
@@ -268,6 +282,7 @@
           // circle-close-x.png is 46x46 pixels
           var x = bub.attrs.cx - 23;
           var y = bub.attrs.cy+bub.attrs.r - 51;
+          var audioY = bub.attrs.cy - bub.attrs.r + 5;
           var closeImage = paper.image('img/circle-close-x.png', x, y, 46, 46).attr({
             opacity: 0,
             'stroke-opacity': 0,
@@ -275,6 +290,33 @@
           }).toFront().animate({opacity: 1}, 500);
           closeImage['textObjects'] = textObjects;
           closeImage['bubbleObject'] = bub;
+
+          if(this.isIPad){
+            var playImage = paper.image('img/circle-play.png', x, audioY, 46, 46).attr({
+              opacity: 0,
+              'stroke-opacity': 0,
+              cursor: 'pointer'
+            });
+            var stopImage = paper.image('img/circle-stop.png', x, audioY, 46, 46).attr({
+              opacity: 0,
+              'stroke-opacity': 0,
+              cursor: 'pointer'
+            });
+            $(stopImage['0']).hide();
+
+            bubImage['playImage'] = playImage;
+            bubImage['stopImage'] = playImage;
+
+            var playAudio = function(){
+              self.mainBubblePlayAudio(this['bubbleObject']['imageObject']);
+            };
+            self.bindTapCallback(playImage, playAudio);
+
+            var stopAudio = function(){
+              self.mainBubbleStopAudio(this['bubbleObject']['imageObject']);
+            };
+            self.bindTapCallback(stopImage, stopAudio);
+          }
 
           self.mainObjectSet.push(closeImage);
           $(window).trigger('resize');
@@ -288,6 +330,22 @@
 
         }).toFront();
       }
+    };
+
+    this.mainBubblePlayAudio = function (imageObject){
+      this.$audio.one('playing', function(){
+        $(imageObject['playImage']['0']).hide();
+        $(imageObject['stopImage']['0']).show();
+      });
+      this.$audio.attr('src','audio/' + imageObject['bubbleObject'].data('track') + '.m4a').attr('type','audio/mp4');
+      this.audio.play();
+    };
+
+    this.mainBubbleStopAudio = function (imageObject){
+      this.audio.pause();
+      this.$audio.attr('src','');
+      $(imageObject['stopImage']['0']).hide();
+      $(imageObject['playImage']['0']).show();
     };
 
     this.mainBubblePopupClose = function (imageObject) {
