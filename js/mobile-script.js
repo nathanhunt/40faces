@@ -346,6 +346,7 @@
         $(imageObject['stopImage']['0']).css('display','none');
         $(imageObject['playImage']['0']).css('display','block');
       });
+      //Dear Vail, this is another place where the src needs to change. Change it so that the iPad gets the same starts-at-the-beginning audio files as IE.
       this.$audio.attr('src','audio/' + imageObject['bubbleObject'].data('track') + '.m4a').attr('type','audio/mp4');
       this.audio.play();
     };
