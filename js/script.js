@@ -33,6 +33,24 @@
         'padding-top': 40
       });
 
+      var audioTag = '';
+      var videoTag = '';
+
+      if(Modernizr.video){
+        videoTag =
+          '    <video class="faces" id="facesVideo" preload="auto" loop="loop">'+
+          '      <source src="video/grid-with-audio.mp4" type="video/mp4" />'+
+          '      <source src="video/grid-with-audio.ogv" type="video/ogg" />'+
+          '    </video>';
+        audioTag =
+          '    <audio class="faces" id="facesAudio" preload="auto" loop="loop" muted="muted"></audio>';
+      }else{
+        videoTag =
+          '    <video src="video/grid-with-audio.mp4" type="video/mp4" class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop"></video>';
+        audioTag =
+          '    <audio src="audio/00.m4a" type="audio/mp4" class="faces" id="facesAudio" autobuffer="autobuffer" preload="auto" loop="loop" muted="muted"></audio>';
+      }
+
       $('#app').html(
         '<div class="fixed-top-bar">' +
           ' <a id="cinch-logo"></a>' +
@@ -61,11 +79,8 @@
           '<div role="viewport" id="viewport">'+
           '  <div role="video" id="video">'+
           '    <div id="occluder"></div>' +
-          '    <video class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop">'+
-          '      <source src="video/grid-with-audio.mp4" type="video/mp4" />'+
-          '      <source src="video/grid-with-audio.ogv" type="video/ogg" />'+
-          '    </video>'+
-          '    <audio src="audio/00.m4a" type="audio/mp4" class="faces" id="facesAudio" autobuffer="autobuffer" preload="auto" loop="loop" muted="muted"></audio>'+
+               videoTag +
+               audioTag +
           '  </div>'+
           '</div>'+
           '<div id="vector-content"></div>' +
