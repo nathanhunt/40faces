@@ -1868,7 +1868,7 @@
             if(track === 0 || typeof track === 'undefined'){
               this.currentChannel = 0;
               $aud.prop('muted', true);
-              $vid.prop('muted', false);
+              if(!self.muted) $vid.prop('muted', false);
             }else{
               $aud.off('canplaythrough').one('canplaythrough', function () {
                 self.aud.currentTime = self.video.currentTime;
@@ -1876,7 +1876,7 @@
                 self.currentChannel = track;
                 $body.trigger('audioLoaded',[self, track, self.aud]);
                 $vid.prop('muted', true);
-                $aud.prop('muted', false);
+                if(!self.muted) $aud.prop('muted', false);
               });
               loadTrack(track);
             }
@@ -1924,7 +1924,7 @@
 
           $body.on('video:loop',function(){
             if(self.loop) self.audio.seek(0);
-            if(self.loop && self.currentChannel !== 0) self.audio.unmute();
+            if(self.loop && self.currentChannel !== 0 && !self.muted) self.audio.unmute();
           });
 
           this.vReady = $.Deferred(function(dfd){
@@ -1972,7 +1972,7 @@
             if(track === 0 || typeof track === 'undefined'){
               this.currentChannel = 0;
               this.audio.mute();
-              this.video.unmute();
+              if(!this.muted) this.video.unmute();
             }else{
               this.audio.getClip(track).onBufferFull(function(){
                 self.currentChannel = track;
@@ -1981,7 +1981,7 @@
               .onStart(function(){
                 self.video.mute();
                 self.video.play();
-                self.audio.unmute();
+                if(!self.muted) self.audio.unmute();
                 self.loop = true;
               });
               this.audio.play(track);
