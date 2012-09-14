@@ -1998,6 +1998,7 @@
             if(track === 0 || typeof track === 'undefined'){
               this.currentChannel = 0;
               this.audio.mute();
+              self.video.setVolume(25);
               if(!this.muted) this.video.unmute();
             }else{
               this.audio.getClip(track)
@@ -2008,8 +2009,8 @@
                 .onStart(function () {
                   self.video.mute();
                   self.video.play();
-                  if(!self.muted) self.audio.unmute();
                   self.audio.setVolume(100);
+                  if(!self.muted) self.audio.unmute();
                   self.loop = true;
                 });
               this.audio.play(track);
