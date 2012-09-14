@@ -2000,16 +2000,18 @@
               this.audio.mute();
               if(!this.muted) this.video.unmute();
             }else{
-              this.audio.getClip(track).onBufferFull(function(){
-                self.currentChannel = track;
-                $body.trigger('audioLoaded',[self, track, self.audio]);
-              })
-              .onStart(function(){
-                self.video.mute();
-                self.video.play();
-                if(!self.muted) self.audio.unmute();
-                self.loop = true;
-              });
+              this.audio.getClip(track)
+                .onBufferFull(function () {
+                  self.currentChannel = track;
+                  $body.trigger('audioLoaded',[self, track, self.audio]);
+                })
+                .onStart(function () {
+                  self.video.mute();
+                  self.video.play();
+                  if(!self.muted) self.audio.unmute();
+                  self.audio.setVolume(100);
+                  self.loop = true;
+                });
               this.audio.play(track);
             }
           };
