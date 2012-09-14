@@ -306,14 +306,18 @@
 
         c.click(circleClickCallback).mouseover(
           function () {
-            hintMouseEnter(this);
-            this['timeout'] = setTimeout($.proxy(circleClickCallback, this), 1500);
+            if(typeof(this.data('isOpened')) === 'undefined' || !this.data('isOpened')) {
+              hintMouseEnter(this);
+              this['timeout'] = setTimeout($.proxy(circleClickCallback, this), 1500);
+            }
           }
         ).mouseout(
           function () {
-            hintMouseLeave(this);
-            if (typeof(this['timeout']) !== 'undefined' && this['timeout']) {
-              clearTimeout(this['timeout']);
+            if(typeof(this.data('isOpened')) === 'undefined' || !this.data('isOpened')) {
+              hintMouseLeave(this);
+              if (typeof(this['timeout']) !== 'undefined' && this['timeout']) {
+                clearTimeout(this['timeout']);
+              }
             }
           }
         );
@@ -324,16 +328,19 @@
     };
 
     var circleClickCallback = function () {
-      if (typeof(this['timeout']) !== 'undefined' && this['timeout']) {
-        clearTimeout(this['timeout']);
-      }
-      self.interpreter.gen({
-        name: 'toSpecific',
-        data: {
-          circle: this,
-          track: this.data('track')
+      if(typeof(this.data('isOpened')) === 'undefined' || !this.data('isOpened')) {
+        if (typeof(this['timeout']) !== 'undefined' && this['timeout']) {
+          clearTimeout(this['timeout']);
         }
-      });
+        this.data('isOpened', true);
+        self.interpreter.gen({
+          name: 'toSpecific',
+          data: {
+            circle: this,
+            track: this.data('track')
+          }
+        });
+      }
     };
 
     var hintMouseEnter = function (circle) {
