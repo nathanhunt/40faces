@@ -306,14 +306,14 @@
 
         c.click(circleClickCallback).mouseover(
           function () {
-            if(typeof(this.data('isOpened')) === 'undefined' || !this.data('isOpened')) {
+            if(typeof(self.blurb.openedTrack) === 'undefined' || self.blurb.openedTrack != this.data('track')) {
               hintMouseEnter(this);
               this['timeout'] = setTimeout($.proxy(circleClickCallback, this), 1500);
             }
           }
         ).mouseout(
           function () {
-            if(typeof(this.data('isOpened')) === 'undefined' || !this.data('isOpened')) {
+            if(typeof(self.blurb.openedTrack) === 'undefined' || self.blurb.openedTrack != this.data('track')) {
               hintMouseLeave(this);
               if (typeof(this['timeout']) !== 'undefined' && this['timeout']) {
                 clearTimeout(this['timeout']);
@@ -328,11 +328,11 @@
     };
 
     var circleClickCallback = function () {
-      if(typeof(this.data('isOpened')) === 'undefined' || !this.data('isOpened')) {
+      if(typeof(self.blurb.openedTrack) === 'undefined' || self.blurb.openedTrack != this.data('track')) {
         if (typeof(this['timeout']) !== 'undefined' && this['timeout']) {
           clearTimeout(this['timeout']);
         }
-        this.data('isOpened', true);
+        self.blurb.openedTrack = this.data('track');
         self.interpreter.gen({
           name: 'toSpecific',
           data: {
@@ -776,6 +776,7 @@
                 name: 'leaveSpecific'
               });
               blurbSelf.removeObjectSet();
+              blurbSelf.openedTrack = null;
             });
 
           objectSet.push(image);
@@ -1513,6 +1514,7 @@
     this.hideMainState = function (toState) {
       self.media.pause();
       self.blurb.removeObjectSet();
+      self.blurb.openedTrack = null;
 
       var windowWidth = $(window).width();
       var windowHeight = $(window).height();
