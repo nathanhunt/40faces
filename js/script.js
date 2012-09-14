@@ -47,9 +47,9 @@
       }else{
         videoTag =
           //Dear Vail, this video tag's src needs to change so that IE gets the all-voices-start-at-the-beginning file. The audio tag's not so much.
-          '    <video src="video/grid-with-audio.mp4" type="video/mp4" class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop"></video>';
+          '    <video src="video/grid-from-beginning.mp4" type="video/mp4" class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop"></video>';
         audioTag =
-          '    <audio src="audio/00.m4a" type="audio/mp4" class="faces" id="facesAudio" autobuffer="autobuffer" preload="auto" loop="loop" muted="muted"></audio>';
+          '    <audio src="audio/from_beginning/00.m4a" type="audio/mp4" class="faces" id="facesAudio" autobuffer="autobuffer" preload="auto" loop="loop" muted="muted"></audio>';
       }
 
       $('#app').html(
@@ -1969,7 +1969,7 @@
             for(c=1;c<=40;c+=1){
               self.audio.addClip({
                 //Dear Vail, this is another place where the src needs to change. Change it so that IE gets the same starts-at-the-beginning audio files as the iPad.
-                url: 'audio/' + zeroPad(c, 2) + '.m4a',
+                url: 'audio/from_beginning/' + zeroPad(c, 2) + '.m4a',
                 autoPlay: false,
                 autoBuffering: true,
                 scaling: "fit",
