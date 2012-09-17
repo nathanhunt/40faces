@@ -36,17 +36,16 @@
       var audioTag = '';
       var videoTag = '';
 
-      if(Modernizr.video){
+      if (Modernizr.video) {
         videoTag =
           '    <video class="faces" id="facesVideo" preload="auto" loop="loop">'+
-          '      <source src="video/grid-with-audio.mp4" type="video/mp4" />'+
-          '      <source src="video/grid-with-audio.ogv" type="video/ogg" />'+
+          '      <source src="video/grid-from-beginning.mp4" type="video/mp4" />'+
+          '      <source src="video/grid-from-beginning.ogv" type="video/ogg" />'+
           '    </video>';
         audioTag =
           '    <audio class="faces" id="facesAudio" preload="auto" loop="loop" muted="muted"></audio>';
-      }else{
+      } else {
         videoTag =
-          //Dear Vail, this video tag's src needs to change so that IE gets the all-voices-start-at-the-beginning file. The audio tag's not so much.
           '    <video src="video/grid-from-beginning.mp4" type="video/mp4" class="faces" id="facesVideo" autobuffer="autobuffer" preload="auto" loop="loop"></video>';
         audioTag =
           '    <audio src="audio/from_beginning/00.m4a" type="audio/mp4" class="faces" id="facesAudio" autobuffer="autobuffer" preload="auto" loop="loop" muted="muted"></audio>';
@@ -1833,7 +1832,7 @@
           self.toggleMute();
         });
 
-        if(canDoVideo){
+        if (canDoVideo) {
 
           //VIDEO BUSINESS
           var $vid = $('video.faces');
@@ -1848,15 +1847,15 @@
 
           this.muted = false;
 
-          this.toggleMute = function(){
-            if(this.muted){
+          this.toggleMute = function () {
+            if (this.muted) {
               $vid.prop('muted',true);
               $aud.prop('muted',true);
-            }else{
-              if(this.currentChannel === 0){
-                $vid.prop('muted',false);
-              }else{
-                $aud.prop('muted',false);
+            } else {
+              if (this.currentChannel === 0) {
+                $vid.prop('muted', false);
+              } else {
+                $aud.prop('muted', false);
               }
             }
           };
@@ -1890,16 +1889,17 @@
 
           this.load = function (track) {
             this.aud.pause();
-            if(track === 0 || typeof track === 'undefined'){
+            if (track === 0 || typeof track === 'undefined') {
               this.currentChannel = 0;
               $aud.prop('muted', true);
               if(!self.muted) $vid.prop('muted', false);
-            }else{
+            } else {
               $aud.off('canplaythrough').one('canplaythrough', function () {
-                self.aud.currentTime = self.video.currentTime;
+                self.aud.currentTime = 0;
+                self.video.currentTime = 0;
                 self.aud.play();
                 self.currentChannel = track;
-                $body.trigger('audioLoaded',[self, track, self.aud]);
+                $body.trigger('audioLoaded', [self, track, self.aud]);
                 $vid.prop('muted', true);
                 if(!self.muted) $aud.prop('muted', false);
               });
@@ -1907,16 +1907,15 @@
             }
           };
 
-          function loadTrack(track){
-            if(self.aud.canPlayType('audio/mp4')){
-              self.aud.setAttribute('src','audio/' + zeroPad(track, 2) + '.m4a');
+          function loadTrack(track) {
+            if (self.aud.canPlayType('audio/mp4')) {
+              self.aud.setAttribute('src', 'audio/from_beginning/' + zeroPad(track, 2) + '.m4a');
               self.aud.setAttribute('type', 'audio/mp4');
-            }else
-            if(self.aud.canPlayType('audio/ogg')){
-              self.aud.setAttribute('src','audio/' + zeroPad(track, 2) + '.ogg');
+            } else if (self.aud.canPlayType('audio/ogg')) {
+              self.aud.setAttribute('src', 'audio/from_beginning/' + zeroPad(track, 2) + '.theora.ogv');
               self.aud.setAttribute('type', 'audio/ogg');
-            }else{
-              self.aud.setAttribute('src','audio/' + zeroPad(track, 2) + '.mp3');
+            } else {
+              self.aud.setAttribute('src', 'audio/from_beginning/' + zeroPad(track, 2) + '.mp3');
               self.aud.setAttribute('type', 'audio/mpeg');
             }
             self.aud.load();
@@ -1925,7 +1924,7 @@
 //              });
           }
 
-        }else{ ////////////////////////////////////////////////////////////////////
+        } else {
 
           this.video = $f(0).play();
           this.audio = $f(1);
@@ -1966,7 +1965,7 @@
           var loadChannels = function(){
             console.log('Getting channels!');
             var c;
-            for(c=1;c<=40;c+=1){
+            for (c=1; c <= 40; c += 1) {
               self.audio.addClip({
                 //Dear Vail, this is another place where the src needs to change. Change it so that IE gets the same starts-at-the-beginning audio files as the iPad.
                 url: 'audio/from_beginning/' + zeroPad(c, 2) + '.m4a',
@@ -1995,12 +1994,12 @@
           this.load = function(track){
             self.loop = false;
             this.audio.pause();
-            if(track === 0 || typeof track === 'undefined'){
+            if (track === 0 || typeof track === 'undefined') {
               this.currentChannel = 0;
               this.audio.mute();
               self.video.setVolume(25);
               if(!this.muted) this.video.unmute();
-            }else{
+            } else {
               this.audio.getClip(track)
                 .onBufferFull(function () {
                   self.currentChannel = track;
