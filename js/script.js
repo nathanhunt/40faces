@@ -37,10 +37,18 @@
       var videoTag = '';
 
       if (Modernizr.video) {
+        var videoSrc, videoType;
+        if ($.browser.webkit) {
+          videoSrc = "video/grid-from-beginning.mp4";
+          videoType = "video/mp4";
+        } else {
+          videoSrc = "video/grid-from-beginning.ogv";
+          videoType = "video/ogg";
+        }
         videoTag =
-          '    <video class="faces" id="facesVideo" preload="auto" loop="loop">'+
-          '      <source src="video/grid-from-beginning.mp4" type="video/mp4" />'+
-          '      <source src="video/grid-from-beginning.ogv" type="video/ogg" />'+
+          '    <video class="faces" id="facesVideo" preload="auto" loop="loop" src="' + videoSrc + '" type="' + videoType + '">'+
+          //'      <source src="video/grid-from-beginning.mp4" type="video/mp4" />'+
+          //'      <source src="video/grid-from-beginning.ogv" type="video/ogg" />'+
           '    </video>';
         audioTag =
           '    <audio class="faces" id="facesAudio" preload="auto" loop="loop" muted="muted"></audio>';
@@ -1931,14 +1939,14 @@
           this.currentChannel = 0;
           this.muted = false;
 
-          this.toggleMute = function(){
+          this.toggleMute = function () {
             if(this.muted){
               this.video.mute();
               this.audio.mute();
-            }else{
-              if(this.currentChannel === 0){
+            } else {
+              if (this.currentChannel === 0) {
                 this.video.unmute();
-              }else{
+              } else {
                 this.audio.unmute();
               }
             }
@@ -1951,8 +1959,8 @@
             if(self.loop && self.currentChannel !== 0 && !self.muted) self.audio.unmute();
           });
 
-          this.vReady = $.Deferred(function(dfd){
-            self.video.getClip(0).onBegin(function(){
+          this.vReady = $.Deferred(function (dfd) {
+            self.video.getClip(0).onBegin(function () {
               $body.trigger('video:loop');
               dfd.resolve();
             });
