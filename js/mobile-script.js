@@ -362,12 +362,16 @@
       imageObject['closeImage'].animate({opacity: 0}, 200, '<>', function() {
         this.remove();
       });
-      imageObject['playImage'].animate({opacity: 0}, 200, '<>', function() {
-        this.remove();
-      });
-      imageObject['stopImage'].animate({opacity: 0}, 200, '<>', function() {
-        this.remove();
-      });
+      if(typeof(imageObject['playImage']) !== 'undefined') {
+        imageObject['playImage'].animate({opacity: 0}, 200, '<>', function() {
+          this.remove();
+        });
+      }
+      if(typeof(imageObject['stopImage']) !== 'undefined') {
+        imageObject['stopImage'].animate({opacity: 0}, 200, '<>', function() {
+          this.remove();
+        });
+      }
       imageObject['textObjects'].animate({opacity:0}, 200, '<>', function() {
         this.remove();
       });
@@ -379,8 +383,11 @@
         this['imageObject']['opened'] = false;
         this.toBack();
       });
-      $('audio').get(0).pause();
-      $('audio').attr('src','')
+      var $audio = $('audio');
+      if($audio.length > 0) {
+        $audio.get(0).pause();
+        $audio.attr('src', '');
+      }
     };
 
     this.initAboutPage = function () {
