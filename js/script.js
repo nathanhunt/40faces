@@ -192,7 +192,7 @@
         'stroke-opacity': 0
       }).toFront());
 
-      s.push(paper.text(x, y, "See how teachers,\nadministrators and\nparents are using\nCinch technology\ntoday.").attr({
+      s.push(paper.text(x, y, "See how teachers,\nadministrators and\nparents are using\nCINCH Learning\ntechnology today.").attr({
         'text-anchor': 'middle',
         'stroke-opacity': 0,
         'fill': '#ffffff',
@@ -2185,23 +2185,25 @@
           "you’re in control of how and what you teach like\n" +
           "never before. CINCH Learning provides convenient\n" +
           "cloud-based access to quality math and science\n" +
-          "content for grades 5-12 along with robust planning\n" +
+          "content for grades 6-12 along with robust planning\n" +
           "and assessment tools. Choose what you want to\n" +
           "teach, what resources you want to use, and what\n" +
           "device you want to use to deliver the lesson.\n" +
           "Put it all together to create a compelling learning\n" +
           "experience that is uniquely yours and highly\n" +
           "personalized to your students.\n \n" +
-          "Get up close and personal with CINCH. Explore\n" +
-          "this site and then contact us for a product demo."
+          "Get up close and personal with CINCH Learning.\n" +
+          "Explore this site and then contact us\n" +
+          "for a product demo."
       },
       'course': {
         'link': 'Your\nCourse',
         'title': 'Your Course',
         'subtitle': 'Personalize content',
         'text': "You know what you want to teach and how you\n" +
-          "want to teach it. CINCH puts all the resources you\n" +
-          "need in one place to use any way you want.\n \n" +
+          "want to teach it. CINCH Learning puts all the\n" +
+          "resources you need in one place to use any\n" +
+          "way you want.\n \n" +
           "Choose from thousands of pre-built lessons to\n" +
           "create your own unique scope and sequence.\n \n" +
           "Customize lessons to match your personal teaching\n" +
@@ -2215,8 +2217,8 @@
         'subtitle': 'Personalize learning',
         'text': "You’ve got students who love math and\n" +
           "science and students who haven’t yet unlocked\n" +
-          "the secrets. With CINCH, you can meet all\n" +
-          "their needs.\n \n" +
+          "the secrets. With CINCH Learning, you can\n" +
+          "meet all their needs.\n \n" +
           "Assign content, assessments, homework, and\n" +
           "even games to each individual student based\n" +
           "on specific learning needs.\n \n" +
@@ -2231,15 +2233,15 @@
         'title': 'Your Classroom',
         'subtitle': 'Personalize the experience',
         'text': "Wherever your classroom is in the digital\n" +
-          "transition, CINCH is right there with you\n" +
-          "helping you make the most of your school’s\n" +
-          "technology resources.\n \n" +
+          "transition, CINCH Learning is right there\n" +
+          "with you helping you make the most of\n" +
+          "your school’s technology resources.\n \n" +
           "Access and edit content from any device –\n" +
           "desktops, laptops, IWBs, tablets or smartphones.\n" +
           "Plan, assess and communicate on-the-go\n" +
-          "with the CINCH app.\n \n" +
+          "with the CINCH Learning app.\n \n" +
           "Always have the latest resources aligned to the\n" +
-          "most current standards with real-time updates.\n" +
+          "most current standards.\n \n" +
           "Integrate print and digital with print\n" +
           "on demand options."
       }

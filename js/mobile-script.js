@@ -141,7 +141,7 @@
         cursor: 'pointer'
       }).toFront();
 
-      var ctaText = paper.text(160, 215, "See how teachers,\nadministrators and\nparents are using\nCinch technology\ntoday.").attr({
+      var ctaText = paper.text(160, 215, "See how teachers,\nadministrators and\nparents are using\nCinch Learning\ntechnology today.").attr({
         'text-anchor': 'middle',
         'stroke-opacity': 0,
         'font-family': 'Arial, sans',
@@ -553,7 +553,9 @@
       });
 
       setTimeout((function () {
-        $('#mobile-footer').show();
+        if (self.state === 'about') {
+          $('#mobile-footer').show();
+        }
       }), 500);
     };
 
@@ -714,7 +716,7 @@
             $('#mobile-footer').hide();
             break;
           case 'about':
-            $('#mobile-vector-content').css('height', 600);
+            $('#mobile-vector-content').css('height', 700);
             $('#mobile-footer').show();
             break;
           case 'contact':
@@ -813,11 +815,11 @@
         'text': [
           "No one else connects with, engages or excites students exactly like you. With CINCH Learning you’re " +
             "in control of how and what you teach like never before. CINCH Learning provides convenient cloud-based " +
-            "access to quality math and science content for grades 5-12 along with robust planning and assessment tools. " +
+            "access to quality math and science content for grades 6-12 along with robust planning and assessment tools. " +
             "Choose what you want to teach, what resources you want to use, and what device you want to use to deliver " +
             "the lesson. Put it all together to create a compelling learning experience that is uniquely yours and " +
             "highly personalized to your students.",
-          "Get up close and personal with CINCH. Explore this site and then contact us for a product demo."
+          "Get up close and personal with CINCH Learning. Explore this site and then contact us for a product demo."
         ]
       },
       'course': {
@@ -825,7 +827,7 @@
         'title': 'Your Course',
         'subtitle': 'Personalize content',
         'text': [
-          "You know what you want to teach and how you want to teach it. CINCH puts all the resources you " +
+          "You know what you want to teach and how you want to teach it. CINCH Learning puts all the resources you " +
             "need in one place to use any way you want.",
           "Choose from thousands of pre-built lessons to create your own unique scope and sequence.",
           "Customize lessons to match your personal teaching style. Add and use your own favorite content.",
@@ -838,7 +840,7 @@
         'subtitle': 'Personalize learning',
         'text': [
           "You’ve got students who love math and science and students who haven’t yet unlocked the secrets. " +
-            "With CINCH, you can meet all their needs.",
+            "With CINCH Learning, you can meet all their needs.",
           "Assign content, assessments, homework, and even games to each individual student based on specific " +
             "learning needs.",
           "Encourage collaboration and communication with built-in social networking tools.",
@@ -850,12 +852,12 @@
         'title': 'Your Classroom',
         'subtitle': 'Personalize the experience',
         'text': [
-          "Wherever your classroom is in the digital transition, CINCH is right there with you helping you make " +
-            "the most of your school’s technology resources.",
+          "Wherever your classroom is in the digital transition, CINCH Learning is right there with you helping " +
+            "you make the most of your school’s technology resources.",
           "Access and edit content from any device – desktops, laptops, IWBs, tablets or smartphones. Plan, " +
-            "assess and communicate on-the-go with the CINCH app.",
-          "Always have the latest resources aligned to the most current standards with real-time updates. " +
-            "Integrate print and digital with print on demand options."
+            "assess and communicate on-the-go with the CINCH Learning app.",
+          "Always have the latest resources aligned to the most current standards.",
+          "Integrate print and digital with print on demand options."
         ]
       }
     };
