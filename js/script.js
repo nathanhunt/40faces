@@ -2133,7 +2133,7 @@
         });
 
         $.when(mediaComplete, bubblesComplete).done(function () {
-          self.clearMainIntroSet();
+          setTimeout(self.clearMainIntroSet, 5000);
           $('#occluder').fadeOut(2e3, function () {
             $body.data('readyForHint', true);
             if(typeof(self.hitAreaSet) !== 'undefined') {
