@@ -506,7 +506,7 @@
             "Prepares students for new online state assessments"],
           ["Activities that capture student attention",
             "Tools for making lessons more dynamic",
-            "Students have fun with wideos, virtual labs, social networking tools"],
+            "Students have fun with videos, virtual labs, social networking tools"],
           ["Collaboratively plan the week from the CINCH app",
             "Planner tool makes it easy to follow scope and sequence",
             "Plan as a group and tweak day-by-day using the CINCH app"],
